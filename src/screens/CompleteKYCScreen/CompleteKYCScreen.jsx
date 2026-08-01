@@ -16,35 +16,42 @@ import KYCHeroCard from "./components/KYCHeroCard.jsx";
 import KYCSecurityCard from "./components/KYCSecurityCard"
 import KYCStepList from "./components/KYCStepList.jsx";
 import KYCFooter from "./components/KYCFooter.jsx";
+import { useNavigation } from "@react-navigation/native";
 
-const steps = [
+const kycSteps = [
   {
     id: 1,
     type: "aadhaar",
     title: "Aadhaar Verification",
-    subtitle: "Verify with OTP, no card needed",
+    subtitle: "Verify your Aadhaar",
+    screen: "aadhaar-verification-enter-mobile-number-screen",
   },
   {
     id: 2,
     type: "pan",
-    title: "PAN Card",
-    subtitle: "Just enter your number",
+    title: "PAN Verification",
+    subtitle: "Verify your PAN",
+    screen: "pan-verification-enter-mobile-number-screen",
   },
   {
     id: 3,
     type: "address",
-    title: "Personal & Address Details",
-    subtitle: "Auto-filled from Aadhaar",
+    title: "Address Verification",
+    subtitle: "Verify your Address",
+    screen: "address-verification-screen",
   },
   {
     id: 4,
     type: "bank",
-    title: "Link your Bank Account",
-    subtitle: "Choose any bank",
+    title: "Bank Verification",
+    subtitle: "Verify your Bank",
+    screen: "bank-verification-screen",
   },
 ];
 
-const CompleteKYCScreen = ({ navigation }) => {
+const CompleteKYCScreen = ({   }) => {
+  const navigation = useNavigation();
+
   const onStepPress = (item) => {
     console.log(item.title);
 
@@ -113,8 +120,32 @@ const CompleteKYCScreen = ({ navigation }) => {
           <KYCSecurityCard />
 
           <KYCStepList
-            data={steps}
-            onPress={onStepPress}
+            data={kycSteps}
+         onPress={(item) => {
+
+    switch (item.type) {
+
+      case "aadhaar":
+        navigation.navigate("aadhaar-verification-enter-mobile-number-screen");
+        break;
+
+      case "pan":
+        navigation.navigate("pan-verification-enter-mobile-number-screen");
+        break;
+
+      case "address":
+        navigation.navigate("address-verification-screen");
+        break;
+
+      case "bank":
+        navigation.navigate("bank-verification-screen");
+        break;
+
+      default:
+        break;
+    }
+
+  }}
           />
         </ScrollView>
 

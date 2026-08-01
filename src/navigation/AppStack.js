@@ -8,6 +8,11 @@ import {
 
 // Bottom Tab Navigation
 import BottomTabNavigator from "./BottomTabNavigator";
+import AadhaarVerificationScreen from "../screens/CompleteKYCScreen/AddharVerification/AadhaarVerificationScreen";
+import AadhaarOtpVerificationScreen from "../screens/CompleteKYCScreen/AddharVerification/AadhaarOtpVerificationScreen";
+
+
+import PanVerificationScreen from "../screens/CompleteKYCScreen/PanVerification/PanVerificationScreen";
 
 const Stack = createNativeStackNavigator();
 
@@ -20,7 +25,7 @@ const AppStack = () => {
         animation: "slide_from_right",
       }}
     >
-      
+
       {/* ========================= */}
       {/* MAIN BOTTOM TABS */}
       {/* ========================= */}
@@ -30,16 +35,32 @@ const AppStack = () => {
         component={BottomTabNavigator}
       />
 
+      <Stack.Screen
+        name="aadhaar-verification-enter-mobile-number-screen"
+        component={AadhaarVerificationScreen
+
+        }
+      />
+      <Stack.Screen
+        name="pan-verification-enter-mobile-number-screen"
+        component={PanVerificationScreen
+
+        }
+      />
+        <Stack.Screen
+        name="aadhaar-verification-enter-otp-screen"
+        component={AadhaarOtpVerificationScreen
+
+        }
+      />
+      
+
       {/* ========================= */}
       {/* FUTURE SCREENS */}
       {/* ========================= */}
 
       {/*
-      <Stack.Screen
-        name="DeviceDetail"
-        component={DeviceDetailScreen}
-      />
-
+      
       <Stack.Screen
         name="Settings"
         component={SettingsScreen}
