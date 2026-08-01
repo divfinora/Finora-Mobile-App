@@ -1,0 +1,65 @@
+{
+  "migIndex": 1,
+  "data": [
+    {
+      "path": "assets/fonts/Manrope-Bold.ttf",
+      "sha1": "dbc0b874ad8b9f3415d0e9b4e22907890ca72327"
+    },
+    {
+      "path": "assets/fonts/Manrope-ExtraBold.ttf",
+      "sha1": "df131208d5c08ff782fbf12c264f473d8dacd83e"
+    },
+    {
+      "path": "assets/fonts/Manrope-ExtraLight.ttf",
+      "sha1": "bc714297659d8d6d987142c11987df3fe6f04b4e"
+    },
+    {
+      "path": "assets/fonts/Manrope-Light.ttf",
+      "sha1": "27d7897032dc0615ace6c53fd292107ae53280e5"
+    },
+    {
+      "path": "assets/fonts/Manrope-Medium.ttf",
+      "sha1": "b5e2c6265e0919163142bb8eac9b6450fb91f920"
+    },
+    {
+      "path": "assets/fonts/Manrope-Regular.ttf",
+      "sha1": "3f36e4904a42d23273ac346047c1b6bcf067ccfc"
+    },
+    {
+      "path": "assets/fonts/Manrope-SemiBold.ttf",
+      "sha1": "f7a023cd6c102b2ffa8bf729579552445970d62d"
+    },
+    {
+      "path": "assets/fonts/Sora-Bold.ttf",
+      "sha1": "f907b49488151754b4d4ca4a5a2aa55e8f01a887"
+    },
+    {
+      "path": "assets/fonts/Sora-ExtraBold.ttf",
+      "sha1": "a262e745d980abb98f6f064cfcd692ddfcda2131"
+    },
+    {
+      "path": "assets/fonts/Sora-ExtraLight.ttf",
+      "sha1": "4ff7803650703a1a590154eda9d47ddbb6fd8466"
+    },
+    {
+      "path": "assets/fonts/Sora-Light.ttf",
+      "sha1": "01761af81a86e7d3a0a41680208fb703e5f4148b"
+    },
+    {
+      "path": "assets/fonts/Sora-Medium.ttf",
+      "sha1": "3e1cdc1bc46fa42af1341d290445e42da67cd6e0"
+    },
+    {
+      "path": "assets/fonts/Sora-Regular.ttf",
+      "sha1": "1d7fc67be342deb56a0b3e90e5e212166117b34e"
+    },
+    {
+      "path": "assets/fonts/Sora-SemiBold.ttf",
+      "sha1": "b28cc2fd0b3d43c007fe82fbf7e72715ee3afaab"
+    },
+    {
+      "path": "assets/fonts/Sora-Thin.ttf",
+      "sha1": "ef1bbd232020073a8351b3151515c121c61622db"
+    }
+  ]
+}

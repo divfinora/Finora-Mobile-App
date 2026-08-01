@@ -9,8 +9,24 @@
 /* Begin PBXBuildFile section */
 		0C80B921A6F3F58F76C31292 /* libPods-FinSaarthi.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 5DCACB8F33CDC322A6C60F78 /* libPods-FinSaarthi.a */; };
 		13B07FBF1A68108700A75B9A /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 13B07FB51A68108700A75B9A /* Images.xcassets */; };
+		22EDE17565204F43A292DB90 /* Manrope-SemiBold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 90C557765E8643F3AEF9E40F /* Manrope-SemiBold.ttf */; };
+		319EF4FF07DF48E5B0440F1A /* Sora-ExtraBold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 513E04E5F32E454B911117B6 /* Sora-ExtraBold.ttf */; };
+		32533F551AB34E3A883AFDBA /* Sora-ExtraLight.ttf in Resources */ = {isa = PBXBuildFile; fileRef = B7DFC11DA1CC44859AE2A0D4 /* Sora-ExtraLight.ttf */; };
+		33445CD41FA94CB6BB2E3BF8 /* Manrope-Bold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 1440BABB1C734841BAA7C736 /* Manrope-Bold.ttf */; };
+		46758F6391DA1FC4680FDC38 /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = 13B07FB81A68108700A75B9A /* PrivacyInfo.xcprivacy */; };
+		557D4BBCFD8A43B29D2D613C /* Sora-Bold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = D2ABE7BBAE0F4B3CA0F5CC9E /* Sora-Bold.ttf */; };
+		58C2CC72F4494CCF92AA2533 /* Manrope-Medium.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 556B19CEA03E48958D4E1509 /* Manrope-Medium.ttf */; };
+		67B540DFA79C4425BB68A49B /* Manrope-ExtraLight.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 96C0B7AB0D484CA9AE374AE7 /* Manrope-ExtraLight.ttf */; };
+		7030F71184AA4964A30EEB69 /* Sora-SemiBold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 990332D2C3BF41F1AD3A6DDB /* Sora-SemiBold.ttf */; };
 		761780ED2CA45674006654EE /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 761780EC2CA45674006654EE /* AppDelegate.swift */; };
+		81A34A2B11694E539BE57036 /* Manrope-Light.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 1DA165AC3BDE403E9473258F /* Manrope-Light.ttf */; };
 		81AB9BB82411601600AC10FF /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 81AB9BB72411601600AC10FF /* LaunchScreen.storyboard */; };
+		910D26799ABB4277967F16F8 /* Sora-Light.ttf in Resources */ = {isa = PBXBuildFile; fileRef = E6E357A07B0B4C7186F98AAC /* Sora-Light.ttf */; };
+		9A0F959A4CAF4CE1B22EAA8F /* Sora-Medium.ttf in Resources */ = {isa = PBXBuildFile; fileRef = D337FBD84A954ECC82A417E2 /* Sora-Medium.ttf */; };
+		9D4A6A600E484743B9535A28 /* Sora-Thin.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 3B54236867894F999EF57218 /* Sora-Thin.ttf */; };
+		BE1C3972AD0B418F9E5B43E7 /* Sora-Regular.ttf in Resources */ = {isa = PBXBuildFile; fileRef = AA81E08C73DB4B4CA46529E9 /* Sora-Regular.ttf */; };
+		CC7DC5A8C3D94432A49CD55B /* Manrope-ExtraBold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 2A5483F4057D48879E5332A0 /* Manrope-ExtraBold.ttf */; };
+		DE584B6EA9694C859884ED75 /* Manrope-Regular.ttf in Resources */ = {isa = PBXBuildFile; fileRef = C802226C5CC7454D80963340 /* Manrope-Regular.ttf */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -18,11 +34,26 @@
 		13B07FB51A68108700A75B9A /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; name = Images.xcassets; path = FinSaarthi/Images.xcassets; sourceTree = "<group>"; };
 		13B07FB61A68108700A75B9A /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = Info.plist; path = FinSaarthi/Info.plist; sourceTree = "<group>"; };
 		13B07FB81A68108700A75B9A /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = PrivacyInfo.xcprivacy; path = FinSaarthi/PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
+		1440BABB1C734841BAA7C736 /* Manrope-Bold.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = "Manrope-Bold.ttf"; path = "../assets/fonts/Manrope-Bold.ttf"; sourceTree = "<group>"; };
+		1DA165AC3BDE403E9473258F /* Manrope-Light.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = "Manrope-Light.ttf"; path = "../assets/fonts/Manrope-Light.ttf"; sourceTree = "<group>"; };
+		2A5483F4057D48879E5332A0 /* Manrope-ExtraBold.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = "Manrope-ExtraBold.ttf"; path = "../assets/fonts/Manrope-ExtraBold.ttf"; sourceTree = "<group>"; };
 		3B4392A12AC88292D35C810B /* Pods-FinSaarthi.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-FinSaarthi.debug.xcconfig"; path = "Target Support Files/Pods-FinSaarthi/Pods-FinSaarthi.debug.xcconfig"; sourceTree = "<group>"; };
+		3B54236867894F999EF57218 /* Sora-Thin.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = "Sora-Thin.ttf"; path = "../assets/fonts/Sora-Thin.ttf"; sourceTree = "<group>"; };
+		513E04E5F32E454B911117B6 /* Sora-ExtraBold.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = "Sora-ExtraBold.ttf"; path = "../assets/fonts/Sora-ExtraBold.ttf"; sourceTree = "<group>"; };
+		556B19CEA03E48958D4E1509 /* Manrope-Medium.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = "Manrope-Medium.ttf"; path = "../assets/fonts/Manrope-Medium.ttf"; sourceTree = "<group>"; };
 		5709B34CF0A7D63546082F79 /* Pods-FinSaarthi.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-FinSaarthi.release.xcconfig"; path = "Target Support Files/Pods-FinSaarthi/Pods-FinSaarthi.release.xcconfig"; sourceTree = "<group>"; };
 		5DCACB8F33CDC322A6C60F78 /* libPods-FinSaarthi.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-FinSaarthi.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		761780EC2CA45674006654EE /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = AppDelegate.swift; path = FinSaarthi/AppDelegate.swift; sourceTree = "<group>"; };
 		81AB9BB72411601600AC10FF /* LaunchScreen.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; name = LaunchScreen.storyboard; path = FinSaarthi/LaunchScreen.storyboard; sourceTree = "<group>"; };
+		90C557765E8643F3AEF9E40F /* Manrope-SemiBold.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = "Manrope-SemiBold.ttf"; path = "../assets/fonts/Manrope-SemiBold.ttf"; sourceTree = "<group>"; };
+		96C0B7AB0D484CA9AE374AE7 /* Manrope-ExtraLight.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = "Manrope-ExtraLight.ttf"; path = "../assets/fonts/Manrope-ExtraLight.ttf"; sourceTree = "<group>"; };
+		990332D2C3BF41F1AD3A6DDB /* Sora-SemiBold.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = "Sora-SemiBold.ttf"; path = "../assets/fonts/Sora-SemiBold.ttf"; sourceTree = "<group>"; };
+		AA81E08C73DB4B4CA46529E9 /* Sora-Regular.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = "Sora-Regular.ttf"; path = "../assets/fonts/Sora-Regular.ttf"; sourceTree = "<group>"; };
+		B7DFC11DA1CC44859AE2A0D4 /* Sora-ExtraLight.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = "Sora-ExtraLight.ttf"; path = "../assets/fonts/Sora-ExtraLight.ttf"; sourceTree = "<group>"; };
+		C802226C5CC7454D80963340 /* Manrope-Regular.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = "Manrope-Regular.ttf"; path = "../assets/fonts/Manrope-Regular.ttf"; sourceTree = "<group>"; };
+		D2ABE7BBAE0F4B3CA0F5CC9E /* Sora-Bold.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = "Sora-Bold.ttf"; path = "../assets/fonts/Sora-Bold.ttf"; sourceTree = "<group>"; };
+		D337FBD84A954ECC82A417E2 /* Sora-Medium.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = "Sora-Medium.ttf"; path = "../assets/fonts/Sora-Medium.ttf"; sourceTree = "<group>"; };
+		E6E357A07B0B4C7186F98AAC /* Sora-Light.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = "Sora-Light.ttf"; path = "../assets/fonts/Sora-Light.ttf"; sourceTree = "<group>"; };
 		ED297162215061F000B7C4FE /* JavaScriptCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = JavaScriptCore.framework; path = System/Library/Frameworks/JavaScriptCore.framework; sourceTree = SDKROOT; };
 /* End PBXFileReference section */
 
@@ -74,6 +105,7 @@
 				83CBBA001A601CBA00E9B192 /* Products */,
 				2D16E6871FA4F8E400B85C8A /* Frameworks */,
 				BBD78D7AC51CEA395F1C20DB /* Pods */,
+				ADDC4801E0BF4105A7990BFF /* Resources */,
 			);
 			indentWidth = 2;
 			sourceTree = "<group>";
@@ -86,6 +118,29 @@
 				13B07F961A680F5B00A75B9A /* FinSaarthi.app */,
 			);
 			name = Products;
+			sourceTree = "<group>";
+		};
+		ADDC4801E0BF4105A7990BFF /* Resources */ = {
+			isa = PBXGroup;
+			children = (
+				3B54236867894F999EF57218 /* Sora-Thin.ttf */,
+				513E04E5F32E454B911117B6 /* Sora-ExtraBold.ttf */,
+				556B19CEA03E48958D4E1509 /* Manrope-Medium.ttf */,
+				D2ABE7BBAE0F4B3CA0F5CC9E /* Sora-Bold.ttf */,
+				E6E357A07B0B4C7186F98AAC /* Sora-Light.ttf */,
+				90C557765E8643F3AEF9E40F /* Manrope-SemiBold.ttf */,
+				AA81E08C73DB4B4CA46529E9 /* Sora-Regular.ttf */,
+				2A5483F4057D48879E5332A0 /* Manrope-ExtraBold.ttf */,
+				C802226C5CC7454D80963340 /* Manrope-Regular.ttf */,
+				D337FBD84A954ECC82A417E2 /* Sora-Medium.ttf */,
+				96C0B7AB0D484CA9AE374AE7 /* Manrope-ExtraLight.ttf */,
+				1DA165AC3BDE403E9473258F /* Manrope-Light.ttf */,
+				990332D2C3BF41F1AD3A6DDB /* Sora-SemiBold.ttf */,
+				1440BABB1C734841BAA7C736 /* Manrope-Bold.ttf */,
+				B7DFC11DA1CC44859AE2A0D4 /* Sora-ExtraLight.ttf */,
+			);
+			name = Resources;
+			path = "";
 			sourceTree = "<group>";
 		};
 		BBD78D7AC51CEA395F1C20DB /* Pods */ = {
@@ -159,6 +214,22 @@
 			files = (
 				81AB9BB82411601600AC10FF /* LaunchScreen.storyboard in Resources */,
 				13B07FBF1A68108700A75B9A /* Images.xcassets in Resources */,
+				46758F6391DA1FC4680FDC38 /* PrivacyInfo.xcprivacy in Resources */,
+				9D4A6A600E484743B9535A28 /* Sora-Thin.ttf in Resources */,
+				319EF4FF07DF48E5B0440F1A /* Sora-ExtraBold.ttf in Resources */,
+				58C2CC72F4494CCF92AA2533 /* Manrope-Medium.ttf in Resources */,
+				557D4BBCFD8A43B29D2D613C /* Sora-Bold.ttf in Resources */,
+				910D26799ABB4277967F16F8 /* Sora-Light.ttf in Resources */,
+				22EDE17565204F43A292DB90 /* Manrope-SemiBold.ttf in Resources */,
+				BE1C3972AD0B418F9E5B43E7 /* Sora-Regular.ttf in Resources */,
+				CC7DC5A8C3D94432A49CD55B /* Manrope-ExtraBold.ttf in Resources */,
+				DE584B6EA9694C859884ED75 /* Manrope-Regular.ttf in Resources */,
+				9A0F959A4CAF4CE1B22EAA8F /* Sora-Medium.ttf in Resources */,
+				67B540DFA79C4425BB68A49B /* Manrope-ExtraLight.ttf in Resources */,
+				81A34A2B11694E539BE57036 /* Manrope-Light.ttf in Resources */,
+				7030F71184AA4964A30EEB69 /* Sora-SemiBold.ttf in Resources */,
+				33445CD41FA94CB6BB2E3BF8 /* Manrope-Bold.ttf in Resources */,
+				32533F551AB34E3A883AFDBA /* Sora-ExtraLight.ttf in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -370,6 +441,10 @@
 				);
 				MTL_ENABLE_DEBUG_INFO = YES;
 				ONLY_ACTIVE_ARCH = YES;
+				OTHER_CFLAGS = (
+					"$(inherited)",
+					"-DRCT_REMOVE_LEGACY_ARCH=1",
+				);
 				OTHER_CPLUSPLUSFLAGS = (
 					"$(OTHER_CFLAGS)",
 					"-DFOLLY_NO_CONFIG",
@@ -377,8 +452,14 @@
 					"-DFOLLY_USE_LIBCPP=1",
 					"-DFOLLY_CFG_NO_COROUTINES=1",
 					"-DFOLLY_HAVE_CLOCK_GETTIME=1",
+					"-DRCT_REMOVE_LEGACY_ARCH=1",
 				);
+				PODFILE_DIR = "$(SRCROOT)";
+				REACT_NATIVE_PATH = "${PODS_ROOT}/../../node_modules/react-native";
 				SDKROOT = iphoneos;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) DEBUG";
+				SWIFT_ENABLE_EXPLICIT_MODULES = NO;
+				USE_HERMES = true;
 			};
 			name = Debug;
 		};
@@ -435,6 +516,10 @@
 					"\"$(inherited)\"",
 				);
 				MTL_ENABLE_DEBUG_INFO = NO;
+				OTHER_CFLAGS = (
+					"$(inherited)",
+					"-DRCT_REMOVE_LEGACY_ARCH=1",
+				);
 				OTHER_CPLUSPLUSFLAGS = (
 					"$(OTHER_CFLAGS)",
 					"-DFOLLY_NO_CONFIG",
@@ -442,8 +527,13 @@
 					"-DFOLLY_USE_LIBCPP=1",
 					"-DFOLLY_CFG_NO_COROUTINES=1",
 					"-DFOLLY_HAVE_CLOCK_GETTIME=1",
+					"-DRCT_REMOVE_LEGACY_ARCH=1",
 				);
+				PODFILE_DIR = "$(SRCROOT)";
+				REACT_NATIVE_PATH = "${PODS_ROOT}/../../node_modules/react-native";
 				SDKROOT = iphoneos;
+				SWIFT_ENABLE_EXPLICIT_MODULES = NO;
+				USE_HERMES = true;
 				VALIDATE_PRODUCT = YES;
 			};
 			name = Release;
