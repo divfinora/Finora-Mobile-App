@@ -134,7 +134,7 @@ const CompleteKYCScreen = ({   }) => {
         break;
 
       case "address":
-        navigation.navigate("address-verification-screen");
+        navigation.navigate("personal-details-verification-screen");
         break;
 
       case "bank":

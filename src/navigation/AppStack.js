@@ -10,7 +10,9 @@ import {
 import BottomTabNavigator from "./BottomTabNavigator";
 import AadhaarVerificationScreen from "../screens/CompleteKYCScreen/AddharVerification/AadhaarVerificationScreen";
 import AadhaarOtpVerificationScreen from "../screens/CompleteKYCScreen/AddharVerification/AadhaarOtpVerificationScreen";
-
+import PanOtpVerificationScreen from "../screens/CompleteKYCScreen/PanVerification/PanOtpVerificationScreen";
+import PersonalVerificationScreen from "../screens/CompleteKYCScreen/PersonalDetails/PersonalDetailsVerificationScreen";
+import BankVerificationScreen from "../screens/CompleteKYCScreen/BankVerification/BankVerificationScreen";
 
 import PanVerificationScreen from "../screens/CompleteKYCScreen/PanVerification/PanVerificationScreen";
 
@@ -47,13 +49,31 @@ const AppStack = () => {
 
         }
       />
-        <Stack.Screen
+      <Stack.Screen
         name="aadhaar-verification-enter-otp-screen"
         component={AadhaarOtpVerificationScreen
 
         }
       />
-      
+
+      <Stack.Screen
+        name="pan-verification-enter-otp-screen"
+        component={PanOtpVerificationScreen
+
+        }
+      />
+      <Stack.Screen
+        name="personal-details-verification-screen"
+        component={PersonalVerificationScreen
+
+        }
+      />
+      <Stack.Screen
+        name="bank-verification-screen"
+        component={BankVerificationScreen
+
+        }
+      />
 
       {/* ========================= */}
       {/* FUTURE SCREENS */}

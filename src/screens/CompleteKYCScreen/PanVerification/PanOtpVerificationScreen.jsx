@@ -5,8 +5,8 @@ import React, {
 
 import EnterOtpScreen from "../../../components/common/OTPScreen/EnterOtpScreen";
 
-import PanOtpImage from "../../../assets/images/otp/pan.webp";
-
+ 
+import PanOtpImage from "../../Auth/assets/login.webp";
 const PanOtpVerificationScreen = ({ navigation, route }) => {
 
   const phone =

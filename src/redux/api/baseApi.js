@@ -1,148 +1,156 @@
-  // // ===============================
-  // // ERP BASE API
-  // // AUTO LOGOUT ON 401 / 403
-  // // ===============================
-
-  // import {
-  //   createApi,
-  //   fetchBaseQuery,
-  // } from "@reduxjs/toolkit/query/react";
-
-  // // import { getAuth, removeAuth } from "../../utils/authStorage";
-  // import {BASE_URL} from '../../config/api.js'
-  
-  // // ======================================
-  // // BASE QUERY
-  // // ======================================
-
-  // const baseQuery = fetchBaseQuery({
-  //   baseUrl: BASE_URL,
-
-  //   prepareHeaders: async (headers) => {
-
-  //     // 🔥 get token
-  //     const { token } = await getAuth();
-  //     console.log(token ,"token ====")
-
-  //     // 🔥 attach token
-  //     if (token) {
-  //       headers.set(
-  //         "authorization",
-  //         `Bearer ${token}`
-  //       );
-  //     }
-
-  //     headers.set(
-  //       "Content-Type",
-  //       "application/json"
-  //     );
-
-  //     return headers;
-  //   },
-  // });
-
-  // // ======================================
-  // // AUTO LOGOUT HANDLER
-  // // ======================================
-
-  // const baseQueryWithReauth = async (
-  //   args,
-  //   api,
-  //   extraOptions
-  // ) => {
-
-  //   // 🔥 original api call
-  //   const result = await baseQuery(
-  //     args,
-  //     api,
-  //     extraOptions
-  //   );
-
-  //   console.log(
-  //     result?.error,
-  //     "ERP API ERROR"
-  //   );
-
-  //   // ======================================
-  //   // TOKEN EXPIRED / INVALID
-  //   // ======================================
-
-  //   if (
-  //     result?.error?.status === 401 ||
-  //     result?.error?.status === 403
-  //   ) {
-
-  //     console.log(
-  //       "🚨 ERP TOKEN EXPIRED → LOGOUT"
-  //     );
-
-  //     // 🔥 clear auth
-  //     // await removeAuth();
-
-  //     /**
-  //      * OPTIONAL
-  //      * If using redux auth slice
-  //      * dispatch(logout())
-  //      */
-
-  //     // api.dispatch(logout());
-  //   }
-
-  //   return result;
-  // };
-
-  // // ======================================
-  // // CREATE API
-  // // ======================================
-
-  // export const baseApi = createApi({
-  //   reducerPath: "api",
-
-  //   baseQuery: baseQueryWithReauth,
-
-  // tagTypes: [
-
-
- 
-
-       
-  //   ],
-
-  //   endpoints: () => ({}),
-  // });
-
-  // ===============================
-// ERP BASE API
-// ===============================
-
 import {
   createApi,
   fetchBaseQuery,
 } from "@reduxjs/toolkit/query/react";
 
 import { BASE_URL } from "../../config/api";
+import {
+  getTokens,
+  updateTokens,
+} from "../../utils/keychain";
 
-// ======================================
-// CREATE API
-// ======================================
+const baseQuery = fetchBaseQuery({
+  baseUrl: BASE_URL,
 
-export const baseApi = createApi({
-  reducerPath: "api",
+  prepareHeaders: async (headers) => {
 
-  baseQuery: fetchBaseQuery({
-    baseUrl: BASE_URL,
+    // ===============================
+    // GET ACCESS TOKEN FROM KEYCHAIN
+    // ===============================
 
-    prepareHeaders: (headers) => {
+    const tokens = await getTokens();
+
+    // ===============================
+    // ATTACH ACCESS TOKEN
+    // ===============================
+
+    if (tokens?.accessToken) {
       headers.set(
-        "Content-Type",
-        "application/json"
+        "Authorization",
+        `Bearer ${tokens.accessToken}`
+      );
+    }
+
+    headers.set(
+      "Content-Type",
+      "application/json"
+    );
+
+    return headers;
+  },
+});
+
+/* ====================================== */
+/* BASE QUERY WITH AUTO REFRESH */
+/* ====================================== */
+
+const baseQueryWithReauth = async (
+  args,
+  api,
+  extraOptions
+) => {
+
+  // ===============================
+  // ORIGINAL API CALL
+  // ===============================
+
+  let result = await baseQuery(
+    args,
+    api,
+    extraOptions
+  );
+
+  // ===============================
+  // ACCESS TOKEN EXPIRED
+  // ===============================
+
+  if (result?.error?.status === 401) {
+
+    console.log("Access Token Expired");
+
+    // ===============================
+    // GET REFRESH TOKEN
+    // ===============================
+
+    const tokens = await getTokens();
+
+    // ===============================
+    // IF REFRESH TOKEN EXISTS
+    // ===============================
+
+    if (tokens?.refreshToken) {
+
+      // ===============================
+      // CALL REFRESH TOKEN API
+      // ===============================
+
+      const refreshResult = await baseQuery(
+        {
+          url: "/auth/v1/refresh",
+          method: "POST",
+          body: {
+            refreshToken: tokens.refreshToken,
+          },
+        },
+        api,
+        extraOptions
       );
 
-      return headers;
-    },
-  }),
+      console.log("Refresh Result =>", refreshResult);
+
+      // ===============================
+      // REFRESH SUCCESS
+      // ===============================
+
+      if (refreshResult?.data?.success) {
+
+        // SAVE NEW TOKENS
+
+        await updateTokens(
+          refreshResult.data.accessToken,
+          refreshResult.data.refreshToken
+        );
+
+        // RETRY ORIGINAL API
+
+        result = await baseQuery(
+          args,
+          api,
+          extraOptions
+        );
+
+      }
+
+      // ===============================
+      // REFRESH FAILED
+      // ===============================
+
+      else {
+
+        console.log("Refresh Token Expired");
+
+        // NEXT STEP:
+        // clearTokens()
+        // dispatch(logout())
+        // Navigate Login
+
+      }
+
+    }
+
+  }
+
+  return result;
+};
+
+export const baseApi = createApi({
+
+  reducerPath: "api",
+
+  baseQuery: baseQueryWithReauth,
 
   tagTypes: [],
 
   endpoints: () => ({}),
+
 });

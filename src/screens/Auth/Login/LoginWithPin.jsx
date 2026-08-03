@@ -212,9 +212,9 @@ const LoginWithPin = ({
                         onPress={() =>
                             navigation.goBack()
                         }
-                        style={{
-                            marginLeft: -8,
-                        }}
+                        // style={{
+                        //     marginLeft: -8,
+                        // }}
                     />
 
                     <TouchableWithoutFeedback

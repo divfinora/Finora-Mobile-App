@@ -6,60 +6,113 @@ import {
   TouchableOpacity,
 } from "react-native";
 
-import { theme } from "../../../../theme/index";
+import { theme } from "../../../../theme";
 
 const OTPResend = ({
-  timer = 30,
+  timer = 0,
+
   onResend,
-  disabled = true,
+
+  disabled,
+
+  resendText = "Resend OTP",
+
+  timerPrefix = "OTP expires in",
+
+  containerStyle,
+
+  textStyle,
+
+  timerStyle,
 }) => {
 
+  const isDisabled =
+    disabled ?? timer > 0;
+
+  const minutes = String(
+    Math.floor(timer / 60)
+  ).padStart(2, "0");
+
+  const seconds = String(
+    timer % 60
+  ).padStart(2, "0");
+
   return (
+
     <View
-      style={{
-        alignItems: "center",
-        marginTop: theme.spacing.xl,
-      }}
+      style={[
+        {
+          alignItems: "center",
+
+          marginTop: theme.spacing.xxxl,
+        },
+        containerStyle,
+      ]}
     >
-      {disabled ? (
 
-        <Text
-          style={{
-            color: theme.colors.textSecondary,
-            fontSize: theme.typography.b2,
-            fontFamily: theme.fonts.regular,
-          }}
-        >
-          Resend OTP in{" "}
+      {isDisabled && (
+
+        <>
           <Text
-            style={{
-              color: theme.colors.primary500,
-              fontFamily: theme.fonts.semiBold,
-            }}
+            style={[
+              {
+                fontSize: theme.typography.b3,
+
+                fontFamily: theme.fonts.medium,
+
+                color: theme.colors.textLight,
+              },
+              textStyle,
+            ]}
           >
-            {timer}s
+            {timerPrefix}
           </Text>
-        </Text>
 
-      ) : (
-
-        <TouchableOpacity
-          activeOpacity={0.8}
-          onPress={onResend}
-        >
           <Text
-            style={{
-              color: theme.colors.primary500,
-              fontSize: theme.typography.b2,
-              fontFamily: theme.fonts.semiBold,
-            }}
+            style={[
+              {
+                marginTop: 4,
+
+                fontSize: theme.typography.b1,
+
+                fontFamily: theme.fonts.bold,
+
+                color: theme.colors.primary500,
+              },
+              timerStyle,
+            ]}
           >
-            Resend OTP
+            {minutes}:{seconds}
           </Text>
-        </TouchableOpacity>
+        </>
 
       )}
+
+      <TouchableOpacity
+        activeOpacity={0.8}
+        disabled={isDisabled}
+        onPress={onResend}
+        style={{
+          marginTop: theme.spacing.xxl,
+        }}
+      >
+        <Text
+          style={{
+            fontSize: theme.typography.b1,
+
+            fontFamily: theme.fonts.medium,
+
+            color: isDisabled
+              ? theme.colors.black
+              : theme.colors.primary500,
+          }}
+        >
+          {resendText}
+        </Text>
+      </TouchableOpacity>
+
     </View>
+
   );
 
 };

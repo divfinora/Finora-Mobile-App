@@ -204,10 +204,10 @@ const CreatePinScreen = ({
                         onPress={() =>
                             navigation.goBack()
                         }
-                        style={{
-                            marginLeft: -8,
+                        // style={{
+                        //     marginLeft: -8,
 
-                        }}
+                        // }}
                     />
                     <TouchableWithoutFeedback
                         onPress={Keyboard.dismiss}

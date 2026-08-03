@@ -4,32 +4,33 @@ import {
   View,
 } from "react-native";
 
+import CommonButton from "../../../../components/common/Button/CommonButton";
 import { theme } from "../../../../theme";
 
-import CommonButton from "../../../common/Button/CommonButton";
-import OTPResend from "./OTPResend";
+const Footer = ({
+  title = "Continue",
 
-const OTPFooter = ({
-  title,
-  loading,
-  disabled,
+  loading = false,
+
+  disabled = false,
+
   onPress,
-  buttonProps = {},
 }) => {
   return (
     <View
       style={{
-        marginTop: theme.spacing.massive,
+        marginTop: theme.spacing.xxxl,
+        marginBottom: theme.spacing.lg,
       }}
     >
       <CommonButton
         title={title}
         loading={loading}
-        disabled={disabled}
+        disabled={disabled || loading}
         onPress={onPress}
-        {...buttonProps}
       />
     </View>
   );
 };
-export default OTPFooter;
+
+export default Footer;

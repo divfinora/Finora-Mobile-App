@@ -104,24 +104,19 @@ const EnterOtpScreen = ({
             error={!!error}
           />
 
-          {!!error && (
-            <OTPError
-              message={error}
-            />
-          )}
+
+
 
           <OTPFooter
             title={buttonTitle}
             loading={loading}
-            disabled={
-              otp.join("").length !== otpLength
-            }
+            disabled={otp.join("").length !== otpLength}
             onPress={onVerify}
           />
 
           <OTPResend
-            seconds={seconds}
-            onPress={onResend}
+            timer={seconds}
+            onResend={onResend}
           />
         </ScrollView>
       </KeyboardAvoidingView>

@@ -20,7 +20,7 @@ const PanVerificationScreen = ({
       return;
     }
 
-    navigation.navigate("BankVerificationScreen");
+    navigation.navigate("pan-verification-enter-otp-screen");
   };
 
   const handleChangePAN = (text) => {

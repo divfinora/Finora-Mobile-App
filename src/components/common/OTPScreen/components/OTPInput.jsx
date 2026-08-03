@@ -1,135 +1,232 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, {
+  useEffect,
+  useRef,
+} from "react";
 
 import {
   View,
   TextInput,
+  Platform,
+  useWindowDimensions,
 } from "react-native";
 
 import { theme } from "../../../../theme";
 
 const OTPInput = ({
-  length = 4,
+  length = 6,
   value = [],
   onChange,
   error = false,
+  autoFocus = true,
 }) => {
+
   const inputRefs = useRef([]);
 
-  const [focusedIndex, setFocusedIndex] = useState(0);
+  const {
+    width,
+  } = useWindowDimensions();
+
+  const otpBoxSize = Math.min(
+    60,
+    (width - theme.spacing.massive - 30) / length
+  );
 
   useEffect(() => {
+
     if (value.length !== length) {
       onChange(Array(length).fill(""));
     }
+
   }, []);
 
-  const handleChange = (text, index) => {
-    // Paste Support
-    if (text.length > 1) {
-      const pasted = text
-        .slice(0, length)
-        .split("");
+  useEffect(() => {
 
-      const otp = [...Array(length)].map(
-        (_, i) => pasted[i] || ""
+    if (!autoFocus) return;
+
+    const timer = setTimeout(() => {
+      inputRefs.current[0]?.focus();
+    }, 300);
+
+    return () => clearTimeout(timer);
+
+  }, []);
+
+  const handleOtpChange = (
+    text,
+    index,
+  ) => {
+
+    const input = text.replace(/\D/g, "");
+
+    // Paste Support
+    if (input.length > 1) {
+
+      const newOtp = [...value];
+
+      input
+        .slice(0, length)
+        .split("")
+        .forEach((digit, i) => {
+
+          if (index + i < length) {
+            newOtp[index + i] = digit;
+          }
+
+        });
+
+      onChange(newOtp);
+
+      const nextIndex = Math.min(
+        index + input.length,
+        length - 1,
       );
 
-      onChange(otp);
-
-      const next =
-        pasted.length >= length
-          ? length - 1
-          : pasted.length;
-
-      inputRefs.current[next]?.focus();
+      inputRefs.current[nextIndex]?.focus();
 
       return;
     }
 
-    const otp = [...value];
+    const newOtp = [...value];
 
-    otp[index] = text;
+    newOtp[index] = input;
 
-    onChange(otp);
+    onChange(newOtp);
 
-    if (text && index < length - 1) {
+    if (
+      input &&
+      index < length - 1
+    ) {
       inputRefs.current[index + 1]?.focus();
     }
+
   };
 
-  const handleBackspace = ({
-    nativeEvent,
-  }, index) => {
+  const handleBackspace = (
+    e,
+    index,
+  ) => {
+
     if (
-      nativeEvent.key === "Backspace" &&
-      !value[index] &&
-      index > 0
-    ) {
-      inputRefs.current[index - 1]?.focus();
+      e.nativeEvent.key !== "Backspace"
+    )
+      return;
+
+    const newOtp = [...value];
+
+    if (value[index]) {
+
+      newOtp[index] = "";
+
+      onChange(newOtp);
+
+      return;
     }
+
+    if (index > 0) {
+
+      newOtp[index - 1] = "";
+
+      onChange(newOtp);
+
+      inputRefs.current[index - 1]?.focus();
+
+    }
+
   };
 
   return (
+
     <View
       style={{
         flexDirection: "row",
         justifyContent: "space-between",
+        alignItems: "center",
+
+        width: "100%",
+
+        marginTop: theme.spacing.xxl,
+
         marginBottom: theme.spacing.xxl,
       }}
     >
-      {Array.from({ length }).map((_, index) => (
-        <TextInput
-          key={index}
-          ref={(ref) =>
-            (inputRefs.current[index] = ref)
-          }
-          value={value[index]}
-          keyboardType="number-pad"
-          maxLength={length}
-          textAlign="center"
-          autoFocus={index === 0}
-          onFocus={() =>
-            setFocusedIndex(index)
-          }
-          onBlur={() =>
-            setFocusedIndex(-1)
-          }
-          onChangeText={(text) =>
-            handleChange(text, index)
-          }
-          onKeyPress={(e) =>
-            handleBackspace(e, index)
-          }
-          textContentType="oneTimeCode"
-          autoComplete="sms-otp"
-          importantForAutofill="yes"
-          style={{
-            width: 58,
-            height: 58,
 
-            borderRadius: theme.radius.lg,
+      {value.map(
+        (
+          digit,
+          index,
+        ) => (
 
-            borderWidth: 1.5,
+          <TextInput
+            key={index}
+            ref={(ref) => {
+              inputRefs.current[index] = ref;
+            }}
+            value={digit}
+            onChangeText={(text) =>
+              handleOtpChange(
+                text,
+                index,
+              )
+            }
+            onKeyPress={(e) =>
+              handleBackspace(
+                e,
+                index,
+              )
+            }
+            keyboardType="number-pad"
+            textContentType="oneTimeCode"
+            autoComplete="sms-otp"
+            importantForAutofill="yes"
+            autoCorrect={false}
+            contextMenuHidden={false}
+            selectTextOnFocus
+            maxLength={
+              Platform.OS === "ios"
+                ? length
+                : 20
+            }
+            textAlign="center"
+            style={{
+              width: otpBoxSize,
 
-            borderColor: error
-              ? theme.colors.error
-              : focusedIndex === index
-              ? theme.colors.primary
-              : theme.colors.border,
+              height: otpBoxSize,
 
-            backgroundColor:
-              theme.colors.inputBackground,
+              borderRadius:
+                theme.radius.lg,
 
-            color: theme.colors.black,
+              borderWidth:
+                theme.borderWidth?.thin ??
+                1,
 
-            fontSize: theme.typography.h3,
+              borderColor:
+                digit
+                  ? theme.colors.primary500
+                  : error
+                  ? theme.colors.error
+                  : theme.colors.gray200,
 
-            fontFamily: theme.fonts.headingBold,
-          }}
-        />
-      ))}
+              backgroundColor:
+                theme.colors.gray100,
+
+              color:
+                theme.colors.black,
+
+              fontSize:
+                otpBoxSize * 0.4,
+
+              fontFamily:
+                theme.fonts.bold,
+            }}
+          />
+
+        )
+      )}
+
     </View>
+
   );
+
 };
 
 export default OTPInput;

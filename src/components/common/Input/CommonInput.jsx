@@ -84,7 +84,7 @@ const CommonInput = ({
 
               color: theme.colors.gray700,
 
-              fontSize: 15,
+              fontSize: theme.typography.b1,
 
               fontFamily: theme.fonts.medium,
             },

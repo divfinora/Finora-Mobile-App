@@ -13,7 +13,7 @@ const AadhaarOtpVerificationScreen = ({ navigation, route }) => {
     route?.params?.phone || "9995380399";
 
   const [otp, setOtp] = useState(
-    Array(4).fill("")
+    Array(6).fill("")
   );
 
   const [loading, setLoading] =
@@ -66,7 +66,7 @@ const AadhaarOtpVerificationScreen = ({ navigation, route }) => {
     const enteredOtp =
       otp.join("");
 
-    if (enteredOtp.length !== 4) {
+    if (enteredOtp.length !== 6) {
 
       setError("Please enter valid OTP.");
 
@@ -119,11 +119,11 @@ const AadhaarOtpVerificationScreen = ({ navigation, route }) => {
        * ---------------------------------
        */
 
-      console.log("Resend OTP");
+    
 
       setSeconds(30);
 
-      setOtp(Array(4).fill(""));
+      setOtp(Array(6).fill(""));
 
       setError("");
 
@@ -149,7 +149,7 @@ const AadhaarOtpVerificationScreen = ({ navigation, route }) => {
 
       otp={otp}
 
-      otpLength={4}
+      otpLength={6}
 
       error={error}
 

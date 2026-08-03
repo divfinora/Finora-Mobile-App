@@ -23,7 +23,7 @@ const KYCHeader = ({
       <BackButton
         onPress={onBack}
         style={{
-          marginLeft: -8,
+          // marginLeft: -8,
           marginBottom: theme.spacing.lg,
           alignSelf: "flex-start",
         }}

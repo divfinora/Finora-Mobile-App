@@ -5,13 +5,13 @@ import {
   Text,
 } from "react-native";
 
-import { theme } from "../../../theme";
+import {
+  Landmark,
+} from "lucide-react-native";
 
-const VerificationHero = ({
-  icon,
-  title,
-  subtitle,
-}) => {
+import { theme } from "../../../../theme";
+
+const HeroSection = () => {
   return (
     <View
       style={{
@@ -26,28 +26,30 @@ const VerificationHero = ({
 
       <View
         style={{
-          width: 84,
+          width: 92,
+          height: 92,
 
-          height: 84,
-
-          borderRadius: 42,
-
-          backgroundColor: theme.colors.primary100,
+          borderRadius: 46,
 
           justifyContent: "center",
-
           alignItems: "center",
 
-          marginBottom: theme.spacing.xl,
+          backgroundColor: theme.colors.primary100,
         }}
       >
-        {icon}
+        <Landmark
+          size={42}
+          color={theme.colors.primary700}
+          strokeWidth={2}
+        />
       </View>
 
       {/* Title */}
 
       <Text
         style={{
+          marginTop: theme.spacing.xxl,
+
           color: theme.colors.black,
 
           fontSize: theme.typography.h2,
@@ -59,14 +61,13 @@ const VerificationHero = ({
           textAlign: "center",
         }}
       >
-        {title}
+        Link Bank Account
       </Text>
 
       {/* Subtitle */}
 
       <Text
         style={{
-           
           marginTop: theme.spacing.sm,
 
           color: theme.colors.textSecondary,
@@ -82,10 +83,10 @@ const VerificationHero = ({
           paddingHorizontal: theme.spacing.md,
         }}
       >
-        {subtitle}
+        Link your account for smooth and secure payments
       </Text>
     </View>
   );
 };
 
-export default VerificationHero;
+export default HeroSection;

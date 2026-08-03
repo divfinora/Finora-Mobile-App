@@ -17,8 +17,8 @@ const OTPError = ({
     <View
       style={[
         {
-          alignItems: "center",
-          marginTop: theme.spacing.md,
+         
+        
           marginBottom: theme.spacing.lg,
         },
         style,
