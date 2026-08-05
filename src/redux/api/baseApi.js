@@ -8,7 +8,7 @@ import {
   getTokens,
   updateTokens,
 } from "../../utils/keychain";
-
+import { logoutUser } from "../../utils/authStorage";
 const baseQuery = fetchBaseQuery({
   baseUrl: BASE_URL,
 
@@ -126,7 +126,7 @@ const baseQueryWithReauth = async (
       // ===============================
 
       else {
-
+        await logoutUser(api.dispatch);
         console.log("Refresh Token Expired");
 
         // NEXT STEP:
@@ -136,6 +136,10 @@ const baseQueryWithReauth = async (
 
       }
 
+    } else{
+        console.log("Refresh Token Not Found");
+
+  await logoutUser(api.dispatch);
     }
 
   }

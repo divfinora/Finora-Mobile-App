@@ -36,7 +36,7 @@ const BackButton = ({
           flexDirection: "row",
           alignItems: "center",
           justifyContent: "space-between",
-
+ 
           paddingTop: theme.spacing.md,
           paddingBottom: theme.spacing.md,
         },

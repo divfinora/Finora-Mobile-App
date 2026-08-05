@@ -15,7 +15,9 @@ import PersonalVerificationScreen from "../screens/CompleteKYCScreen/PersonalDet
 import BankVerificationScreen from "../screens/CompleteKYCScreen/BankVerification/BankVerificationScreen";
 
 import PanVerificationScreen from "../screens/CompleteKYCScreen/PanVerification/PanVerificationScreen";
-
+import ProfilePersonalInfoScreen from "../screens/Profile/PersonalInfoScreen/PersonalInfoScreen";
+import KycDetailsScreen from "../screens/Profile/KycDetails/KycDetailsScreen";
+import CompleteKYCScreen from '../screens/CompleteKYCScreen/CompleteKYCScreen'
 const Stack = createNativeStackNavigator();
 
 const AppStack = () => {
@@ -75,17 +77,31 @@ const AppStack = () => {
         }
       />
 
-      {/* ========================= */}
-      {/* FUTURE SCREENS */}
-      {/* ========================= */}
 
-      {/*
-      
+      {/* ========================= */}
+      {/* Profile  SCREENS  Route */}
+      {/* ========================= */}
       <Stack.Screen
-        name="Settings"
-        component={SettingsScreen}
+        name="profile-screen-personal-info-screen"
+        component={ProfilePersonalInfoScreen
+
+        }
       />
-      */}
+      <Stack.Screen
+        name="profile-screen-kyc-details"
+        component={KycDetailsScreen
+
+        }
+      />
+      <Stack.Screen
+        name="complete-kyc-screen"
+        component={CompleteKYCScreen
+
+        }
+      />
+
+
+
     </Stack.Navigator>
   );
 };
