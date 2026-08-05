@@ -42,6 +42,7 @@ import useHandleMutation
     from "../../../hooks/useHandleMutation";
 import { useDispatch } from "react-redux";
 import { saveAuth } from "../../../utils/saveAuth"
+import {syncProfile} from '../../../utils/profileSync'
 const PIN_LENGTH = 4;
 
 const LoginWithPin = ({
@@ -166,9 +167,7 @@ const LoginWithPin = ({
                     response
                 );
 
-                // saveAuth(response);
-
-                // navigation.replace("Home");
+            syncProfile();
 
             },
 

@@ -21,7 +21,7 @@ const KycBannerCard = ({
       style={{
         backgroundColor: theme.colors.navy900,
 
-        borderRadius: theme.radius.xl,
+      
 
         paddingVertical: theme.spacing.lg,
 

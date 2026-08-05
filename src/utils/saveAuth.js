@@ -12,7 +12,7 @@ export const saveAuth = async (
       response.accessToken,
       response.refreshToken
     );
-
+ console.log(response ,"saveAuthsaveAuthsaveAuthsaveAuthsaveAuthsaveAuth")
     dispatch(
       setUser(response.data)
     );

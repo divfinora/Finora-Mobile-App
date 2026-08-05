@@ -50,7 +50,7 @@ export const authApi = baseApi.injectEndpoints({
     // ==========================
     // REFRESH TOKEN
     // ==========================
-     refreshToken: builder.mutation({
+    refreshToken: builder.mutation({
 
       query: (refreshToken) => ({
 
@@ -64,6 +64,13 @@ export const authApi = baseApi.injectEndpoints({
 
       }),
 
+    }),
+
+    getProfile: builder.query({
+      query: () => ({
+        url: "/User/v1/profile",
+        method: "GET",
+      }),
     }),
 
   }),
@@ -80,5 +87,6 @@ export const {
   useLoginWithMpinMutation,
 
   useRefreshTokenMutation,
+  useGetProfileQuery
 
 } = authApi;

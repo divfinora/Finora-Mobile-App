@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 
 import {
   View,
@@ -6,6 +6,7 @@ import {
   KeyboardAvoidingView,
   Platform,
   StatusBar,
+  RefreshControl,
 } from "react-native";
 
 import {
@@ -24,7 +25,35 @@ import SettingsSection from "./components/SettingsSection";
 import ReportsCard from "./components/ReportsCard";
 import LogoutButton from "../LogOut/LogoutButton.jsx";
 
+import useKYCVerificationDoneAndNotDone from "../../hooks/useKYCVerificationDoneAndNotDone.js";
+import { syncProfile } from "../../utils/profileSync";
 const ProfileScreen = () => {
+
+
+  const {
+    verification,
+    isLoading,
+    isFetching,
+    refetch,
+  } = useKYCVerificationDoneAndNotDone();
+
+  const [refreshing, setRefreshing] = useState(false);
+
+const onRefresh = async () => {
+  try {
+    setRefreshing(true);
+
+    await Promise.all([
+      syncProfile(), // Profile API
+      refetch(),     // KYC API
+    ]);
+
+  } finally {
+    setRefreshing(false);
+  }
+};
+
+
 
   return (
 
@@ -82,6 +111,14 @@ const ProfileScreen = () => {
           {/* ===================================== */}
 
           <ScrollView
+            refreshControl={
+              <RefreshControl
+                refreshing={refreshing}
+                onRefresh={onRefresh}
+                colors={[theme.colors.primary500]}
+                tintColor={theme.colors.primary500}
+              />
+            }
             showsVerticalScrollIndicator={false}
             keyboardShouldPersistTaps="handled"
             contentContainerStyle={{
@@ -95,7 +132,10 @@ const ProfileScreen = () => {
             {/* PROFILE BANNER */}
             {/* =============================== */}
 
-            <ProfileBanner />
+            <ProfileBanner
+              verification={verification}
+              loading={isLoading || isFetching}
+            />
 
             {/* =============================== */}
             {/* QUICK ACTIONS */}
@@ -107,7 +147,7 @@ const ProfileScreen = () => {
             {/* ACCOUNT */}
             {/* =============================== */}
 
-          
+
 
             {/* =============================== */}
             {/* HELP & LEGAL */}

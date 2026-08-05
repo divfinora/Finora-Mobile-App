@@ -1,3 +1,5 @@
+
+
 import React from "react";
 
 import {
@@ -8,60 +10,59 @@ import {
 
 import LinearGradient from "react-native-linear-gradient";
 
+
 import { theme } from "../../../theme";
 
-const ProfileBanner = () => {
+import ProfileBannerSkeleton from "./ProfileBannerSkeleton.jsx";
+import { useSelector } from "react-redux";
 
-  return (
+const ProfileBanner = ({
+  verification,
+  loading,
+}) => {
 
-    <LinearGradient
+  const isVerified =
+    verification?.isVerification &&
+    verification?.kycStatus === "VERIFIED";
 
-      colors={[
-        "#16212D",
-        "#07090C",
-      ]}
+  // ==========================
+  // LOADING
+  // ==========================
+  const user = useSelector((state) => state.auth.user);
+  if (loading) {
+    return <ProfileBannerSkeleton />;
+  }
 
-      start={{
-        x: 0,
-        y: 0,
-      }}
+  // ==========================
+  // VERIFIED
+  // ==========================
 
-      end={{
-        x: 1,
-        y: 1,
-      }}
+  if (isVerified) {
 
-      style={{
+    return (
 
-        borderRadius: 24,
+      <LinearGradient
 
-        paddingVertical: 28,
+        colors={[
+          "#16212D",
+          "#07090C",
+        ]}
 
-        alignItems: "center",
+        start={{
+          x: 0,
+          y: 0,
+        }}
 
-      }}
-
-    >
-
-      {/* ============================ */}
-      {/* PROFILE IMAGE */}
-      {/* ============================ */}
-
-      <View
+        end={{
+          x: 1,
+          y: 1,
+        }}
 
         style={{
+          padding: theme.spacing.lg,
+          borderRadius: 24,
 
-          width: 92,
-
-          height: 92,
-
-          borderRadius: 46,
-
-          borderWidth: 4,
-
-          borderColor: theme.colors.primary500,
-
-          justifyContent: "center",
+          paddingVertical: 28,
 
           alignItems: "center",
 
@@ -69,47 +70,23 @@ const ProfileBanner = () => {
 
       >
 
-        <Image
-
-          source={{
-            uri: "https://i.pravatar.cc/300",
-          }}
-
-          style={{
-
-            width: 82,
-
-            height: 82,
-
-            borderRadius: 41,
-
-          }}
-
-        />
-
-        {/* VERIFIED BADGE */}
+        {/* ============================ */}
+        {/* PROFILE IMAGE */}
+        {/* ============================ */}
 
         <View
 
           style={{
 
-            position: "absolute",
+            width: 92,
 
-            bottom: -2,
+            height: 92,
 
-            right: -2,
+            borderRadius: 46,
 
-            width: 24,
+            borderWidth: 4,
 
-            height: 24,
-
-            borderRadius: 12,
-
-            backgroundColor: theme.colors.primary500,
-
-            borderWidth: 2,
-
-            borderColor: "#FFD25A",
+            borderColor: theme.colors.primary500,
 
             justifyContent: "center",
 
@@ -119,119 +96,288 @@ const ProfileBanner = () => {
 
         >
 
-          <Text
+          <Image
+
+            source={{
+              uri:
+                user?.profileImage ||
+                "https://i.pravatar.cc/300",
+            }}
 
             style={{
 
-              color: theme.colors.white,
+              width: 82,
 
-              fontSize: 12,
+              height: 82,
+
+              borderRadius: 41,
+
+            }}
+
+          />
+
+          {/* VERIFIED BADGE */}
+
+          <View
+
+            style={{
+
+              position: "absolute",
+
+              bottom: -2,
+
+              right: -2,
+
+              width: 24,
+
+              height: 24,
+
+              borderRadius: 12,
+
+              backgroundColor: theme.colors.primary500,
+
+              borderWidth: 2,
+
+              borderColor: "#FFD25A",
+
+              justifyContent: "center",
+
+              alignItems: "center",
 
             }}
 
           >
 
-            ✓
+            <Text
 
-          </Text>
+              style={{
+
+                color: theme.colors.white,
+
+                fontSize: 12,
+
+              }}
+
+            >
+
+              ✓
+
+            </Text>
+
+          </View>
 
         </View>
 
-      </View>
-
-      {/* ============================ */}
-      {/* NAME */}
-      {/* ============================ */}
-
-      <Text
-
-        style={{
-
-          marginTop: 18,
-
-          color: theme.colors.white,
-
-          fontSize: theme.typography.h2,
-
-          fontFamily: theme.fonts.headingSemiBold,
-
-        }}
-
-      >
-
-        Parth Sarthi
-
-      </Text>
-
-      {/* ============================ */}
-      {/* CITIZEN ID */}
-      {/* ============================ */}
-
-      <Text
-
-        style={{
-
-          marginTop: 6,
-
-          color: "#AEB7C6",
-
-          fontSize: theme.typography.b2,
-
-          fontFamily: theme.fonts.medium,
-
-        }}
-
-      >
-
-        Citizen ID: GP-8829-X01
-
-      </Text>
-
-      {/* ============================ */}
-      {/* VERIFIED CHIP */}
-      {/* ============================ */}
-
-      <View
-
-        style={{
-
-          marginTop: 16,
-
-          backgroundColor: "#FFF2E7",
-
-          paddingHorizontal: 16,
-
-          paddingVertical: 6,
-
-          borderRadius: 50,
-
-        }}
-
-      >
+        {/* ============================ */}
+        {/* NAME */}
+        {/* ============================ */}
 
         <Text
+          numberOfLines={2}
+          ellipsizeMode="tail"
 
           style={{
+            textAlign: "center",
+            marginTop: theme.spacing.lg,
 
-            color: theme.colors.primary500,
+            color: theme.colors.white,
 
-            fontSize: 11,
+            fontSize: theme.typography.h2,
 
-            letterSpacing: 1,
-
-            fontFamily: theme.fonts.bold,
+            fontFamily: theme.fonts.headingSemiBold,
 
           }}
 
         >
 
-          VERIFIED
+          {user.fullName || "-"}
 
+        </Text>
+
+        {/* ============================ */}
+        {/* CITIZEN ID */}
+        {/* ============================ */}
+
+        <Text
+
+          style={{
+            textAlign: 'center',
+            marginTop: 6,
+
+            color: "#AEB7C6",
+
+            fontSize: theme.typography.b2,
+
+            fontFamily: theme.fonts.medium,
+
+          }}
+
+        >
+
+          Citizen ID: {user?.customerId || "-"}
+
+        </Text>
+
+        {/* ============================ */}
+        {/* VERIFIED CHIP */}
+        {/* ============================ */}
+
+        <View
+
+          style={{
+
+            marginTop: 16,
+
+            backgroundColor: "#FFF2E7",
+
+            paddingHorizontal: 16,
+
+            paddingVertical: 6,
+
+            borderRadius: 50,
+
+          }}
+
+        >
+
+          <Text
+
+            style={{
+
+              color: theme.colors.primary500,
+
+              fontSize: 11,
+
+              letterSpacing: 1,
+
+              fontFamily: theme.fonts.bold,
+
+            }}
+
+          >
+
+            VERIFIED
+
+          </Text>
+
+        </View>
+
+      </LinearGradient>
+
+    );
+
+  }
+
+  // ==========================
+  // NOT VERIFIED
+  // ==========================
+
+  // ==========================
+  // NOT VERIFIED
+  // ==========================
+
+  return (
+
+    <View
+      style={{
+        padding: theme.spacing.lg,
+        backgroundColor: "#FDF2F2",
+        borderRadius: 24,
+        paddingVertical: theme.spacing.xxxl,
+        alignItems: "center",
+      }}
+    >
+
+      {/* Avatar */}
+
+      <View
+        style={{
+          width: 92,
+          height: 92,
+          borderRadius: 46,
+          backgroundColor: theme.colors.gray200,
+          justifyContent: "center",
+          alignItems: "center",
+        }}
+      >
+
+        <Image
+          source={{
+            uri:
+              user?.profileImage ||
+              "https://i.pravatar.cc/300",
+          }}
+          resizeMode="contain"
+          style={{
+            width: 82,
+            height: 82,
+            borderRadius: 41,
+          }}
+        />
+
+      </View>
+
+      {/* Name */}
+
+      <Text
+        numberOfLines={2}
+        ellipsizeMode="tail"
+        style={{
+          textAlign: 'center',
+          marginTop: theme.spacing.lg,
+          color: theme.colors.error,
+          fontSize: theme.typography.h2,
+          fontFamily: theme.fonts.headingSemiBold,
+
+        }}
+      >
+        {user?.fullName || "-"}
+      </Text>
+
+      {/* Phone */}
+
+      <Text
+        numberOfLines={1}
+        ellipsizeMode="tail"
+        style={{
+          textAlign: 'center',
+          marginTop: theme.spacing.xs,
+          color: theme.colors.black,
+          fontSize: theme.typography.b2,
+          fontFamily: theme.fonts.medium,
+        }}
+      >
+        +91 {user?.mobile || ""}
+      </Text>
+
+      {/* Status */}
+
+      <View
+        style={{
+          marginTop: theme.spacing.sm,
+          paddingHorizontal: theme.spacing.lg,
+          paddingVertical: theme.spacing.xs,
+          borderRadius: 50,
+          borderWidth: 1,
+          borderColor: theme.colors.error,
+          backgroundColor: theme.colors.white,
+        }}
+      >
+
+        <Text
+          style={{
+            color: theme.colors.error,
+            fontSize: theme.typography.b3,
+            fontFamily: theme.fonts.extraBold,
+            letterSpacing: 0.8,
+          }}
+        >
+          KYC : NOT VERIFIED
         </Text>
 
       </View>
 
-    </LinearGradient>
+    </View>
 
   );
 

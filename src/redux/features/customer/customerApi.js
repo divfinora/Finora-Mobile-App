@@ -51,10 +51,19 @@ export const customerApi = baseApi.injectEndpoints({
       }),
     }),
 
+    CustomerKYCVerificationDoneAndNotDone: builder.query({
+      query: (body) => ({
+        url: "/User/v1/get-verification",
+        method: "POST",
+        body,
+      }),
+    }),
+
   }),
 });
 
 export const {
+  useCustomerKYCVerificationDoneAndNotDoneQuery,
   usePersonalDetailsVerificationMutation,
   useAddBankAccountMutation,
   useVerifyAadhaarMutation,

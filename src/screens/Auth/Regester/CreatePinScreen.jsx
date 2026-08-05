@@ -45,6 +45,7 @@ import BackButton
 
 import { useDispatch } from "react-redux";
 import { saveAuth } from "../../../utils/saveAuth";
+import {syncProfile} from '../../../utils/profileSync'
 const PIN_LENGTH = 4;
 
 const CreatePinScreen = ({
@@ -158,10 +159,7 @@ const CreatePinScreen = ({
                     response
                 );
 
-                console.log(
-                    "Register Response =>",
-                    response
-                );
+           syncProfile();
 
             },
 

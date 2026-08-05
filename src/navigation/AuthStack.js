@@ -52,6 +52,7 @@ const AuthStack = () => {
         component={LoginWithPin}
       />
 
+
     </Stack.Navigator>
   );
 };
