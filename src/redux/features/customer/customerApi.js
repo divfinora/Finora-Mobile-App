@@ -54,16 +54,23 @@ export const customerApi = baseApi.injectEndpoints({
     CustomerKYCVerificationDoneAndNotDone: builder.query({
       query: (body) => ({
         url: "/User/v1/get-verification",
-        method: "POST",
+        method: "GET",
         body,
       }),
     }),
-
+    GetCustomerKYCdetails: builder.query({
+      query: (body) => ({
+        url: "/User/v1/get-kyc",
+        method: "GET",
+        body,
+      }),
+    }),
   }),
 });
 
 export const {
   useCustomerKYCVerificationDoneAndNotDoneQuery,
+  useGetCustomerKYCdetailsQuery,
   usePersonalDetailsVerificationMutation,
   useAddBankAccountMutation,
   useVerifyAadhaarMutation,

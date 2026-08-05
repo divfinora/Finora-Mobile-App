@@ -8,15 +8,19 @@ import {
 
 import {
   BadgeCheck,
+  Plus,
 } from "lucide-react-native";
 import { theme } from "../../../../theme";
+import ShimmerPlaceholder from "../../../../components/common/Loader/ShimmerPlaceholder";
 
- 
+
 
 const KycDocumentCard = ({
   title,
   subtitle,
   icon,
+  verified,
+  loading,
   onPress,
 }) => {
 
@@ -31,13 +35,21 @@ const KycDocumentCard = ({
         flexDirection: "row",
         alignItems: "center",
 
-        backgroundColor: theme.colors.gray100,
+        backgroundColor: verified
+          ? theme.colors.gray100
+          : theme.colors.white,
 
         borderRadius: theme.radius.lg,
 
         padding: theme.spacing.lg,
 
         marginBottom: theme.spacing.lg,
+
+        borderWidth: verified ? 0 : 1,
+        borderStyle: verified ? "solid" : "dashed",
+        borderColor: verified
+          ? "transparent"
+          : theme.colors.border,
       }}
     >
 
@@ -57,10 +69,17 @@ const KycDocumentCard = ({
         }}
       >
 
+
+
+
+
+
+
         <Icon
           size={theme.iconSize.md}
           color={theme.colors.white}
         />
+
 
       </View>
 
@@ -76,7 +95,9 @@ const KycDocumentCard = ({
         <Text
           numberOfLines={1}
           style={{
-            color: theme.colors.gray900,
+            color: verified
+              ? theme.colors.gray900
+              : theme.colors.gray700,
 
             fontSize: theme.typography.b2,
 
@@ -86,63 +107,134 @@ const KycDocumentCard = ({
           {title}
         </Text>
 
-        <Text
-          numberOfLines={1}
-          style={{
-            marginTop: 2,
+        {
 
-            color: theme.colors.textLight,
+          loading ? (
 
-            fontSize: theme.typography.b3,
+            <ShimmerPlaceholder
+              width={110}
+              height={12}
+              borderRadius={6}
+              style={{
+                marginTop: 6,
+              }}
+            />
 
-            fontFamily: theme.fonts.regular,
-          }}
-        >
-          {subtitle}
-        </Text>
+          ) : (
 
-      </View>
+            <Text
+              numberOfLines={1}
+              style={{
+                marginTop: 2,
 
-      {/* ================= VERIFIED BADGE ================= */}
+                color: theme.colors.textLight,
 
-      <View
-        style={{
-          flexDirection: "row",
-          alignItems: "center",
+                fontSize: theme.typography.b3,
 
-          backgroundColor: "#FFF4EA",
+                fontFamily: theme.fonts.regular,
+              }}
+            >
+              {subtitle}
+            </Text>
 
-          borderWidth: 1,
-          borderColor: "#FDBA74",
+          )
 
-          borderRadius: 999,
-
-          paddingHorizontal: 12,
-          paddingVertical: 6,
-        }}
-      >
-
-        <BadgeCheck
-          size={14}
-          color="#EA580C"
-          fill="#EA580C"
-        />
-
-        <Text
-          style={{
-            marginLeft: 4,
-
-            color: "#EA580C",
-
-            fontSize: theme.typography.b3,
-
-            fontFamily: theme.fonts.semiBold,
-          }}
-        >
-          Verified
-        </Text>
+        }
 
       </View>
+
+      {/* ================= RIGHT SIDE ================= */}
+
+      {
+
+        loading ? (
+
+          <ShimmerPlaceholder
+            width={70}
+            height={32}
+            borderRadius={20}
+          />
+
+        ) : verified ? (
+
+          <View
+            style={{
+              flexDirection: "row",
+              alignItems: "center",
+
+              backgroundColor: "#FFF4EA",
+
+              borderWidth: 1,
+              borderColor: "#FDBA74",
+
+              borderRadius: 999,
+
+              paddingHorizontal: 12,
+              paddingVertical: 6,
+            }}
+          >
+
+            <BadgeCheck
+              size={14}
+              color="#EA580C"
+              fill="#EA580C"
+            />
+
+            <Text
+              style={{
+                marginLeft: 4,
+
+                color: "#EA580C",
+
+                fontSize: theme.typography.b3,
+
+                fontFamily: theme.fonts.semiBold,
+              }}
+            >
+              Verified
+            </Text>
+
+          </View>
+
+        ) : (
+
+          <TouchableOpacity
+            activeOpacity={0.8}
+            onPress={onPress}
+            style={{
+              width: 36,
+              height: 36,
+
+              borderRadius: 18,
+
+              backgroundColor: "#FFF3E8",
+
+              justifyContent: "center",
+              alignItems: "center",
+
+              shadowColor: "#F97316",
+              shadowOffset: {
+                width: 0,
+                height: 4,
+              },
+              shadowOpacity: 0.12,
+              shadowRadius: 8,
+
+              elevation: 4,
+            }}
+          >
+
+            <Plus
+              size={20}
+              color="#F97316"
+              strokeWidth={2.5}
+            />
+
+          </TouchableOpacity>
+
+        )
+
+      }
 
     </TouchableOpacity>
 
