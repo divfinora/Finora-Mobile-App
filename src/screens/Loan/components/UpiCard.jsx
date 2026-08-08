@@ -1,12 +1,12 @@
 import { View, Text } from 'react-native'
 import React from 'react'
 
-const ScannerScreen = () => {
+const UpiCard = () => {
   return (
     <View>
-      <Text>ScannerScreen</Text>
+      <Text>UpiCard</Text>
     </View>
   )
 }
 
-export default ScannerScreen
+export default UpiCard

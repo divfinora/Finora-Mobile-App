@@ -1,0 +1,193 @@
+import React from "react";
+
+import {
+  View,
+  Text,
+} from "react-native";
+
+import {
+  FileText,
+  Clock3,
+} from "lucide-react-native";
+
+import { theme } from "../../../../../theme";
+import LinearGradient from "react-native-linear-gradient";
+
+const InfoCard = () => {
+
+  return (
+
+  <LinearGradient
+  colors={[
+    "#0F2027",
+    "#203A43",
+  ]}
+  start={{
+    x: 0.5,
+    y: 0,
+  }}
+  end={{
+    x: 0.5,
+    y: 1,
+  }}
+  style={{
+
+    borderRadius: 20,
+
+    padding:
+      theme.spacing.xl,
+
+    ...theme.shadows.card,
+
+  }}
+>
+
+      {/* Top */}
+
+      <View
+        style={{
+
+          flexDirection: "row",
+
+          
+
+        }}
+      >
+
+        <View
+          style={{
+
+            width: 40,
+
+            height: 40,
+
+            borderRadius: 12,
+
+            backgroundColor:
+              "rgba(255,255,255,0.15)",
+
+            justifyContent: "center",
+
+            alignItems: "center",
+
+            marginRight:
+              theme.spacing.lg,
+
+          }}
+        >
+
+          <FileText
+            size={24}
+            color={theme.colors.white}
+          />
+
+        </View>
+
+        <View
+          style={{
+            flex: 1,
+          }}
+        >
+
+          <Text
+            style={{
+
+              color:
+                theme.colors.white,
+
+              fontSize:
+                theme.typography.h4,
+
+              fontFamily:
+                theme.fonts.headingBold,
+
+            }}
+          >
+            Get Ready Before You Apply
+          </Text>
+
+          <Text
+            style={{
+
+              marginTop: 4,
+
+              color:
+                "rgba(255,255,255,0.82)",
+
+              fontSize:
+                theme.typography.b2,
+
+              fontFamily:
+                theme.fonts.medium,
+
+            }}
+          >
+            Funds in your account within hours.
+          </Text>
+
+        </View>
+
+      </View>
+
+      {/* Divider */}
+
+      <View
+        style={{
+
+          height: 1,
+
+          backgroundColor:
+            "rgba(255,255,255,0.10)",
+
+          marginVertical:
+            theme.spacing.lg,
+
+        }}
+      />
+
+      {/* Bottom */}
+
+      <View
+        style={{
+
+          flexDirection: "row",
+
+          alignItems: "center",
+
+        }}
+      >
+
+        <Clock3
+          size={18}
+          color="rgba(255,255,255,0.85)"
+        />
+
+        <Text
+          style={{
+
+            marginLeft:
+              theme.spacing.md,
+
+            color:
+              "rgba(255,255,255,0.85)",
+
+            fontSize:
+              theme.typography.b2,
+
+            fontFamily:
+              theme.fonts.medium,
+
+          }}
+        >
+          Takes about 5–10 minutes
+        </Text>
+
+      </View>
+
+  </LinearGradient>
+
+  );
+
+};
+
+export default InfoCard;

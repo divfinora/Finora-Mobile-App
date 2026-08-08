@@ -8,7 +8,7 @@ import {
 
 import {
   BadgeCheck,
-  Plus,
+  CircleX,
 } from "lucide-react-native";
 import { theme } from "../../../../theme";
 import ShimmerPlaceholder from "../../../../components/common/Loader/ShimmerPlaceholder";
@@ -145,96 +145,79 @@ const KycDocumentCard = ({
 
       {/* ================= RIGHT SIDE ================= */}
 
+     {
+  loading ? (
+
+    <ShimmerPlaceholder
+      width={80}
+      height={32}
+      borderRadius={20}
+    />
+
+  ) : (
+
+    <View
+      style={{
+        flexDirection: "row",
+        alignItems: "center",
+
+        backgroundColor: verified
+          ? "#FFF4EA"
+          : "#FEF2F2",
+
+        borderWidth: 1,
+
+        borderColor: verified
+          ? "#FDBA74"
+          : "#FECACA",
+
+        borderRadius: 999,
+
+        paddingHorizontal: 12,
+        paddingVertical: 6,
+      }}
+    >
+
       {
+        verified ? (
 
-        loading ? (
-
-          <ShimmerPlaceholder
-            width={70}
-            height={32}
-            borderRadius={20}
+          <BadgeCheck
+            size={15}
+            color="#EA580C"
+            
           />
-
-        ) : verified ? (
-
-          <View
-            style={{
-              flexDirection: "row",
-              alignItems: "center",
-
-              backgroundColor: "#FFF4EA",
-
-              borderWidth: 1,
-              borderColor: "#FDBA74",
-
-              borderRadius: 999,
-
-              paddingHorizontal: 12,
-              paddingVertical: 6,
-            }}
-          >
-
-            <BadgeCheck
-              size={14}
-              color="#EA580C"
-              fill="#EA580C"
-            />
-
-            <Text
-              style={{
-                marginLeft: 4,
-
-                color: "#EA580C",
-
-                fontSize: theme.typography.b3,
-
-                fontFamily: theme.fonts.semiBold,
-              }}
-            >
-              Verified
-            </Text>
-
-          </View>
 
         ) : (
 
-          <TouchableOpacity
-            activeOpacity={0.8}
-            onPress={onPress}
-            style={{
-              width: 36,
-              height: 36,
-
-              borderRadius: 18,
-
-              backgroundColor: "#FFF3E8",
-
-              justifyContent: "center",
-              alignItems: "center",
-
-              shadowColor: "#F97316",
-              shadowOffset: {
-                width: 0,
-                height: 4,
-              },
-              shadowOpacity: 0.12,
-              shadowRadius: 8,
-
-              elevation: 4,
-            }}
-          >
-
-            <Plus
-              size={20}
-              color="#F97316"
-              strokeWidth={2.5}
-            />
-
-          </TouchableOpacity>
+          <CircleX
+            size={15}
+            color="#DC2626"
+        
+          />
 
         )
-
       }
+
+      <Text
+        style={{
+          marginLeft: 4,
+
+          color: verified
+            ? "#EA580C"
+            : "#DC2626",
+
+          fontSize: theme.typography.b3,
+
+          fontFamily: theme.fonts.semiBold,
+        }}
+      >
+        {verified ? "Verified" : "Not Verified"}
+      </Text>
+
+    </View>
+
+  )
+}
 
     </TouchableOpacity>
 

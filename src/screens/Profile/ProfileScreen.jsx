@@ -27,31 +27,37 @@ import LogoutButton from "../LogOut/LogoutButton.jsx";
 
 import useKYCVerificationDoneAndNotDone from "../../hooks/useKYCVerificationDoneAndNotDone.js";
 import { syncProfile } from "../../utils/profileSync";
+import { useGetSettingsQuery } from "../../redux/features/customer/customerApi";
 const ProfileScreen = () => {
 
-
+const {
+  refetch: refetchSettings,
+} = useGetSettingsQuery();
   const {
     verification,
     isLoading,
     isFetching,
     refetch,
+    isError,
+    error,
   } = useKYCVerificationDoneAndNotDone();
 
   const [refreshing, setRefreshing] = useState(false);
 
-const onRefresh = async () => {
-  try {
-    setRefreshing(true);
+  const onRefresh = async () => {
+    try {
+      setRefreshing(true);
 
-    await Promise.all([
-      syncProfile(), // Profile API
-      refetch(),     // KYC API
-    ]);
+      await Promise.all([
+        syncProfile(), // Profile API
+        refetch(),     // KYC API
+             refetchSettings(),  // Settings
+      ]);
 
-  } finally {
-    setRefreshing(false);
-  }
-};
+    } finally {
+      setRefreshing(false);
+    }
+  };
 
 
 
@@ -135,6 +141,8 @@ const onRefresh = async () => {
             <ProfileBanner
               verification={verification}
               loading={isLoading || isFetching}
+              error ={error}
+              refetch={refetch}
             />
 
             {/* =============================== */}

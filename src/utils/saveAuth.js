@@ -9,12 +9,12 @@ export const saveAuth = async (
   try {
 
     await saveTokens(
-      response.accessToken,
-      response.refreshToken
+      response?.accessToken,
+      response?.refreshToken
     );
  console.log(response ,"saveAuthsaveAuthsaveAuthsaveAuthsaveAuthsaveAuth")
     dispatch(
-      setUser(response.data)
+      setUser(response?.data)
     );
 
     return true;

@@ -14,11 +14,14 @@ import LinearGradient from "react-native-linear-gradient";
 import { theme } from "../../../theme";
 
 import ProfileBannerSkeleton from "./ProfileBannerSkeleton.jsx";
+import InlineRetry from  '../../../components/common/RetryScreen/InlineRetry.jsx'
 import { useSelector } from "react-redux";
 
 const ProfileBanner = ({
   verification,
   loading,
+  refetch  ,
+  error ,
 }) => {
 
   const isVerified =
@@ -32,6 +35,34 @@ const ProfileBanner = ({
   if (loading) {
     return <ProfileBannerSkeleton />;
   }
+ 
+ if (error) {
+  return (
+   <View
+      style={{
+        padding: theme.spacing.lg,
+        backgroundColor: "#FDF2F2",
+        borderRadius: 24,
+        paddingVertical: theme.spacing.xxxl,
+      }}
+    >
+      <InlineRetry
+        title="Unable to load profile"
+        description="Tap below to refresh your profile."
+        loading={loading}
+        onRetry={refetch}
+        containerStyle={{
+          backgroundColor: "transparent",
+          borderWidth: 0,
+          elevation: 0,
+          shadowOpacity: 0,
+          paddingHorizontal: 0,
+          paddingVertical: 0,
+        }}
+      />
+    </View>
+  );
+}
 
   // ==========================
   // VERIFIED

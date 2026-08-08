@@ -6,7 +6,7 @@ import {
 
 // Screens
 import HomeScreen from "../screens/Home/HomeScreen.jsx";
-import ScannerScreen from "../screens/Scanner/ScannerScreen.jsx";
+import LoanScreen from "../screens/Loan/LoanScreen.jsx";
 import HistoryScreen from "../screens/History/HistoryScreen.jsx";
 import ProfileScreen from "../screens/Profile/ProfileScreen.jsx";
 
@@ -45,8 +45,8 @@ const BottomTabNavigator = () => {
 
       {/* SCANNER */}
       <Tab.Screen
-        name="Scanner"
-        component={ScannerScreen}
+        name="Loan"
+        component={LoanScreen}
       />
 
       {/* HISTORY */}

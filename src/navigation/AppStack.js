@@ -18,6 +18,7 @@ import PanVerificationScreen from "../screens/CompleteKYCScreen/PanVerification/
 import ProfilePersonalInfoScreen from "../screens/Profile/PersonalInfoScreen/PersonalInfoScreen";
 import KycDetailsScreen from "../screens/Profile/KycDetails/KycDetailsScreen";
 import CompleteKYCScreen from '../screens/CompleteKYCScreen/CompleteKYCScreen'
+import InstantLoanApplyScreen from '../screens/Loan/LoanApply/InstantLoanApply/InstantLoanApplyScreen'
 const Stack = createNativeStackNavigator();
 
 const AppStack = () => {
@@ -100,7 +101,12 @@ const AppStack = () => {
         }
       />
 
+   <Stack.Screen
+        name="apply-instant-loan"
+        component={InstantLoanApplyScreen
 
+        }
+      />
 
     </Stack.Navigator>
   );

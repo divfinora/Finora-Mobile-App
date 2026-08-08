@@ -58,7 +58,7 @@ const QuickActions = () => {
       }}
     >
 
-      {DATA.map((item) => {
+      {DATA?.map((item) => {
 
         const Icon = item.icon;
 

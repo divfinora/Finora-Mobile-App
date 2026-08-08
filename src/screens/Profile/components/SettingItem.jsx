@@ -5,21 +5,37 @@ import {
   Text,
   TouchableOpacity,
   Switch,
+  ActivityIndicator,
 } from "react-native";
 
-import { ChevronRight } from "lucide-react-native";
+import {
+  ChevronRight,
+} from "lucide-react-native";
 
 import { theme } from "../../../theme";
-
+import CommonSwitch from "../../../components/common/Button/CommonSwitch.jsx";
 const SettingItem = ({
+
   title,
+
   icon,
+
   type = "arrow",
+
   value = false,
+
   onToggle,
+
   onPress,
+
   onButtonPress,
+
   isLast = false,
+
+  loading = false,
+
+  disabled = false,
+
 }) => {
 
   const Icon = icon;
@@ -28,7 +44,10 @@ const SettingItem = ({
 
     <TouchableOpacity
       activeOpacity={0.8}
-      disabled={type === "toggle"}
+      disabled={
+        type === "toggle" ||
+        disabled
+      }
       onPress={onPress}
       style={{
         flexDirection: "row",
@@ -56,10 +75,12 @@ const SettingItem = ({
           alignItems: "center",
         }}
       >
+
         <Icon
           size={theme.iconSize.md}
           color={theme.colors.white}
         />
+
       </View>
 
       {/* TITLE */}
@@ -92,25 +113,22 @@ const SettingItem = ({
 
       )}
 
-      {type === "toggle" && (
+    {type === "toggle" && (
 
-        <Switch
-          value={value}
-          onValueChange={onToggle}
-          trackColor={{
-            false: theme.colors.gray300,
-            true: theme.colors.success,
-          }}
-          thumbColor={theme.colors.white}
-        />
+  <CommonSwitch
+    value={value}
+    loading={loading}
+    disabled={disabled}
+    onValueChange={onToggle}
+  />
 
-      )}
-
+)}
       {type === "button" && (
 
         <TouchableOpacity
           activeOpacity={0.8}
           onPress={onButtonPress}
+          disabled={loading}
           style={{
             backgroundColor: theme.colors.white,
 
@@ -118,6 +136,8 @@ const SettingItem = ({
             paddingVertical: theme.spacing.sm,
 
             borderRadius: theme.radius.md,
+
+            opacity: loading ? 0.6 : 1,
           }}
         >
 

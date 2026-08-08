@@ -210,11 +210,12 @@ const showAlert = useCallback(
         /* ============================== */
 
       } catch (err) {
+         console.log(err ,'error ======= = = = = == == = = == = = = = = = = ==')
 
-        console.log(
-          "Mutation Error:",
-          err
-        );
+        // console.log(
+        //   "Mutation Error:",
+        //   err
+        // );
 
         let message =
           customErrorMsg ||

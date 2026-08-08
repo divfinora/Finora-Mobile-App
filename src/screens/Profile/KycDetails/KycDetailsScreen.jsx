@@ -34,6 +34,7 @@ import BackButton from "../../../components/common/BackButton/BackButton.jsx";
 import CommonButton from "../../../components/common/Button/CommonButton.jsx";
 import { useGetCustomerKYCdetailsQuery } from "../../../redux/features/customer/customerApi.js";
 import { useNavigation } from "@react-navigation/native";
+import RetryScreen from "../../../components/common/RetryScreen/RetryScreen.jsx";
 
 const KycDetailsScreen = () => {
   const {
@@ -41,6 +42,7 @@ const KycDetailsScreen = () => {
     isLoading,
     isFetching,
     refetch,
+    error
   } = useGetCustomerKYCdetailsQuery();
 
   const navigation = useNavigation();
@@ -78,7 +80,8 @@ const KycDetailsScreen = () => {
       title: "Bank Link Account",
       subtitle: kyc?.bankDetails?.accountNumber || "Not Linked",
       icon: Landmark,
-      verified: kyc?.bankVerified,
+      // verified: kyc?.bankVerified,
+      verified: kyc?.bankStatus ==="VERIFIED",
       screen: "bank-verification-screen",
     },
   ], [kyc]);
@@ -99,6 +102,11 @@ const KycDetailsScreen = () => {
 
   };
   //  Pull to Refress 
+
+  const completedCount = useMemo(() => {
+  return documents.filter(item => item?.verified)?.length;
+}, [documents]);
+const totalCount = documents?.length;
 
   const renderItem = ({ item }) => {
 
@@ -137,6 +145,10 @@ const KycDetailsScreen = () => {
         />
 
         <FlatList
+          data={error ? [] : documents}
+          keyExtractor={(item) => item.id}
+          renderItem={renderItem}
+          showsVerticalScrollIndicator={false}
           refreshControl={
             <RefreshControl
               refreshing={refreshing}
@@ -145,50 +157,55 @@ const KycDetailsScreen = () => {
               tintColor={theme.colors.primary500}
             />
           }
-          data={documents}
-          keyExtractor={(item) => item.id}
-          renderItem={renderItem}
-          showsVerticalScrollIndicator={false}
           contentContainerStyle={{
-            // paddingHorizontal: theme.spacing.lg,
-            paddingBottom: 120,
+            paddingBottom: 50,
+            flexGrow: 1,
           }}
           ListHeaderComponent={
-            <>
-              <KycStatusCard
-                loading={isLoading || isFetching}
-                status={kyc?.kycStatus}
-                lastUpdated={`Last updated: ${dayjs(kyc?.updatedAt).format("DD MMM YYYY")}`}
-                profileStatus={
-                  kyc?.kycStatus === "VERIFIED"
-                    ? "Active Profile"
-                    : "KYC Pending"
-                }
-                
-              />
-           
-
-              <SectionHeader
-                title="IDENTITY DOCUMENTS"
-                rightText="2/3 COMPLETED"
-              />
-            </>
-          }
-          ListFooterComponent={
-            <>
-              <SecurityNotice />
-
-              <View
-                style={{
+            error ? (
+              <RetryScreen
+                fullScreen={false}
+                error={error}
+                onRetry={refetch}
+                isRetrying={isFetching}
+                wrapperStyle={{
+                  flex: 0,
+                  paddingHorizontal: 0,
                   marginTop: theme.spacing.xxxl,
                 }}
-              >
-                <CommonButton
-                  title="Save Changes"
-                  onPress={() => { }}
+                cardStyle={{
+                  elevation: 0,
+                  shadowOpacity: 0,
+                }}
+              />
+            ) : (
+              <>
+                <KycStatusCard
+                  loading={isLoading || isFetching}
+                  status={kyc?.kycStatus}
+                  lastUpdated={`Last updated: ${dayjs(kyc?.updatedAt).format("DD MMM YYYY")}`}
+                  profileStatus={
+                    kyc?.kycStatus === "VERIFIED"
+                      ? "Active Profile"
+                      : "KYC Pending"
+                  }
                 />
-              </View>
-            </>
+
+             <SectionHeader
+  title="IDENTITY DOCUMENTS"
+  rightText={`${completedCount}/${totalCount} COMPLETED`}
+/>
+              </>
+            )
+          }
+          ListFooterComponent={
+            error ? null : (
+              <>
+                <SecurityNotice />
+
+
+              </>
+            )
           }
         />
       </View>

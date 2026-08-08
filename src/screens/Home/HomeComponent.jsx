@@ -23,6 +23,7 @@ import FinanceSection from "./components/FinanceSection";
 import OfferSection from "./components/FinanceSection";
 import { theme } from "../../theme";
 import { useNavigation } from "@react-navigation/native";
+import { useSelector } from "react-redux";
 const HomeComponent = () => { 
   const sections = useMemo(() => ([
     { id: "loan-banner" },
@@ -34,7 +35,10 @@ const HomeComponent = () => {
   ]), []);
    
    const navigation = useNavigation()
+     const user = useSelector((state) => state.auth.user);
 
+
+      console.log(user ,"user")
   const renderItem = ({ item }) => {
 
     switch (item.id) {
@@ -77,13 +81,21 @@ const HomeComponent = () => {
       }}
       ListHeaderComponent={
         <>
-          <HeaderCard />
+          <HeaderCard 
+            userName ={user.fullName} 
+            // profileImage ={""} 
+             onNotificationPress={""} 
+           />
+
+
+
+ 
 
           <KycBannerCard onPress={()=>{
             navigation.navigate('complete-kyc-screen')
           }} />
 
-          <LoanSection />
+          {/* <LoanSection /> */}
 
           <NoticeCard />
 

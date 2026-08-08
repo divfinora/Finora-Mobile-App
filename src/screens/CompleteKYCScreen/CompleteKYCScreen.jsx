@@ -53,7 +53,7 @@ const CompleteKYCScreen = ({   }) => {
   const navigation = useNavigation();
 
   const onStepPress = (item) => {
-    console.log(item.title);
+     
 
     switch (item.type) {
       case "aadhaar":

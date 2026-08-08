@@ -380,7 +380,7 @@ const EnterOtpScreen = ({
 
 
         if (
-          response.data.isRegistered
+          response?.data?.isRegistered
         ) {
 
 

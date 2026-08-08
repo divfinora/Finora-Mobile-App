@@ -88,7 +88,7 @@ const KYCStepList = ({
         padding: 18,
       }}
     >
-      {data.map((item) => (
+      {data?.map((item) => (
         <KYCStepCard
           key={item.id}
           icon={getIcon(item.type)}

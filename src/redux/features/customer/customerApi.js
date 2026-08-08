@@ -13,6 +13,8 @@ export const customerApi = baseApi.injectEndpoints({
         method: "POST",
         body,
       }),
+      invalidatesTags: ["GetCustomerKYCdetails", 'CustomerKYCVerificationDoneAndNotDone'],
+
     }),
 
     /* ==========================
@@ -25,6 +27,7 @@ export const customerApi = baseApi.injectEndpoints({
         method: "POST",
         body,
       }),
+      invalidatesTags: ["GetCustomerKYCdetails", 'CustomerKYCVerificationDoneAndNotDone'],
     }),
 
     /* ==========================
@@ -37,6 +40,7 @@ export const customerApi = baseApi.injectEndpoints({
         method: "POST",
         body,
       }),
+      invalidatesTags: ["GetCustomerKYCdetails", 'CustomerKYCVerificationDoneAndNotDone'],
     }),
 
     /* ==========================
@@ -49,6 +53,7 @@ export const customerApi = baseApi.injectEndpoints({
         method: "POST",
         body,
       }),
+      invalidatesTags: ["GetCustomerKYCdetails", 'CustomerKYCVerificationDoneAndNotDone'],
     }),
 
     CustomerKYCVerificationDoneAndNotDone: builder.query({
@@ -57,6 +62,7 @@ export const customerApi = baseApi.injectEndpoints({
         method: "GET",
         body,
       }),
+      providesTags: ["CustomerKYCVerificationDoneAndNotDone"],
     }),
     GetCustomerKYCdetails: builder.query({
       query: (body) => ({
@@ -64,7 +70,64 @@ export const customerApi = baseApi.injectEndpoints({
         method: "GET",
         body,
       }),
+      providesTags: ["GetCustomerKYCdetails"],
     }),
+
+
+    getSettings: builder.query({
+
+      query: () => ({
+        url: "/system/bio-metric",
+        method: "GET",
+      }),
+
+      providesTags: ["Settings"],
+
+    }),
+
+    getupdateSettings: builder.mutation({
+
+      query: (body) => ({
+        url: "/system/add-bio",
+        method: "PATCH",
+        body,
+      }),
+
+      invalidatesTags: ["Settings"],
+
+    }),
+
+
+
+    // Apply Loan ----- Start  Api
+
+    GetAllLoan: builder.query({
+
+      query: () => ({
+        url: "/Get-Loan/get",
+        method: "GET",
+      }),
+
+      providesTags: ["Get-Loan"],
+
+    }),
+
+    applyLoan: builder.mutation({
+
+      query: (body) => ({
+
+        url: "/applyloan/apply",
+
+        method: "POST",
+
+        body,
+
+      }),
+
+    }),
+    // App Loan --- End Api
+
+
   }),
 });
 
@@ -75,4 +138,8 @@ export const {
   useAddBankAccountMutation,
   useVerifyAadhaarMutation,
   useVerifyPanMutation,
+  useGetSettingsQuery,
+  useGetAllLoanQuery,
+  useGetupdateSettingsMutation,
+  useApplyLoanMutation,
 } = customerApi;
