@@ -279,7 +279,7 @@ const InstantLoanForm = ({
   }}
 
   onChangeText={(text) => {
-    setForm((prev) => ({
+    setForm((prev) => ({ 
       ...prev,
       purpose: text,
     }));

@@ -19,6 +19,8 @@ import ProfilePersonalInfoScreen from "../screens/Profile/PersonalInfoScreen/Per
 import KycDetailsScreen from "../screens/Profile/KycDetails/KycDetailsScreen";
 import CompleteKYCScreen from '../screens/CompleteKYCScreen/CompleteKYCScreen'
 import InstantLoanApplyScreen from '../screens/Loan/LoanApply/InstantLoanApply/InstantLoanApplyScreen'
+import PropertyLoanApplyScreen from '../../src/screens/Loan/LoanApply/PropertyLoan/PropertyLoanApplyScreen'
+import PersonalLoanScreen from '../../src/screens/Loan/LoanApply/PersonalLoan/PersonalLoan'
 const Stack = createNativeStackNavigator();
 
 const AppStack = () => {
@@ -107,6 +109,17 @@ const AppStack = () => {
 
         }
       />
+   <Stack.Screen
+        name="apply-property-loan"
+        component={PropertyLoanApplyScreen
+        }
+      />
+         <Stack.Screen
+        name="apply-personal-loan"
+        component={PersonalLoanScreen
+        }
+      />
+
 
     </Stack.Navigator>
   );

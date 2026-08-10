@@ -21,8 +21,8 @@ import {
 import { theme } from "../../../../theme";
 
 // Components
-import Headers from "./components/Header.jsx";
-import InfoCard from "./components/InfoCard";
+import LoanCommonHeader from "../commonComponent/LoanCommonHeader.jsx";
+import CommonInfoCard from "../commonComponent/CommonInfoCard.jsx";
 import InstantLoanForm from './components/InstantLoanForm'
 import CommonButton from "../../../../components/common/Button/CommonButton.jsx";
 import useHandleMutation from "../../../../hooks/useHandleMutation";
@@ -195,7 +195,7 @@ const InstantLoanApplyScreen = ({ route }) => {
                     theme.statusBar.dark
                 }
             />
-            <Headers />
+            <LoanCommonHeader />
 
             <KeyboardAvoidingView
                 style={{ flex: 1 }}
@@ -246,7 +246,7 @@ const InstantLoanApplyScreen = ({ route }) => {
                                         }}
                                     >
 
-                                        <InfoCard />
+                                        <CommonInfoCard />
                                         <InstantLoanForm
                                             form={form}
                                             setForm={setForm}

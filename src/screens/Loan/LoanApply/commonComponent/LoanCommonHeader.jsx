@@ -9,31 +9,28 @@ import {
   Bell,
 } from "lucide-react-native";
 
-import { theme } from "../../../../../theme";
+import { theme } from "../../../../theme";
 
- import BackButton from '../../../../../components/common/BackButton/BackButton'
+import BackButton from '../../../../components/common/BackButton/BackButton'
 
-const Header = ({
+const LoanCommonHeader = ({
   onBack,
   onNotification,
+  title = "Loan requirements"
 }) => {
 
   return (
 
     <View
-      style={{
-        paddingHorizontal: theme.spacing.xl,
-       
-      }}
+     style={{     paddingHorizontal: theme.spacing.xxl,}}
     >
 
       <BackButton
 
         onPress={onBack}
+        title={title}
 
-        title="Loan requirementsfvee"
 
-   
 
         rightComponent={
 
@@ -109,4 +106,6 @@ const Header = ({
 
 };
 
-export default Header;
+export default LoanCommonHeader;
+
+

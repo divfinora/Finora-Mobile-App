@@ -43,6 +43,7 @@ const LoanSection = () => {
 
 
 
+
     const renderItem =
         useCallback(
 
@@ -58,11 +59,24 @@ const LoanSection = () => {
 
                 return (
                     <LoanCard
-                         onPress={() => {
-      navigation.navigate("apply-instant-loan", {
-        product: item,
-      });
-    }}
+                        onPress={() => {
+
+                            if (item.processingType == "INSTANT") {
+                                navigation.navigate("apply-instant-loan", {
+                                    product: item,
+                                });
+                            } else if (item.processingType == "MANUAL") {
+                                // navigation.navigate("apply-property-loan", {
+                                //     product: item,
+                                // });
+                                navigation.navigate("apply-personal-loan", {
+                                    product: item,
+                                });
+                            }
+
+
+
+                        }}
                         loan={item}
                     />
                 );
@@ -84,6 +98,8 @@ const LoanSection = () => {
             []
 
         );
+
+
 
     return (
 
@@ -227,7 +243,7 @@ const LoanSection = () => {
                     onRetry={refetch}
 
                     containerStyle={{
-width:'auto',
+                        width: 'auto',
                         marginHorizontal:
                             theme.spacing.xl,
 

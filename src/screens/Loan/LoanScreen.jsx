@@ -114,8 +114,8 @@ const LoanScreen = () => {
                         <LoanSection />
                         {/* LoanHeader */}
 
-                        <  UpiCard />
-
+                        <UpiCard />
+{/* <PropertyLoanApplyScreen /> */}
                         {/* BannerSlider */}
 
 

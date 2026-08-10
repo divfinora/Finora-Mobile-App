@@ -10,10 +10,10 @@ import {
   Clock3,
 } from "lucide-react-native";
 
-import { theme } from "../../../../../theme";
+import { theme } from "../../../../theme";
 import LinearGradient from "react-native-linear-gradient";
 
-const InfoCard = () => {
+const CommonInfoCard = () => {
 
   return (
 
@@ -190,4 +190,6 @@ const InfoCard = () => {
 
 };
 
-export default InfoCard;
+export default CommonInfoCard;
+
+ 
