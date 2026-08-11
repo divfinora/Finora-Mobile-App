@@ -1,7 +1,8 @@
 import React from 'react';
 import { View, Text } from 'react-native';
-import { theme } from '../../../../../theme';
+ 
 import { Check, CreditCard, Home, FileText } from 'lucide-react-native';
+import { theme } from '../../../../theme';
 
 // ===== Verification Document Component =====
 const VerificationDocument = () => {

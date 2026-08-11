@@ -1,52 +1,48 @@
 import React, { useState } from 'react';
-import { View, ScrollView, KeyboardAvoidingView, Platform } from 'react-native';
+import { View, ScrollView, KeyboardAvoidingView, Platform, Text } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
- 
+import { theme } from '../../../../theme/index.js';
 
-// Common Components
-import CommonButton from '../../../../components/common/Button/CommonButton';
-import LoanCommonHeader from '../commonComponent/LoanCommonHeader';
-import CommonInfoCard from '../commonComponent/CommonInfoCard';
+import CommonButton from '../../../../components/common/Button/CommonButton.jsx';
+import LoanCommonHeader from '../commonComponent/LoanCommonHeader.jsx';
+import CommonInfoCard from '../commonComponent/CommonInfoCard.jsx';
 import StepProgress from '../commonComponent/StepProgress.jsx';
 
-// Step Components
  
-import RequiredDocument from './components/RequiredDocument.jsx';
-import IncomeDetails from './components/IncomeDetails.jsx';
-import IncomeDocument from './components/IncomeDocument.jsx';
-import ReviewDocument from './components/ReviewDocument.jsx';
-import AlmostDoneScreen from './components/AlmostDoneScreen.jsx';
-import { theme } from '../../../../theme/index.js';
-import VerificationDocument from "../commonComponent/VerificationDocument.jsx"
- 
-const PersonalLoan = ({ navigation }) => {
+import CommercialAddressDetails from './components/CommercialAddressDetails.jsx';
+import CommonAddressDetailsForm from '../commonComponent/CommonAddressDetailsForm.jsx';
+import CommercialBusinessDetails from './components/CommercialBusinessDetails.jsx';
+import CommercialLoanRequirement from './components/CommercialLoanRequirement.jsx';
+import CommercialPropertyDetails from './components/CommercialPropertyDetails.jsx';
+import CommercialFinancialDetails from './components/CommercialFinancialDetails.jsx';
+import CommonPersonalDetailsForm from '../commonComponent/CommonPersonalDetailsForm.jsx';
+
+const ApplyCommercialLoan = ({ navigation }) => {
   const [currentStep, setCurrentStep] = useState(1);
   const [formData, setFormData] = useState({});
   const [errors, setErrors] = useState({});
 
   const totalSteps = 6;
 
-  // Header Title Dynamic Update Based on Current Step
   const getHeaderTitle = () => {
     switch (currentStep) {
       case 1:
-        return 'Verification Document';
+        return 'Personal Details';
       case 2:
-        return 'Required Document';
+        return 'Address Details';
       case 3:
-        return 'Income Details';
+        return 'Business Details';
       case 4:
-        return 'Income Document';
+        return 'Loan Requirement';
       case 5:
-        return 'Review Application';
+        return 'Property Details';
       case 6:
-        return 'Almost Done';
+        return 'Financial Details';
       default:
-        return 'Personal Loan';
+        return 'Commercial Loan';
     }
   };
 
-  // Next Step / Submit Logic
   const handleNext = () => {
     if (currentStep < totalSteps) {
       setCurrentStep((prev) => prev + 1);
@@ -55,7 +51,6 @@ const PersonalLoan = ({ navigation }) => {
     }
   };
 
-  // Back Navigation Handling
   const handleBack = () => {
     if (currentStep > 1) {
       setCurrentStep((prev) => prev - 1);
@@ -65,26 +60,24 @@ const PersonalLoan = ({ navigation }) => {
   };
 
   const submitApplication = () => {
-    console.log('Personal Loan Submitted:', formData);
+    console.log('Commercial Loan Application Submitted:', formData);
   };
 
-  // Render Current Active Step Component
   const renderStep = () => {
     const commonProps = { formData, setFormData, errors, setErrors };
-
     switch (currentStep) {
       case 1:
-        return <VerificationDocument {...commonProps} />;
+        return <CommonPersonalDetailsForm {...commonProps} />;
       case 2:
-        return <RequiredDocument {...commonProps} />;
+        return <CommonAddressDetailsForm {...commonProps} />;
       case 3:
-        return <IncomeDetails {...commonProps} />;
+        return <CommercialBusinessDetails {...commonProps} />;
       case 4:
-        return <IncomeDocument {...commonProps} />;
+        return <CommercialLoanRequirement {...commonProps} />;
       case 5:
-        return <ReviewDocument {...commonProps} />;
+        return <CommercialPropertyDetails {...commonProps} />;
       case 6:
-        return <AlmostDoneScreen {...commonProps} />;
+        return <CommercialFinancialDetails {...commonProps} />;
       default:
         return null;
     }
@@ -92,8 +85,7 @@ const PersonalLoan = ({ navigation }) => {
 
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: '#F6F8F7' }}>
-      {/* Dynamic Header */}
-      <LoanCommonHeader title={getHeaderTitle()} onBackPress={handleBack} />
+      <LoanCommonHeader title={getHeaderTitle()} onBack={handleBack} />
 
       <KeyboardAvoidingView
         style={{ flex: 1 }}
@@ -110,7 +102,6 @@ const PersonalLoan = ({ navigation }) => {
           </View>
         </ScrollView>
 
-        {/* Bottom Continue / Submit Action Button */}
         <View
           style={{
             padding: theme.spacing.lg,
@@ -129,4 +120,4 @@ const PersonalLoan = ({ navigation }) => {
   );
 };
 
-export default PersonalLoan;
+export default ApplyCommercialLoan;

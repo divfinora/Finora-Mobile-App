@@ -3,7 +3,7 @@ import React, { useState, useEffect } from 'react';
 import { View, ScrollView, KeyboardAvoidingView } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
  
-import PersonalDetailsForm from './components/PersonalDetailsForm';
+import CommonPersonalDetailsForm from '../commonComponent/CommonPersonalDetailsForm';
 import AddressForm from './components/AddressForm';
 import LoanRequirementsForm from './components/LoanRequirementsForm';
 import PropertyDetailsForm from './components/PropertyDetailsForm';
@@ -15,6 +15,7 @@ import BackButton from '../../../../components/common/BackButton/BackButton';
 import LoanCommonHeader from '../commonComponent/LoanCommonHeader';
 import CommonInfoCard from '../commonComponent/CommonInfoCard';
 import { theme } from '../../../../theme';
+import StepProgress from '../commonComponent/StepProgress';
 
 const PropertyLoanApplyScreen = ({ route }) => {
   const [currentStep, setCurrentStep] = useState(1);
@@ -26,7 +27,7 @@ const PropertyLoanApplyScreen = ({ route }) => {
 
   const renderStep = () => {
     switch (currentStep) {
-      case 1: return <PersonalDetailsForm formData={formData} setFormData={setFormData} errors={errors} setErrors={setErrors} />;
+      case 1: return <CommonPersonalDetailsForm formData={formData} setFormData={setFormData} errors={errors} setErrors={setErrors} />;
       case 2: return <AddressForm formData={formData} setFormData={setFormData} errors={errors} setErrors={setErrors} />;
       case 3: return <LoanRequirementsForm formData={formData} setFormData={setFormData} errors={errors} setErrors={setErrors} productDetails={productDetails} />;
       case 4: return <PropertyDetailsForm formData={formData} setFormData={setFormData} errors={errors} setErrors={setErrors} />;

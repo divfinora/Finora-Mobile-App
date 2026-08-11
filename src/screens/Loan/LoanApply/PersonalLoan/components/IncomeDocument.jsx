@@ -2,7 +2,7 @@ import React from 'react';
 import { View, Text } from 'react-native';
 import * as ImagePicker from 'react-native-image-picker';
  
- import  DocumentUploadCard from '../../commonComponent/DocumentUploadCard'
+ import  DocumentUploadCard from '../../../../../components/common/Input/DocumentUploadCard'
 import { theme } from '../../../../../theme';
 
 const IncomeDocument = ({ formData, setFormData, errors, setErrors }) => {

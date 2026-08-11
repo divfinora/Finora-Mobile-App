@@ -6,7 +6,7 @@ import {
     FlatList,
 } from "react-native";
 
-import { theme } from "../../../theme/index";
+
 
 import LoanCard from "./LoanSectionComponents/LoanCard";
 import LoanCardSkeleton from "./LoanSectionComponents/LoanCardSkeleton";
@@ -17,6 +17,22 @@ import {
     useGetAllLoanQuery,
 } from "../../../redux/features/customer/customerApi";
 import { useNavigation } from '@react-navigation/native'
+import { theme } from "../../../theme";
+
+// Fake/Dummy Loan Data
+const FAKE_LOANS = [
+    { _id: "1", name: "Personal Loan", maxAmount: 1000000, processingType: "MANUAL" },
+    { _id: "2", name: "Gold Loan", maxAmount: 1000000, processingType: "MANUAL" },
+    { _id: "3", name: "Instant Loan", maxAmount: 500000, processingType: "INSTANT" },
+    { _id: "4", name: "Vehicle Loan", maxAmount: 1500000, processingType: "MANUAL" },
+    { _id: "5", name: "Property Loan", maxAmount: 5000000, processingType: "MANUAL" },
+    { _id: "6", name: "Education Loan", maxAmount: 2000000, processingType: "MANUAL" },
+    { _id: "7", name: "Agricultural Loan", maxAmount: 1000000, processingType: "MANUAL" },
+    { _id: "8", name: "Constructional Loan", maxAmount: 3000000, processingType: "MANUAL" },
+    { _id: "9", name: "Renovation Loan", maxAmount: 800000, processingType: "MANUAL" },
+    { _id: "10", name: "Commercial Loan", maxAmount: 5000000, processingType: "MANUAL" },
+];
+
 const LoanSection = () => {
     const navigation = useNavigation()
 
@@ -35,8 +51,10 @@ const LoanSection = () => {
 
     } = useGetAllLoanQuery();
 
-    const loans =
-        data?.data || [];
+    // Fallback to FAKE_LOANS if API data is empty
+    const apiLoans = data?.data || [];
+    // const loans = apiLoans.length > 0 ? apiLoans : FAKE_LOANS;
+    const loans = FAKE_LOANS;
 
     const loading =
         isLoading || isFetching;
@@ -60,23 +78,50 @@ const LoanSection = () => {
                 return (
                     <LoanCard
                         onPress={() => {
-
-                            if (item.processingType == "INSTANT") {
-                                navigation.navigate("apply-instant-loan", {
-                                    product: item,
-                                });
-                            } else if (item.processingType == "MANUAL") {
-                                // navigation.navigate("apply-property-loan", {
-                                //     product: item,
-                                // });
-                                navigation.navigate("apply-personal-loan", {
-                                    product: item,
-                                });
+                            // 1. Check if explicit route exists in item
+                            if (item.route) {
+                                navigation.navigate(item.route, { product: item });
+                                return;
                             }
 
+                            // 2. Dynamic navigation based on loan name or processing type
+                            const loanName = item?.name?.toLowerCase() || '';
 
+                            console.log(loanName ,"name")
 
+                            if (loanName.includes('gold')) {
+                                navigation.navigate('apply-gold-loan', { product: item });
+                            } else if (loanName.includes('instant') || item.processingType === 'INSTANT') {
+                                navigation.navigate('apply-instant-loan', { product: item });
+                            } else if (loanName.includes('property')) {
+                                navigation.navigate('apply-property-loan', { product: item });
+                            } else if (loanName.includes('commercial')) {
+                                navigation.navigate('apply-commercial-loan', { product: item });
+                            } else if (loanName.includes('education')) {
+                                navigation.navigate('apply-education-loan', { product: item });
+                            } else {
+                                // Default fallback
+                                navigation.navigate('apply-personal-loan', { product: item });
+                            }
                         }}
+                        // onPress={() => {
+
+                        //     if (item.processingType == "INSTANT") {
+                        //         navigation.navigate("apply-instant-loan", {
+                        //             product: item,
+                        //         });
+                        //     } else if (item.processingType == "MANUAL") {
+                        //         // navigation.navigate("apply-property-loan", {
+                        //         //     product: item,
+                        //         // });
+                        //         navigation.navigate("apply-personal-loan", {
+                        //             product: item,
+                        //         });
+                        //     }
+
+
+
+                        // }}
                         loan={item}
                     />
                 );
@@ -230,7 +275,7 @@ const LoanSection = () => {
 
             {/* Error */}
 
-            {error ? (
+            {error && apiLoans.length === 0 ? (
 
                 <InlineRetry
 

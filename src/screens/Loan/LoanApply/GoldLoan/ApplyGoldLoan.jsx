@@ -1,52 +1,51 @@
 import React, { useState } from 'react';
 import { View, ScrollView, KeyboardAvoidingView, Platform } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
- 
 
 // Common Components
-import CommonButton from '../../../../components/common/Button/CommonButton';
-import LoanCommonHeader from '../commonComponent/LoanCommonHeader';
-import CommonInfoCard from '../commonComponent/CommonInfoCard';
+import CommonButton from '../../../../components/common/Button/CommonButton.jsx';
+import LoanCommonHeader from '../commonComponent/LoanCommonHeader.jsx';
+import CommonInfoCard from '../commonComponent/CommonInfoCard.jsx';
 import StepProgress from '../commonComponent/StepProgress.jsx';
 
-// Step Components
- 
-import RequiredDocument from './components/RequiredDocument.jsx';
-import IncomeDetails from './components/IncomeDetails.jsx';
-import IncomeDocument from './components/IncomeDocument.jsx';
-import ReviewDocument from './components/ReviewDocument.jsx';
-import AlmostDoneScreen from './components/AlmostDoneScreen.jsx';
+// Step Components for Gold Loan
+import VerificationDocument from '../commonComponent/VerificationDocument.jsx'; // Shared Common Step
+import GoldLoanPersonalDetails from './components/GoldLoanPersonalDetails.jsx';
+import EmploymentAndIncome from './components/EmploymentAndIncome.jsx';
+import GoldDetails from './components/GoldDetails.jsx';
+import LoanRequirement from './components/LoanRequirement.jsx';
+import DocumentUpload from './components/DocumentUpload.jsx';
+
 import { theme } from '../../../../theme/index.js';
-import VerificationDocument from "../commonComponent/VerificationDocument.jsx"
- 
-const PersonalLoan = ({ navigation }) => {
+
+const ApplyGoldLoan = ({ navigation }) => {
   const [currentStep, setCurrentStep] = useState(1);
   const [formData, setFormData] = useState({});
   const [errors, setErrors] = useState({});
 
   const totalSteps = 6;
 
-  // Header Title Dynamic Update Based on Current Step
+  // Dynamic Header Title per Step
   const getHeaderTitle = () => {
     switch (currentStep) {
       case 1:
         return 'Verification Document';
       case 2:
-        return 'Required Document';
+        return 'Personal Details';
       case 3:
-        return 'Income Details';
+        return 'Employment & Income';
       case 4:
-        return 'Income Document';
+        return 'Gold Details';
       case 5:
-        return 'Review Application';
+        return 'Loan Requirement';
       case 6:
-        return 'Almost Done';
+        return 'Document Upload';
       default:
-        return 'Personal Loan';
+        return 'Gold Loan';
     }
   };
 
-  // Next Step / Submit Logic
+  // Navigation Logic
   const handleNext = () => {
     if (currentStep < totalSteps) {
       setCurrentStep((prev) => prev + 1);
@@ -55,7 +54,6 @@ const PersonalLoan = ({ navigation }) => {
     }
   };
 
-  // Back Navigation Handling
   const handleBack = () => {
     if (currentStep > 1) {
       setCurrentStep((prev) => prev - 1);
@@ -65,10 +63,10 @@ const PersonalLoan = ({ navigation }) => {
   };
 
   const submitApplication = () => {
-    console.log('Personal Loan Submitted:', formData);
+    console.log('Gold Loan Application Submitted:', formData);
   };
 
-  // Render Current Active Step Component
+  // Render Dynamic Step Component
   const renderStep = () => {
     const commonProps = { formData, setFormData, errors, setErrors };
 
@@ -76,15 +74,15 @@ const PersonalLoan = ({ navigation }) => {
       case 1:
         return <VerificationDocument {...commonProps} />;
       case 2:
-        return <RequiredDocument {...commonProps} />;
+        return <GoldLoanPersonalDetails {...commonProps} />;
       case 3:
-        return <IncomeDetails {...commonProps} />;
+        return <EmploymentAndIncome {...commonProps} />;
       case 4:
-        return <IncomeDocument {...commonProps} />;
+        return <GoldDetails {...commonProps} />;
       case 5:
-        return <ReviewDocument {...commonProps} />;
+        return <LoanRequirement {...commonProps} />;
       case 6:
-        return <AlmostDoneScreen {...commonProps} />;
+        return <DocumentUpload {...commonProps} />;
       default:
         return null;
     }
@@ -110,7 +108,7 @@ const PersonalLoan = ({ navigation }) => {
           </View>
         </ScrollView>
 
-        {/* Bottom Continue / Submit Action Button */}
+        {/* Bottom Navigation Button */}
         <View
           style={{
             padding: theme.spacing.lg,
@@ -129,4 +127,6 @@ const PersonalLoan = ({ navigation }) => {
   );
 };
 
-export default PersonalLoan;
+export default ApplyGoldLoan;
+
+ 

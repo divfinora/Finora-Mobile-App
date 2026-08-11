@@ -21,6 +21,8 @@ import CompleteKYCScreen from '../screens/CompleteKYCScreen/CompleteKYCScreen'
 import InstantLoanApplyScreen from '../screens/Loan/LoanApply/InstantLoanApply/InstantLoanApplyScreen'
 import PropertyLoanApplyScreen from '../../src/screens/Loan/LoanApply/PropertyLoan/PropertyLoanApplyScreen'
 import PersonalLoanScreen from '../../src/screens/Loan/LoanApply/PersonalLoan/PersonalLoan'
+import ApplyGoldLoan from  '../screens/Loan/LoanApply/GoldLoan/ApplyGoldLoan.jsx'
+import ApplyCommercialLoan from '../screens/Loan/LoanApply/CommercialLoan/ApplyCommercialLoan.jsx'
 const Stack = createNativeStackNavigator();
 
 const AppStack = () => {
@@ -103,23 +105,30 @@ const AppStack = () => {
         }
       />
 
-   <Stack.Screen
+      <Stack.Screen
         name="apply-instant-loan"
         component={InstantLoanApplyScreen
 
         }
       />
-   <Stack.Screen
+      <Stack.Screen
         name="apply-property-loan"
         component={PropertyLoanApplyScreen
         }
       />
-         <Stack.Screen
+      <Stack.Screen
         name="apply-personal-loan"
         component={PersonalLoanScreen
         }
       />
-
+      <Stack.Screen
+        name="apply-gold-loan"
+        component={ApplyGoldLoan}
+      />
+ <Stack.Screen
+        name="apply-commercial-loan"
+        component={ApplyCommercialLoan}
+      />
 
     </Stack.Navigator>
   );
