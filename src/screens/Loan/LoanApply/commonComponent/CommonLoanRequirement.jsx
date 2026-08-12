@@ -1,8 +1,8 @@
 import React from 'react';
 import { View, Text } from 'react-native';
-import { theme } from '../../../../../theme/index.js';
-import CommonInput from '../../../../../components/common/Input/CommonInput.jsx';
-import SquareChip from '../../../../../components/common/Input/SquareChip.jsx';
+import { theme } from '../../../../theme/index.js';
+import CommonInput from '../../../../components/common/Input/CommonInput.jsx';
+import SquareChip from '../../../../components/common/Input/SquareChip.jsx';
  
 
  
@@ -17,7 +17,7 @@ const TENURE_ROWS = [
   ['24 months', '36 months', '48 months'],
 ];
 
-const CommercialLoanRequirement = ({ formData, setFormData, errors, setErrors }) => {
+const CommonLoanRequirement = ({ formData, setFormData, errors, setErrors }) => {
   const handleChange = (field, value) => {
     setFormData((prev) => ({ ...prev, [field]: value }));
     if (setErrors) {
@@ -38,11 +38,13 @@ const CommercialLoanRequirement = ({ formData, setFormData, errors, setErrors })
   };
 
   const labelStyle = {
-    fontSize: theme.typography?.b3 || 14,
-    fontFamily: theme.fonts?.medium,
-    color: theme.colors?.text || '#1E293B',
+    fontSize: theme.typography.b2,
+fontFamily: theme.fonts.semiBold,
+  color: theme.colors.gray700,
     marginBottom: theme.spacing?.sm || 8,
   };
+        
+   
 
   const requiredAsterisk = {
     color: theme.colors?.error || '#EF4444',
@@ -177,4 +179,6 @@ const CommercialLoanRequirement = ({ formData, setFormData, errors, setErrors })
   );
 };
 
-export default CommercialLoanRequirement;
+export default CommonLoanRequirement;
+
+ 

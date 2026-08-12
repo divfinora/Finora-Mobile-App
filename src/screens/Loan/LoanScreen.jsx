@@ -50,7 +50,7 @@ const LoanScreen = () => {
 
                 flex: 1,
                 backgroundColor:
-                    '##FFFAF2'
+                    '#FFFAF2'
             }}
         >
 

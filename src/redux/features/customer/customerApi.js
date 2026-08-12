@@ -128,6 +128,22 @@ export const customerApi = baseApi.injectEndpoints({
     // App Loan --- End Api
 
 
+    getMyLoans: builder.query({
+      query: () => ({
+        url: "/applyloan/my-loans",  
+        method: "GET", //[cite: 3]
+      }),
+      providesTags: ["MyLoans"],
+    }),
+    getSingleLoanDetails: builder.query({
+      query: (loanId) => ({
+        url: `/applyloan/${loanId}/check`,
+        method: "GET",
+      }),
+      providesTags: (result, error, loanId) => [{ type: "LoanDetails", id: loanId }],
+    }),
+
+    
   }),
 });
 
@@ -142,4 +158,7 @@ export const {
   useGetAllLoanQuery,
   useGetupdateSettingsMutation,
   useApplyLoanMutation,
+  useGetMyLoansQuery ,
+  useGetSingleLoanDetailsQuery,
+  
 } = customerApi;

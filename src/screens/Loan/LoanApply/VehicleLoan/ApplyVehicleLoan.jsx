@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { View, ScrollView, KeyboardAvoidingView, Platform } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { theme } from '../../../../theme/index.js';
 
 // Common Components
 import CommonButton from '../../../../components/common/Button/CommonButton.jsx';
@@ -8,40 +9,35 @@ import LoanCommonHeader from '../commonComponent/LoanCommonHeader.jsx';
 import CommonInfoCard from '../commonComponent/CommonInfoCard.jsx';
 import StepProgress from '../commonComponent/StepProgress.jsx';
 
-// Step Components for Gold Loan
-import VerificationDocument from '../commonComponent/VerificationDocument.jsx'; // Shared Common Step
-import ShortPersonalDetails from '../commonComponent/CommonEmploymentAndIncome.jsx';
+// Step Components for Vehicle Loan
+import ShortPersonalDetails from '../commonComponent/CommonShortPersonalDetails.jsx';
 import CommonEmploymentAndIncome from '../commonComponent/CommonEmploymentAndIncome.jsx';
-import GoldDetails from './components/GoldDetails.jsx';
-import LoanRequirement from './components/LoanRequirement.jsx';
+import VehicleInformation from './components/VehicleInformation.jsx';
 import DocumentUpload from './components/DocumentUpload.jsx';
+import CommonLoanRequirement from '../commonComponent/CommonLoanRequirement.jsx';
 
-import { theme } from '../../../../theme/index.js';
-
-const ApplyGoldLoan = ({ navigation }) => {
+const ApplyVehicleLoan = ({ navigation }) => {
   const [currentStep, setCurrentStep] = useState(1);
   const [formData, setFormData] = useState({});
   const [errors, setErrors] = useState({});
 
-  const totalSteps = 6;
+  const totalSteps = 5;
 
   // Dynamic Header Title per Step
   const getHeaderTitle = () => {
     switch (currentStep) {
       case 1:
-        return 'Verification Document';
-      case 2:
         return 'Personal Details';
-      case 3:
+      case 2:
         return 'Employment & Income';
+      case 3:
+        return 'Vehicle Information';
       case 4:
-        return 'Gold Details';
-      case 5:
         return 'Loan Requirement';
-      case 6:
+      case 5:
         return 'Document Upload';
       default:
-        return 'Gold Loan';
+        return 'Vehicle Loan';
     }
   };
 
@@ -63,7 +59,7 @@ const ApplyGoldLoan = ({ navigation }) => {
   };
 
   const submitApplication = () => {
-    console.log('Gold Loan Application Submitted:', formData);
+    console.log('Vehicle Loan Application Submitted:', formData);
   };
 
   // Render Dynamic Step Component
@@ -72,16 +68,14 @@ const ApplyGoldLoan = ({ navigation }) => {
 
     switch (currentStep) {
       case 1:
-        return <VerificationDocument {...commonProps} />;
-      case 2:
         return <ShortPersonalDetails {...commonProps} />;
-      case 3:
+      case 2:
         return <CommonEmploymentAndIncome {...commonProps} />;
+      case 3:
+        return <VehicleInformation {...commonProps} />;
       case 4:
-        return <GoldDetails {...commonProps} />;
+        return <CommonLoanRequirement {...commonProps} />;
       case 5:
-        return <LoanRequirement {...commonProps} />;
-      case 6:
         return <DocumentUpload {...commonProps} />;
       default:
         return null;
@@ -99,9 +93,9 @@ const ApplyGoldLoan = ({ navigation }) => {
       >
         <ScrollView
           showsVerticalScrollIndicator={false}
-          contentContainerStyle={{ paddingBottom: theme.spacing.xl }}
+          contentContainerStyle={{ paddingBottom: theme.spacing?.xl || 24 }}
         >
-          <View style={{ paddingHorizontal: theme.spacing.xxl }}>
+          <View style={{ paddingHorizontal: theme.spacing?.xxl || 20 }}>
             <CommonInfoCard />
             <StepProgress currentStep={currentStep} totalSteps={totalSteps} />
             {renderStep()}
@@ -111,10 +105,10 @@ const ApplyGoldLoan = ({ navigation }) => {
         {/* Bottom Navigation Button */}
         <View
           style={{
-            padding: theme.spacing.lg,
-            backgroundColor: theme.colors.white,
-            borderTopWidth: theme.borderWidth.thin,
-            borderTopColor: theme.colors.divider,
+            padding: theme.spacing?.lg || 16,
+            backgroundColor: theme.colors?.white || '#FFFFFF',
+            borderTopWidth: theme.borderWidth?.thin || 1,
+            borderTopColor: theme.colors?.divider || '#E2E8F0',
           }}
         >
           <CommonButton
@@ -127,6 +121,4 @@ const ApplyGoldLoan = ({ navigation }) => {
   );
 };
 
-export default ApplyGoldLoan;
-
- 
+export default ApplyVehicleLoan;

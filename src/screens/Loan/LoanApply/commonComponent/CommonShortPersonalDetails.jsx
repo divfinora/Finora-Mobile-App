@@ -1,11 +1,11 @@
 import React from 'react';
 import { View, Text } from 'react-native';
  
-import CommonInput from '../../../../../components/common/Input/CommonInput.jsx';
-import { theme } from '../../../../../theme/index.js';
+import CommonInput from '../../../../components/common/Input/CommonInput.jsx';
+import { theme } from '../../../../theme/index.js';
  
 
-const GoldLoanPersonalDetails = ({ formData, setFormData, errors }) => {
+const CommonShortPersonalDetails = ({ formData, setFormData, errors }) => {
   const handleChange = (field, value) => {
     setFormData((prev) => ({
       ...prev,
@@ -85,4 +85,8 @@ const GoldLoanPersonalDetails = ({ formData, setFormData, errors }) => {
   );
 };
 
-export default GoldLoanPersonalDetails;
+export default CommonShortPersonalDetails;
+
+ 
+ 
+ 

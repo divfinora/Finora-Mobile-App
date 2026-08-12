@@ -1,9 +1,9 @@
 import React from 'react';
 import { View, Text } from 'react-native';
  ;
-import CommonInput from '../../../../../components/common/Input/CommonInput';
-import CustomDropdown from '../../../../../components/common/Modal/CustomDropdown'; // Adjust import path if needed
-import { theme } from '../../../../../theme';
+import CommonInput from '../../../../components/common/Input/CommonInput';
+import CustomDropdown from '../../../../components/common/Modal/CustomDropdown'; // Adjust import path if needed
+import { theme } from '../../../../theme';
 
 const EMPLOYMENT_TYPES = [
   'Salaried',
@@ -13,7 +13,7 @@ const EMPLOYMENT_TYPES = [
   'Retired / Other',
 ];
 
-const EmploymentAndIncome = ({ formData, setFormData, errors }) => {
+const CommonEmploymentAndIncome = ({ formData, setFormData, errors }) => {
   const handleChange = (field, value) => {
     setFormData((prev) => ({
       ...prev,
@@ -89,4 +89,8 @@ const EmploymentAndIncome = ({ formData, setFormData, errors }) => {
   );
 };
 
-export default EmploymentAndIncome;
+export default CommonEmploymentAndIncome;
+
+ 
+
+ 

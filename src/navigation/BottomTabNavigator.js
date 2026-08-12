@@ -9,6 +9,7 @@ import HomeScreen from "../screens/Home/HomeScreen.jsx";
 import LoanScreen from "../screens/Loan/LoanScreen.jsx";
 import HistoryScreen from "../screens/History/HistoryScreen.jsx";
 import ProfileScreen from "../screens/Profile/ProfileScreen.jsx";
+import MyLoanScreen from "../screens/GetLoan/MyLoan/MyLoanScreen.jsx";
 
 const Tab = createBottomTabNavigator();
 
@@ -52,7 +53,7 @@ const BottomTabNavigator = () => {
       {/* HISTORY */}
       <Tab.Screen
         name="History"
-        component={HistoryScreen}
+        component={MyLoanScreen}
       />
 
       {/* PROFILE */}

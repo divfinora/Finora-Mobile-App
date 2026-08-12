@@ -4,6 +4,7 @@ import {
     View,
     Text,
     FlatList,
+    Alert,
 } from "react-native";
 
 
@@ -87,7 +88,7 @@ const LoanSection = () => {
                             // 2. Dynamic navigation based on loan name or processing type
                             const loanName = item?.name?.toLowerCase() || '';
 
-                            console.log(loanName ,"name")
+                            console.log(loanName, "name")
 
                             if (loanName.includes('gold')) {
                                 navigation.navigate('apply-gold-loan', { product: item });
@@ -97,11 +98,25 @@ const LoanSection = () => {
                                 navigation.navigate('apply-property-loan', { product: item });
                             } else if (loanName.includes('commercial')) {
                                 navigation.navigate('apply-commercial-loan', { product: item });
-                            } else if (loanName.includes('education')) {
+                            }
+                            else if (loanName.includes('education')) {
                                 navigation.navigate('apply-education-loan', { product: item });
-                            } else {
-                                // Default fallback
+                            }
+                            else if (loanName.includes('vehicle')) {
+                                navigation.navigate('apply-vechicle-loan', { product: item });
+                            }
+                            else if (loanName.includes('personal')) {
                                 navigation.navigate('apply-personal-loan', { product: item });
+                            }
+                            else if (loanName.includes('agricultural')) {
+                                navigation.navigate('apply-agriculture-loan', { product: item });
+                            }
+                            else if (loanName.includes('renovation')) {
+                                navigation.navigate('apply-renovation-loan', { product: item });
+                            }
+                            else {
+                                Alert.alert("not avalable navigation")
+                                // Default fallback   navigation.navigate('apply-personal-loan', { product: item });
                             }
                         }}
                         // onPress={() => {

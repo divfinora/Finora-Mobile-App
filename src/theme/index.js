@@ -57,8 +57,8 @@ primary50: "#FFF9F5",
   /* COMMON */
   /* ---------------------------------- */
 
-  background: "#FFF4EC",
   card: "#FFF9F5",
+   background: "#F6F8F7",
 
   text: "#111827",
   textSecondary: "#4B5563",

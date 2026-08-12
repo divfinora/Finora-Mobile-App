@@ -12,7 +12,7 @@ import StepProgress from '../commonComponent/StepProgress.jsx';
 import CommercialAddressDetails from './components/CommercialAddressDetails.jsx';
 import CommonAddressDetailsForm from '../commonComponent/CommonAddressDetailsForm.jsx';
 import CommercialBusinessDetails from './components/CommercialBusinessDetails.jsx';
-import CommercialLoanRequirement from './components/CommercialLoanRequirement.jsx';
+import CommonLoanRequirement from '../commonComponent/CommonLoanRequirement.jsx';
 import CommercialPropertyDetails from './components/CommercialPropertyDetails.jsx';
 import CommercialFinancialDetails from './components/CommercialFinancialDetails.jsx';
 import CommonPersonalDetailsForm from '../commonComponent/CommonPersonalDetailsForm.jsx';
@@ -73,7 +73,7 @@ const ApplyCommercialLoan = ({ navigation }) => {
       case 3:
         return <CommercialBusinessDetails {...commonProps} />;
       case 4:
-        return <CommercialLoanRequirement {...commonProps} />;
+        return <CommonLoanRequirement {...commonProps} />;
       case 5:
         return <CommercialPropertyDetails {...commonProps} />;
       case 6:
