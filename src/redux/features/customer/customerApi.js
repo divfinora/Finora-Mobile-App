@@ -135,6 +135,13 @@ export const customerApi = baseApi.injectEndpoints({
       }),
       providesTags: ["MyLoans"],
     }),
+    getLoanApplicationPrefill: builder.query({
+  query: () => ({
+    url: "/applyloan/application/prefill",
+    method: "GET",
+  }),
+}),
+
     getSingleLoanDetails: builder.query({
       query: (loanId) => ({
         url: `/applyloan/${loanId}/check`,
@@ -160,5 +167,6 @@ export const {
   useApplyLoanMutation,
   useGetMyLoansQuery ,
   useGetSingleLoanDetailsQuery,
+    useGetLoanApplicationPrefillQuery,
   
 } = customerApi;

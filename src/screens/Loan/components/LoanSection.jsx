@@ -54,8 +54,8 @@ const LoanSection = () => {
 
     // Fallback to FAKE_LOANS if API data is empty
     const apiLoans = data?.data || [];
-    // const loans = apiLoans.length > 0 ? apiLoans : FAKE_LOANS;
-    const loans = FAKE_LOANS;
+        //  const loans = apiLoans.length > 0 ? apiLoans : FAKE_LOANS;
+      const loans = FAKE_LOANS;
 
     const loading =
         isLoading || isFetching;
@@ -120,6 +120,7 @@ const LoanSection = () => {
                             }
                         }}
                         // onPress={() => {
+                        //     console.log(item ,"item")
 
                         //     if (item.processingType == "INSTANT") {
                         //         navigation.navigate("apply-instant-loan", {

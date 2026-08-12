@@ -82,7 +82,7 @@ const HomeComponent = () => {
       ListHeaderComponent={
         <>
           <HeaderCard 
-            userName ={user.fullName} 
+            userName ={user?.fullName} 
             // profileImage ={""} 
              onNotificationPress={""} 
            />

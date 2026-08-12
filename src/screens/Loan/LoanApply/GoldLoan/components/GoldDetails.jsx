@@ -3,8 +3,6 @@ import { View, Text } from 'react-native';
 import { theme } from '../../../../../theme';
 import CustomDropdown from '../../../../../components/common/Modal/CustomDropdown';
 import CommonInput from '../../../../../components/common/Input/CommonInput';
-// import CommonInput from '../../../../../components/common/Input/CommonInput';
-// import CustomDropdown from '../../../../../components/common/Dropdown/CustomDropdown';
 
 const GOLD_TYPES = [
   'Jewellery / Ornaments',
@@ -19,12 +17,20 @@ const PURITY_OPTIONS = [
   '18 Carat (75.0%)',
 ];
 
-const GoldDetails = ({ formData, setFormData, errors }) => {
+const GoldDetails = ({ formData, setFormData, errors, setErrors }) => {
   const handleChange = (field, value) => {
     setFormData((prev) => ({
       ...prev,
       [field]: value,
     }));
+
+    // Typing/Selecting par us field ka error clear ho jayega
+    if (errors?.[field]) {
+      setErrors?.((prev) => ({
+        ...prev,
+        [field]: '',
+      }));
+    }
   };
 
   const borderStyle = {
@@ -137,6 +143,3 @@ const GoldDetails = ({ formData, setFormData, errors }) => {
 };
 
 export default GoldDetails;
-
-
- 

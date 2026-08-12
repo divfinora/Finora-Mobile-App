@@ -25,7 +25,7 @@ const REPAYMENT_METHODS = [
   {
     id: 'bullet',
     title: 'Bullet Repayments',
-    description: 'Regular monthly payments',
+    description: 'Pay principal at maturity with monthly interest',
   },
   {
     id: 'interest_only',
@@ -34,12 +34,20 @@ const REPAYMENT_METHODS = [
   },
 ];
 
-const LoanRequirement = ({ formData, setFormData, errors }) => {
+const LoanRequirement = ({ formData, setFormData, errors, setErrors }) => {
   const handleChange = (field, value) => {
     setFormData((prev) => ({
       ...prev,
       [field]: value,
     }));
+
+    // Typing ya Selection karte hi us field ka error clear ho jayega
+    if (errors?.[field]) {
+      setErrors?.((prev) => ({
+        ...prev,
+        [field]: '',
+      }));
+    }
   };
 
   const borderStyle = {

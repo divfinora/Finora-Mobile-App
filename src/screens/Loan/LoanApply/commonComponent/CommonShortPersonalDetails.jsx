@@ -1,16 +1,22 @@
 import React from 'react';
 import { View, Text } from 'react-native';
- 
 import CommonInput from '../../../../components/common/Input/CommonInput.jsx';
 import { theme } from '../../../../theme/index.js';
- 
 
-const CommonShortPersonalDetails = ({ formData, setFormData, errors }) => {
+const CommonShortPersonalDetails = ({ formData, setFormData, errors, setErrors }) => {
   const handleChange = (field, value) => {
     setFormData((prev) => ({
       ...prev,
       [field]: value,
     }));
+
+    // Typing start karte hi us particular field ka error remove ho jayega
+    if (errors?.[field]) {
+      setErrors?.((prev) => ({
+        ...prev,
+        [field]: '',
+      }));
+    }
   };
 
   const inputContainerStyle = {
@@ -86,7 +92,3 @@ const CommonShortPersonalDetails = ({ formData, setFormData, errors }) => {
 };
 
 export default CommonShortPersonalDetails;
-
- 
- 
- 

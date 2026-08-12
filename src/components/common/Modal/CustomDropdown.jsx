@@ -1,24 +1,26 @@
- 
 import React, { useState } from 'react';
 import { View, Text, TouchableOpacity, FlatList, Modal, Pressable } from 'react-native';
  
 import { theme } from '../../../theme';
-import { ChevronDown, Check } from 'lucide-react-native'
+import { ChevronDown } from 'lucide-react-native';
 import CommonInput from "../Input/CommonInput";
+
 const CustomDropdown = ({ 
   label, 
   placeholder, 
-  options, 
+  options = [], 
   selectedValue, 
   onSelect, 
   error,
-  required 
+  required,
+  inputContainerStyle 
 }) => {
   const [expanded, setExpanded] = useState(false);
-
+ 
   return (
     <View style={{ marginBottom: theme.spacing.lg }}>
-      <TouchableOpacity activeOpacity={0.8} onPress={() => setExpanded(true)}>
+      {/* Tap Listener on Entire Input Area */}
+      <TouchableOpacity activeOpacity={0.7} onPress={() => setExpanded(true)}>
         <View pointerEvents="none">
           <CommonInput
             label={label}
@@ -31,6 +33,7 @@ const CustomDropdown = ({
             inputContainerStyle={{
               backgroundColor: theme.colors.gray100,
               borderColor: error ? theme.colors.error : theme.colors.transparent,
+              ...inputContainerStyle,
             }}
             containerStyle={{ marginBottom: 0 }}
           />
@@ -38,29 +41,36 @@ const CustomDropdown = ({
       </TouchableOpacity>
 
       {/* Modal Dropdown Options */}
-      <Modal visible={expanded} transparent animationType="fade">
+      <Modal 
+        visible={expanded} 
+        transparent 
+        animationType="fade"
+        onRequestClose={() => setExpanded(false)} // Android back button support
+      >
         <Pressable 
           style={{ 
             flex: 1, 
-            backgroundColor: theme.colors.overlay, 
+            backgroundColor: theme.colors.overlay || 'rgba(0,0,0,0.5)', 
             justifyContent: 'center', 
             padding: theme.spacing.xxl 
           }}
-          onPress={() => setExpanded(false)}
+          onPress={() => setExpanded(false)} // Background overlay tap to close
         >
-          <View 
+          <Pressable 
             style={{ 
               backgroundColor: theme.colors.white, 
               borderRadius: theme.radius.lg, 
               maxHeight: 300, 
               overflow: 'hidden' 
             }}
+            onPress={(e) => e.stopPropagation()} // Card ke andhar tap karne par close hone se rokega
           >
             <FlatList
               data={options}
-              keyExtractor={(item) => item}
+              keyExtractor={(item, index) => item?.toString() || index.toString()}
               renderItem={({ item }) => (
                 <TouchableOpacity
+                  activeOpacity={0.7}
                   onPress={() => {
                     onSelect(item);
                     setExpanded(false);
@@ -85,10 +95,11 @@ const CustomDropdown = ({
                 </TouchableOpacity>
               )}
             />
-          </View>
+          </Pressable>
         </Pressable>
       </Modal>
     </View>
   );
 };
-export default CustomDropdown
+
+export default CustomDropdown;

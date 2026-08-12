@@ -221,7 +221,7 @@ const ProfileBanner = ({
 
         >
 
-          {user.fullName || "-"}
+          {user?.fullName || "-"}
 
         </Text>
 
