@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
+
 import {
   View,
   Text,
@@ -7,6 +8,7 @@ import {
   StatusBar,
   RefreshControl,
 } from "react-native";
+
 import {
   Fingerprint,
   Lightbulb,
@@ -20,7 +22,9 @@ import {
   Clock,
   Calendar,
   BarChart2,
+  ArrowLeft,
 } from "lucide-react-native";
+
 import { SafeAreaView } from "react-native-safe-area-context";
 
 import { theme } from "../../../theme/index.js";
@@ -29,12 +33,11 @@ import SettingItem from "../../Profile/components/SettingItem.jsx";
 import InlineRetry from "../../../components/common/RetryScreen/InlineRetry.jsx";
 import useHandleMutation from "../../../hooks/useHandleMutation.js";
 
-
 import {
   useGetNotificationPreferencesQuery,
   useUpdateNotificationPreferencesMutation,
 } from "../../../redux/features/customer/customerApi.js";
-
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 const DEFAULT_PREFERENCES = {
   emiReminders: false,
   paymentAlerts: false,
@@ -122,12 +125,12 @@ const SUMMARY_REPORTS = [
   },
 ];
 
-const NotificationPreferencesScreen = () => {
+const NotificationPreferencesScreen = ({navigation}) => {
   const [loadingKey, setLoadingKey] = useState("");
-  const [filterTab, setFilterTab] = useState("all"); // 'all' | 'enabled' | 'disabled'
-  const debounceRef = useRef({});
+  const [filterTab, setFilterTab] = useState("all");
 
-  // API Hooks
+  const debounceRef = useRef({});
+  const insets = useSafeAreaInsets();
   const {
     data: apiResponse,
     error: preferencesError,
@@ -136,12 +139,14 @@ const NotificationPreferencesScreen = () => {
     refetch,
   } = useGetNotificationPreferencesQuery();
 
-  const [updatePreferences] = useUpdateNotificationPreferencesMutation();
+  const [updatePreferences] =
+    useUpdateNotificationPreferencesMutation();
+
   const { handleMutation } = useHandleMutation();
 
-  const [preferences, setPreferences] = useState(DEFAULT_PREFERENCES);
+  const [preferences, setPreferences] =
+    useState(DEFAULT_PREFERENCES);
 
-  // Sync state with API response
   useEffect(() => {
     if (preferencesError) {
       setPreferences(DEFAULT_PREFERENCES);
@@ -149,8 +154,16 @@ const NotificationPreferencesScreen = () => {
     }
 
     const prefData = apiResponse?.data;
+
     if (!prefData) return;
-    if (loadingKey || preferencesLoading || preferencesFetching) return;
+
+    if (
+      loadingKey ||
+      preferencesLoading ||
+      preferencesFetching
+    ) {
+      return;
+    }
 
     setPreferences({
       ...DEFAULT_PREFERENCES,
@@ -164,16 +177,14 @@ const NotificationPreferencesScreen = () => {
     preferencesFetching,
   ]);
 
-  // Clean debounces on unmount
   useEffect(() => {
     return () => {
       Object.values(debounceRef.current).forEach(clearTimeout);
     };
   }, []);
 
-  // Single Item Toggle
   const handleSettingToggle = (key, value) => {
-    setPreferences((prev) => ({ ...prev, [key]: value }));
+    if (loadingKey) return;
 
     if (debounceRef.current[key]) {
       clearTimeout(debounceRef.current[key]);
@@ -184,145 +195,230 @@ const NotificationPreferencesScreen = () => {
 
       const response = await handleMutation({
         apiFunc: updatePreferences,
-        params: { [key]: value },
+        params: {
+          [key]: value,
+        },
         timeoutMs: 10000,
         showError: true,
         showSuccess: false,
       });
 
-      if (!response) {
-        setPreferences((prev) => ({ ...prev, [key]: !value }));
+      if (response) {
+        await refetch();
       }
 
       setLoadingKey("");
     }, 400);
   };
 
-  // Filter Helper
   const shouldShowItem = (key) => {
-    if (filterTab === "enabled") return Boolean(preferences[key]);
-    if (filterTab === "disabled") return !preferences[key];
+    if (filterTab === "enabled") {
+      return Boolean(preferences[key]);
+    }
+
+    if (filterTab === "disabled") {
+      return !preferences[key];
+    }
+
     return true;
   };
 
-  const filteredNotificationTypes = NOTIFICATION_TYPES.filter((item) =>
-    shouldShowItem(item.key)
-  );
+  const filteredNotificationTypes =
+    NOTIFICATION_TYPES.filter((item) =>
+      shouldShowItem(item.key)
+    );
 
-  const filteredSummaryReports = SUMMARY_REPORTS.filter((item) =>
-    shouldShowItem(item.key)
-  );
+  const filteredSummaryReports =
+    SUMMARY_REPORTS.filter((item) =>
+      shouldShowItem(item.key)
+    );
 
-  const showPushEnabled = shouldShowItem("pushEnabled");
+  const showPushEnabled =
+    shouldShowItem("pushEnabled");
 
   const isListEmpty =
     !showPushEnabled &&
     filteredNotificationTypes.length === 0 &&
     filteredSummaryReports.length === 0;
 
+  const [refreshing, setRefreshing] = useState(false);
 
-
-    // pull to refress 
-
-    const [refreshing, setRefreshing] = useState(false);
-
-const onRefresh = async () => {
-  setRefreshing(true);
-  await refetch();
-  setRefreshing(false);
-};
+  const onRefresh = async () => {
+    try {
+      setRefreshing(true);
+      await refetch();
+    } catch (error) {
+      console.log("Refresh error:", error);
+    } finally {
+      setRefreshing(false);
+    }
+  };
 
   return (
-    <SafeAreaView style={{ flex: 1,    backgroundColor: theme.colors.white,}}>
-      <StatusBar backgroundColor="#FFF8F2" barStyle="dark-content" />
+    <SafeAreaView
+      edges={['bottom', 'left', 'right']}
+      style={{
+        flex: 1,
+        backgroundColor: theme.colors.white,
+
+      }}
+    >
+      <StatusBar
+        backgroundColor="#FFF8F2"
+        barStyle="dark-content"
+      />
 
       {/* HEADER */}
-      <View
+
+     {/* HEADER */}
+
+<View
+  style={{
+    backgroundColor: "#FFF8ED",
+    paddingHorizontal: theme.spacing.xxl,
+    paddingTop: insets.top + theme.spacing.xxxl,
+    paddingBottom:insets.top + theme.spacing.xxl,
+    // height: 100 + insets.top,
+    position: "relative",
+  }}
+>
+  <View
+    style={{
+      flexDirection: "row",
+      alignItems: "center",
+    }}
+  >
+    <TouchableOpacity
+      onPress={() => navigation.goBack()}
+      activeOpacity={0.7}
+      style={{
+        width: 32,
+        height: 40,
+        alignItems: "flex-start",
+        justifyContent: "center",
+      }}
+    >
+      <ArrowLeft
+        size={24}
+        color={theme.colors.gray900}
+        strokeWidth={2}
+      />
+    </TouchableOpacity>
+
+    <View
+      style={{
+        marginLeft: 34,
+      }}
+    >
+      <Text
         style={{
-          backgroundColor:"red",
-          paddingHorizontal: theme.spacing.xxl,
-          paddingTop: theme.spacing.md,
-          paddingBottom: theme.spacing.sm,
+          fontSize: 20,
+          fontFamily: theme.fonts.semiBold,
+          color: theme.colors.gray900,
+          lineHeight: 24,
         }}
       >
-        <BackButton title="Notification Preferences" />
-        <Text
+        Notification Preferences
+      </Text>
+
+      <Text
+        style={{
+          fontSize: theme.typography.b3,
+          fontFamily: theme.fonts.medium,
+          color: theme.colors.gray500,
+          marginTop: 3,
+          lineHeight: 16,
+        }}
+      >
+        Manage your alerts and notifications
+      </Text>
+    </View>
+  </View>
+
+  {/* FILTER */}
+
+  <View
+    style={{
+      position: "absolute",
+      left: theme.spacing.xxl,
+      right: theme.spacing.xxl,
+      bottom: -36,
+      height: 56,
+      backgroundColor: theme.colors.white,
+      borderRadius: theme.radius.pill,
+      borderWidth: 1,
+      borderColor: "#A8660B",
+      padding: 4,
+      flexDirection: "row",
+      zIndex: 10,
+    }}
+  >
+    {[
+      {
+        id: "all",
+        label: "All",
+      },
+      {
+        id: "enabled",
+        label: "Enabled",
+      },
+      {
+        id: "disabled",
+        label: "Disabled",
+      },
+    ].map((tab) => {
+      const isActive = filterTab === tab.id;
+
+      return (
+        <TouchableOpacity
+          key={tab.id}
+          onPress={() => setFilterTab(tab.id)}
+          activeOpacity={0.8}
           style={{
-            fontSize: theme.typography.b3,
-            fontFamily: theme.fonts.medium,
-            color: theme.colors.gray500,
-            marginTop: 2,
-            marginLeft: 36,
+            flex: 1,
+            borderRadius: theme.radius.pill,
+            backgroundColor: isActive
+              ? "#A8660B"
+              : "transparent",
+            alignItems: "center",
+            justifyContent: "center",
           }}
         >
-          Manage your alerts and notifications
-        </Text>
-      </View>
+          <Text
+            style={{
+              color: isActive
+                ? theme.colors.white
+                : theme.colors.gray700,
+              fontFamily: theme.fonts.semiBold,
+              fontSize: theme.typography.b3,
+            }}
+          >
+            {tab.label}
+          </Text>
+        </TouchableOpacity>
+      );
+    })}
+  </View>
+</View>
 
       <ScrollView
         showsVerticalScrollIndicator={false}
         refreshControl={
-    <RefreshControl
-      refreshing={refreshing || preferencesFetching}
-      onRefresh={onRefresh}
-      colors={["#8C5814"]} // Android loader color
-      tintColor="#8C5814"   // iOS loader color
-    />
-  }
+          <RefreshControl
+            refreshing={refreshing}
+            onRefresh={onRefresh}
+            colors={["#8C5814"]}
+            tintColor="#8C5814"
+          />
+        }
         contentContainerStyle={{
           paddingHorizontal: theme.spacing.xxl,
-          paddingTop: theme.spacing.lg,
+          paddingTop: 48,
           paddingBottom: theme.spacing.massive,
         }}
-
       >
-        {/* FILTER TAB BAR (ALL / ENABLED / DISABLED) */}
-        <View
-          style={{
-            flexDirection: "row",
-            backgroundColor: theme.colors.white,
-            borderRadius: theme.radius.pill,
-            padding: 4,
-            borderWidth: theme.borderWidth.thin,
-            borderColor: theme.colors.gray200,
-            marginBottom: theme.spacing.xl,
-          }}
-        >
-          {[
-            { id: "all", label: "All" },
-            { id: "enabled", label: "Enabled" },
-            { id: "disabled", label: "Disabled" },
-          ].map((tab) => {
-            const isActive = filterTab === tab.id;
-            return (
-              <TouchableOpacity
-                key={tab.id}
-                onPress={() => setFilterTab(tab.id)}
-                activeOpacity={0.8}
-                style={{
-                  flex: 1,
-                  paddingVertical: 10,
-                  borderRadius: 25,
-                  backgroundColor: isActive ? "#8C5814" : theme.colors.transparent,
-                  alignItems: "center",
-                  justifyContent: "center",
-                }}
-              >
-                <Text
-                  style={{
-                    color: isActive ? theme.colors.white : theme.colors.gray700,
-                    fontFamily: theme.fonts.semiBold,
-                    fontSize: theme.typography.b2,
-                  }}
-                >
-                  {tab.label}
-                </Text>
-              </TouchableOpacity>
-            );
-          })}
-        </View>
-
         {/* ERROR STATE / RETRY */}
+
         {preferencesError ? (
           <InlineRetry
             title="Unable to load preferences"
@@ -339,6 +435,7 @@ const onRefresh = async () => {
           />
         ) : isListEmpty ? (
           /* EMPTY FILTER STATE */
+
           <View
             style={{
               paddingVertical: theme.spacing.massive,
@@ -356,6 +453,7 @@ const onRefresh = async () => {
             >
               No {filterTab} preferences
             </Text>
+
             <Text
               style={{
                 fontSize: theme.typography.b3,
@@ -364,12 +462,14 @@ const onRefresh = async () => {
                 textAlign: "center",
               }}
             >
-              You don't have any preferences in the {filterTab} status.
+              You don't have any preferences in the{" "}
+              {filterTab} status.
             </Text>
           </View>
         ) : (
           <>
             {/* GLOBAL PREFERENCES */}
+
             {showPushEnabled && (
               <>
                 <Text
@@ -397,9 +497,20 @@ const onRefresh = async () => {
                     icon={Bell}
                     type="toggle"
                     value={preferences.pushEnabled}
-                    loading={loadingKey === "pushEnabled"}
-                    disabled={!!loadingKey || preferencesLoading ||preferencesFetching}
-                    onToggle={(val) => handleSettingToggle("pushEnabled", val)}
+                    loading={
+                      loadingKey === "pushEnabled"
+                    }
+                    disabled={
+                      !!loadingKey ||
+                      preferencesLoading ||
+                      preferencesFetching
+                    }
+                    onToggle={(val) =>
+                      handleSettingToggle(
+                        "pushEnabled",
+                        val
+                      )
+                    }
                     isLast
                   />
                 </View>
@@ -407,6 +518,7 @@ const onRefresh = async () => {
             )}
 
             {/* NOTIFICATION TYPES */}
+
             {filteredNotificationTypes.length > 0 && (
               <>
                 <Text
@@ -428,25 +540,43 @@ const onRefresh = async () => {
                     marginBottom: theme.spacing.xxl,
                   }}
                 >
-                  {filteredNotificationTypes.map((item, index) => (
-                    <SettingItem
-                      key={item.key}
-                      title={item.title}
-                      subtitle={item.subtitle}
-                      icon={item.icon}
-                      type="toggle"
-                      value={preferences[item.key]}
-                      loading={loadingKey === item.key}
-                      disabled={!!loadingKey || preferencesLoading || preferencesFetching}
-                      onToggle={(val) => handleSettingToggle(item.key, val)}
-                      isLast={index === filteredNotificationTypes.length - 1}
-                    />
-                  ))}
+                  {filteredNotificationTypes.map(
+                    (item, index) => (
+                      <SettingItem
+                        key={item.key}
+                        title={item.title}
+                        subtitle={item.subtitle}
+                        icon={item.icon}
+                        type="toggle"
+                        value={preferences[item.key]}
+                        loading={
+                          loadingKey === item.key
+                        }
+                        disabled={
+                          !!loadingKey ||
+                          preferencesLoading ||
+                          preferencesFetching
+                        }
+                        onToggle={(val) =>
+                          handleSettingToggle(
+                            item.key,
+                            val
+                          )
+                        }
+                        isLast={
+                          index ===
+                          filteredNotificationTypes.length -
+                          1
+                        }
+                      />
+                    )
+                  )}
                 </View>
               </>
             )}
 
             {/* SUMMARY REPORTS */}
+
             {filteredSummaryReports.length > 0 && (
               <>
                 <Text
@@ -468,25 +598,43 @@ const onRefresh = async () => {
                     marginBottom: theme.spacing.xl,
                   }}
                 >
-                  {filteredSummaryReports.map((item, index) => (
-                    <SettingItem
-                      key={item.key}
-                      title={item.title}
-                      subtitle={item.subtitle}
-                      icon={item.icon}
-                      type="toggle"
-                      value={preferences[item.key]}
-                      loading={loadingKey === item.key}
-                      disabled={!!loadingKey || preferencesLoading || preferencesFetching}
-                      onToggle={(val) => handleSettingToggle(item.key, val)}
-                      isLast={index === filteredSummaryReports.length - 1}
-                    />
-                  ))}
+                  {filteredSummaryReports.map(
+                    (item, index) => (
+                      <SettingItem
+                        key={item.key}
+                        title={item.title}
+                        subtitle={item.subtitle}
+                        icon={item.icon}
+                        type="toggle"
+                        value={preferences[item.key]}
+                        loading={
+                          loadingKey === item.key
+                        }
+                        disabled={
+                          !!loadingKey ||
+                          preferencesLoading ||
+                          preferencesFetching
+                        }
+                        onToggle={(val) =>
+                          handleSettingToggle(
+                            item.key,
+                            val
+                          )
+                        }
+                        isLast={
+                          index ===
+                          filteredSummaryReports.length -
+                          1
+                        }
+                      />
+                    )
+                  )}
                 </View>
               </>
             )}
 
             {/* SECURITY BANNER */}
+
             <View
               style={{
                 flexDirection: "row",
@@ -501,8 +649,11 @@ const onRefresh = async () => {
               <Lightbulb
                 size={theme.iconSize.sm}
                 color="#2563EB"
-                style={{ marginRight: theme.spacing.sm }}
+                style={{
+                  marginRight: theme.spacing.sm,
+                }}
               />
+
               <Text
                 style={{
                   flex: 1,
@@ -512,7 +663,9 @@ const onRefresh = async () => {
                   lineHeight: theme.lineHeight.b3,
                 }}
               >
-                Note: Security alerts cannot be disabled and will always be sent for your account safety.
+                Note: Security alerts cannot be
+                disabled and will always be sent for
+                your account safety.
               </Text>
             </View>
           </>

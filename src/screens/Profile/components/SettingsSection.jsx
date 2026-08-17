@@ -133,13 +133,13 @@ const SettingsSection = () => {
 
   }, [
 
-     settings,
+    settings,
 
-  loadingKey,
+    loadingKey,
 
-  settingsLoading,
+    settingsLoading,
 
-  settingsisFetching,
+    settingsisFetching,
 
   ]);
 
@@ -315,7 +315,7 @@ const SettingsSection = () => {
               type="toggle"
               value={biometric}
               loading={loadingKey === "biometricEnabled"}
-              disabled={loadingKey?true :false  || settingsLoading || settingsisFetching}
+              disabled={loadingKey ? true : false || settingsLoading || settingsisFetching}
               onToggle={(value) =>
                 handleSettingToggle(
                   "biometricEnabled",
@@ -330,7 +330,7 @@ const SettingsSection = () => {
               type="toggle"
               value={emailNotification}
               loading={loadingKey === "emailNotification"}
-              disabled={loadingKey?true :false   || settingsLoading || settingsisFetching}
+              disabled={loadingKey ? true : false || settingsLoading || settingsisFetching}
               onToggle={(value) =>
                 handleSettingToggle(
                   "emailNotification",
@@ -339,7 +339,7 @@ const SettingsSection = () => {
                 )
               }
             />
-            <SettingItem
+            {/* <SettingItem
               title="Push Notification"
               icon={Bell}
               type="toggle"
@@ -353,16 +353,16 @@ const SettingsSection = () => {
                   setPushNotification
                 )
               }
-            />
+            /> */}
 
-  <SettingItem
-        title="Notification Preferences"
-        icon={Bell}
-        type="button"
-        onPress={() =>
-          navigation.navigate("notification-preferences-screen")
-        }
-      />
+            <SettingItem
+              title="Notification Preferences"
+              icon={Bell}
+             
+              onPress={() =>
+                navigation.navigate("notification-preferences-screen")
+              }
+            />
 
           </>}
         <SettingItem
