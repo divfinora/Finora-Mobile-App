@@ -358,12 +358,19 @@ const SettingsSection = () => {
             <SettingItem
               title="Notification Preferences"
               icon={Bell}
-             
+
               onPress={() =>
                 navigation.navigate("notification-preferences-screen")
               }
             />
+            <SettingItem
+              title="Show All Notification"
+              icon={Bell}
 
+              onPress={() =>
+                navigation.navigate("get-notification-screen")
+              }
+            />
           </>}
         <SettingItem
           title="Change Pin"

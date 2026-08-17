@@ -1,61 +1,101 @@
 import React from "react";
 import { View } from "react-native";
-import { theme } from "../../../../theme/index.js";
+
+ 
+import { theme } from "../../../../theme";
+import ShimmerPlaceholder from "../../../../components/common/Loader/ShimmerPlaceholder";
 
 const NotificationSkeleton = () => {
-  return (
-    <View style={{ paddingTop: theme.spacing.sm, gap: theme.spacing.lg }}>
-      {[1, 2, 3, 4, 5].map((item) => (
+  const SkeletonCard = () => (
+    <View
+      style={{
+        height: 116,
+
+        marginBottom: 14,
+
+        paddingHorizontal: 16,
+        paddingVertical: 16,
+
+        borderRadius: 16,
+
+        backgroundColor: "#FFFFFF",
+
+        borderWidth: 1,
+        borderColor: "#F7D7BE",
+      }}
+    >
+      <View
+        style={{
+          flexDirection: "row",
+          alignItems: "flex-start",
+        }}
+      >
+        {/* ICON */}
+        <ShimmerPlaceholder
+          width={48}
+          height={48}
+          borderRadius={24}
+        />
+
+        {/* CONTENT */}
         <View
-          key={item}
           style={{
-            backgroundColor: theme.colors.gray100,
-            borderRadius: theme.radius.xl,
-            padding: theme.spacing.lg,
-            flexDirection: "row",
-            alignItems: "flex-start",
+            flex: 1,
+            marginLeft: 16,
           }}
         >
-          <View
-            style={{
-              width: 44,
-              height: 44,
-              borderRadius: theme.radius.circle,
-              backgroundColor: theme.colors.gray200,
-              marginRight: theme.spacing.md,
-            }}
+          <ShimmerPlaceholder
+            width="65%"
+            height={16}
+            borderRadius={6}
           />
-          <View style={{ flex: 1 }}>
-            <View
-              style={{
-                width: "50%",
-                height: 16,
-                borderRadius: theme.radius.sm,
-                backgroundColor: theme.colors.gray200,
-                marginBottom: theme.spacing.sm,
-              }}
-            />
-            <View
-              style={{
-                width: "85%",
-                height: 14,
-                borderRadius: theme.radius.sm,
-                backgroundColor: theme.colors.gray200,
-                marginBottom: theme.spacing.md,
-              }}
-            />
-            <View
-              style={{
-                width: "30%",
-                height: 12,
-                borderRadius: theme.radius.sm,
-                backgroundColor: theme.colors.gray200,
-                alignSelf: "flex-end",
-              }}
-            />
-          </View>
+
+          <View style={{ height: 9 }} />
+
+          <ShimmerPlaceholder
+            width="90%"
+            height={12}
+            borderRadius={6}
+          />
+
+          <View style={{ height: 6 }} />
+
+          <ShimmerPlaceholder
+            width="70%"
+            height={12}
+            borderRadius={6}
+          />
         </View>
-      ))}
+      </View>
+
+      {/* TIME */}
+      <View
+        style={{
+          position: "absolute",
+          right: 16,
+          bottom: 12,
+        }}
+      >
+        <ShimmerPlaceholder
+          width={58}
+          height={10}
+          borderRadius={5}
+        />
+      </View>
+    </View>
+  );
+
+  return (
+    <View
+      style={{
+        paddingTop: 8,
+      }}
+    >
+      <SkeletonCard />
+      <SkeletonCard />
+      <SkeletonCard />
+      <SkeletonCard />
+      <SkeletonCard />
     </View>
   );
 };

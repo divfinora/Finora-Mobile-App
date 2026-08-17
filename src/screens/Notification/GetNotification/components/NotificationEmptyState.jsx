@@ -1,54 +1,139 @@
 import React from "react";
-import { View, Text } from "react-native";
+import {
+  View,
+  Text,
+} from "react-native";
 import { BellOff } from "lucide-react-native";
-import { theme } from "../../../../theme/index.js";
 
-const NotificationEmptyState = () => {
+import { theme } from "../../../../theme";
+
+const NotificationEmptyState = ({
+  isUnread = false,
+}) => {
   return (
     <View
       style={{
         flex: 1,
+
         alignItems: "center",
         justifyContent: "center",
-        paddingTop: theme.spacing.screen,
-        paddingHorizontal: theme.spacing.xxxl,
+
+        paddingHorizontal: 30,
+
+        paddingBottom: 80,
       }}
     >
+      {/* =========================================
+          ICON
+      ========================================= */}
+
       <View
         style={{
-          width: 84,
-          height: 84,
-          borderRadius: theme.radius.circle,
-          backgroundColor: theme.colors.primary100,
+          width: 80,
+          height: 80,
+
+          borderRadius: 40,
+
           alignItems: "center",
           justifyContent: "center",
-          marginBottom: theme.spacing.xl,
+
+          backgroundColor: "#FFF0E4",
         }}
       >
-        <BellOff size={theme.iconSize.xl} color={theme.colors.primary700} />
+        <BellOff
+          size={38}
+          color="#FF671D"
+          strokeWidth={1.8}
+        />
       </View>
+
+      {/* =========================================
+          TITLE
+      ========================================= */}
+
       <Text
         style={{
-          fontSize: theme.typography.h3,
-          fontFamily: theme.fonts.bold,
-          color: theme.colors.gray900,
-          marginBottom: theme.spacing.sm,
+          marginTop: 34,
+
+          fontSize: 20,
+          lineHeight: 26,
+
+          fontFamily:
+            theme.fonts.headingSemiBold,
+
+          color: "#252B3A",
+
           textAlign: "center",
         }}
       >
-        No Notifications
+        {isUnread
+          ? "No Unread Notifications"
+          : "No Notifications"}
       </Text>
-      <Text
-        style={{
-          fontSize: theme.typography.b2,
-          fontFamily: theme.fonts.regular,
-          color: theme.colors.gray500,
-          textAlign: "center",
-          lineHeight: theme.lineHeight.b2,
-        }}
-      >
-        You're all caught up!{"\n"}We'll notify you when there's an update
-      </Text>
+
+      {/* =========================================
+          DESCRIPTION
+      ========================================= */}
+
+      {isUnread ? (
+        <Text
+          style={{
+            marginTop: 12,
+
+            fontSize: 14,
+            lineHeight: 22,
+
+            fontFamily:
+              theme.fonts.regular,
+
+            color: "#7A8194",
+
+            textAlign: "center",
+          }}
+        >
+          You're all caught up!
+        </Text>
+      ) : (
+        <View
+          style={{
+            marginTop: 12,
+
+            alignItems: "center",
+          }}
+        >
+          <Text
+            style={{
+              fontSize: 14,
+              lineHeight: 22,
+
+              fontFamily:
+                theme.fonts.regular,
+
+              color: "#7A8194",
+
+              textAlign: "center",
+            }}
+          >
+            You're all caught up!
+          </Text>
+
+          <Text
+            style={{
+              fontSize: 14,
+              lineHeight: 22,
+
+              fontFamily:
+                theme.fonts.regular,
+
+              color: "#7A8194",
+
+              textAlign: "center",
+            }}
+          >
+            We'll notify you when there's an update
+          </Text>
+        </View>
+      )}
     </View>
   );
 };
