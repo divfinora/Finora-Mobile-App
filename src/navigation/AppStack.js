@@ -27,6 +27,8 @@ import ApplyVehicleLoan from '../screens/Loan/LoanApply/VehicleLoan/ApplyVehicle
 import ApplyAgricultureLoan from '../screens/Loan/LoanApply/AgricultureLoan/ApplyAgricultureLoan.jsx'
 import ApplyRenovationLoan from '../screens/Loan/LoanApply/RenovationLoan/ApplyRenovationLoan.jsx'
 import SingleLoanDetailsScreen from '../screens/GetLoan/SingleLoanDetails/SingleLoanDetailsScreen.jsx'
+import NotificationPreferencesScreen from '../screens/Notification/NotificationPreferencesScreen/NotificationPreferencesScreen.jsx'
+import GetNotificationScreen from '../screens/Notification/GetNotification/GetNotificationScreen.jsx';
 const Stack = createNativeStackNavigator();
 
 const AppStack = () => {
@@ -137,20 +139,29 @@ const AppStack = () => {
         name="apply-vechicle-loan"
         component={ApplyVehicleLoan}
       />
-        <Stack.Screen
+      <Stack.Screen
         name="apply-agriculture-loan"
         component={ApplyAgricultureLoan}
       />
 
-     <Stack.Screen
+      <Stack.Screen
         name="apply-renovation-loan"
         component={ApplyRenovationLoan}
       />
-     <Stack.Screen
+      <Stack.Screen
         name="get-single-loan-detail"
         component={SingleLoanDetailsScreen}
       />
-      
+      <Stack.Screen
+        name="notification-preferences-screen"
+        component={NotificationPreferencesScreen}
+      />
+
+      <Stack.Screen
+        name="get-notification-screen"
+        component={GetNotificationScreen}
+      />
+
     </Stack.Navigator>
   );
 };

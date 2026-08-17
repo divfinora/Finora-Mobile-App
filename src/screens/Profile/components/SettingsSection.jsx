@@ -355,7 +355,14 @@ const SettingsSection = () => {
               }
             />
 
-
+  <SettingItem
+        title="Notification Preferences"
+        icon={Bell}
+        type="button"
+        onPress={() =>
+          navigation.navigate("notification-preferences-screen")
+        }
+      />
 
           </>}
         <SettingItem

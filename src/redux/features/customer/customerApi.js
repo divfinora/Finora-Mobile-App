@@ -2,24 +2,17 @@ import { baseApi } from "../../api/baseApi";
 
 export const customerApi = baseApi.injectEndpoints({
   endpoints: (builder) => ({
-
     /* ==========================
-       PERSONAL DETAILS
+       PERSONAL DETAILS & KYC
     ========================== */
-
     personalDetailsVerification: builder.mutation({
       query: (body) => ({
         url: "/ekyc/v1/kyc",
         method: "POST",
         body,
       }),
-      invalidatesTags: ["GetCustomerKYCdetails", 'CustomerKYCVerificationDoneAndNotDone'],
-
+      invalidatesTags: ["GetCustomerKYCdetails", "CustomerKYCVerificationDoneAndNotDone"],
     }),
-
-    /* ==========================
-       ADD BANK ACCOUNT
-    ========================== */
 
     addBankAccount: builder.mutation({
       query: (body) => ({
@@ -27,12 +20,8 @@ export const customerApi = baseApi.injectEndpoints({
         method: "POST",
         body,
       }),
-      invalidatesTags: ["GetCustomerKYCdetails", 'CustomerKYCVerificationDoneAndNotDone'],
+      invalidatesTags: ["GetCustomerKYCdetails", "CustomerKYCVerificationDoneAndNotDone"],
     }),
-
-    /* ==========================
-       VERIFY AADHAAR
-    ========================== */
 
     verifyAadhaar: builder.mutation({
       query: (body) => ({
@@ -40,12 +29,8 @@ export const customerApi = baseApi.injectEndpoints({
         method: "POST",
         body,
       }),
-      invalidatesTags: ["GetCustomerKYCdetails", 'CustomerKYCVerificationDoneAndNotDone'],
+      invalidatesTags: ["GetCustomerKYCdetails", "CustomerKYCVerificationDoneAndNotDone"],
     }),
-
-    /* ==========================
-       VERIFY PAN
-    ========================== */
 
     verifyPan: builder.mutation({
       query: (body) => ({
@@ -53,94 +38,75 @@ export const customerApi = baseApi.injectEndpoints({
         method: "POST",
         body,
       }),
-      invalidatesTags: ["GetCustomerKYCdetails", 'CustomerKYCVerificationDoneAndNotDone'],
+      invalidatesTags: ["GetCustomerKYCdetails", "CustomerKYCVerificationDoneAndNotDone"],
     }),
 
     CustomerKYCVerificationDoneAndNotDone: builder.query({
-      query: (body) => ({
+      query: () => ({
         url: "/User/v1/get-verification",
         method: "GET",
-        body,
       }),
       providesTags: ["CustomerKYCVerificationDoneAndNotDone"],
     }),
+
     GetCustomerKYCdetails: builder.query({
-      query: (body) => ({
+      query: () => ({
         url: "/User/v1/get-kyc",
         method: "GET",
-        body,
       }),
       providesTags: ["GetCustomerKYCdetails"],
     }),
 
-
     getSettings: builder.query({
-
       query: () => ({
         url: "/system/bio-metric",
         method: "GET",
       }),
-
       providesTags: ["Settings"],
-
     }),
 
     getupdateSettings: builder.mutation({
-
       query: (body) => ({
         url: "/system/add-bio",
         method: "PATCH",
         body,
       }),
-
       invalidatesTags: ["Settings"],
-
     }),
 
-
-
-    // Apply Loan ----- Start  Api
-
+    /* ==========================
+       LOAN APIs
+    ========================== */
     GetAllLoan: builder.query({
-
       query: () => ({
         url: "/Get-Loan/get",
         method: "GET",
       }),
-
       providesTags: ["Get-Loan"],
-
     }),
 
     applyLoan: builder.mutation({
-
       query: (body) => ({
-
         url: "/applyloan/apply",
-
         method: "POST",
-
         body,
-
       }),
-
     }),
-    // App Loan --- End Api
-
 
     getMyLoans: builder.query({
       query: () => ({
-        url: "/applyloan/my-loans",  
-        method: "GET", //[cite: 3]
+        url: "/applyloan/my-loans",
+        method: "GET",
       }),
       providesTags: ["MyLoans"],
     }),
+
     getLoanApplicationPrefill: builder.query({
-  query: () => ({
-    url: "/applyloan/application/prefill",
-    method: "GET",
-  }),
-}),
+      query: () => ({
+        url: "/applyloan/application/prefill",
+        method: "GET",
+      }),
+    }),
 
     getSingleLoanDetails: builder.query({
       query: (loanId) => ({
@@ -150,7 +116,93 @@ export const customerApi = baseApi.injectEndpoints({
       providesTags: (result, error, loanId) => [{ type: "LoanDetails", id: loanId }],
     }),
 
-    
+    /* ==========================
+       NOTIFICATION PREFERENCES (UPDATED)
+    ========================== */
+    getNotificationPreferences: builder.query({
+      query: () => ({
+        url: "/notification-permission/get",
+        method: "GET",
+      }),
+      providesTags: ["NotificationPreferences"],
+    }),
+
+    updateNotificationPreferences: builder.mutation({
+      query: (body) => ({
+        url: "/notification-permission/enable",
+        method: "PATCH",
+        body,
+      }),
+      invalidatesTags: ["NotificationPreferences"],
+    }),
+
+    enableAllNotificationPreferences: builder.mutation({
+      query: () => ({
+        url: "/notification-permission/enable-all",
+        method: "PATCH",
+      }),
+      invalidatesTags: ["NotificationPreferences"],
+    }),
+
+    disableAllNotificationPreferences: builder.mutation({
+      query: () => ({
+        url: "/notification-permission/disable-all",
+        method: "PATCH",
+      }),
+      invalidatesTags: ["NotificationPreferences"],
+    }),
+
+    /* ==========================
+       NOTIFICATIONS SYSTEM
+    ========================== */
+    getAllNotifications: builder.query({
+      query: (params) => ({
+        url: "/notification/get-all-notification",
+        method: "GET",
+        params,
+      }),
+      providesTags: ["Notifications"],
+    }),
+
+    getUnreadNotificationCount: builder.query({
+      query: () => ({
+        url: "/notification/unread-count",
+        method: "GET",
+      }),
+      providesTags: ["UnreadNotificationCount"],
+    }),
+
+    markNotificationAsRead: builder.mutation({
+      query: (id) => ({
+        url: `/notification/${id}/read`,
+        method: "PATCH",
+      }),
+      invalidatesTags: ["Notifications", "UnreadNotificationCount"],
+    }),
+
+    markAllNotificationsAsRead: builder.mutation({
+      query: () => ({
+        url: "/notification/read-all",
+        method: "PATCH",
+      }),
+      invalidatesTags: ["Notifications", "UnreadNotificationCount"],
+    }),
+
+    deleteNotification: builder.mutation({
+      query: (id) => ({
+        url: `/notification/${id}`,
+        method: "DELETE",
+      }),
+      invalidatesTags: ["Notifications", "UnreadNotificationCount"],
+    }),
+
+    deleteAllNotifications: builder.mutation({
+      query: () => ({
+        url: "/notification/",
+        method: "DELETE",
+      }),
+      invalidatesTags: ["Notifications", "UnreadNotificationCount"],
+    }),
   }),
 });
 
@@ -165,8 +217,21 @@ export const {
   useGetAllLoanQuery,
   useGetupdateSettingsMutation,
   useApplyLoanMutation,
-  useGetMyLoansQuery ,
+  useGetMyLoansQuery,
   useGetSingleLoanDetailsQuery,
-    useGetLoanApplicationPrefillQuery,
-  
+  useGetLoanApplicationPrefillQuery,
+
+  // Notification Preferences Hooks
+  useGetNotificationPreferencesQuery,
+  useUpdateNotificationPreferencesMutation,
+  useEnableAllNotificationPreferencesMutation,
+  useDisableAllNotificationPreferencesMutation,
+
+  // In-App Notification Hooks
+  useGetAllNotificationsQuery,
+  useGetUnreadNotificationCountQuery,
+  useMarkNotificationAsReadMutation,
+  useMarkAllNotificationsAsReadMutation,
+  useDeleteNotificationMutation,
+  useDeleteAllNotificationsMutation,
 } = customerApi;

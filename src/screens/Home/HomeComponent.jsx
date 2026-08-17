@@ -84,7 +84,9 @@ const HomeComponent = () => {
           <HeaderCard 
             userName ={user?.fullName} 
             // profileImage ={""} 
-             onNotificationPress={""} 
+             onNotificationPress={()=>{
+              navigation.navigate('get-notification-screen')
+             }} 
            />
 
 
