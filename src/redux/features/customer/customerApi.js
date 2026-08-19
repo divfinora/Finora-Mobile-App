@@ -84,13 +84,30 @@ export const customerApi = baseApi.injectEndpoints({
       }),
       providesTags: ["Get-Loan"],
     }),
-
+    GetLoanProductsByCategory: builder.query({
+      query: (category) => ({
+        url: `/Get-Loan/get/${category}`,
+        method: "GET",
+      }),
+      providesTags: (result, error, category) => [
+        {
+          type: "Get-Loan",
+          id: category,
+        },
+      ],
+    }),
     applyLoan: builder.mutation({
       query: (body) => ({
         url: "/applyloan/apply",
         method: "POST",
         body,
       }),
+        invalidatesTags: [
+    "MyLoans",
+    "LoanDetails",
+    "Notifications",
+    "UnreadNotificationCount",
+  ],
     }),
 
     getMyLoans: builder.query({
@@ -98,7 +115,7 @@ export const customerApi = baseApi.injectEndpoints({
         url: "/applyloan/my-loans",
         method: "GET",
       }),
-      providesTags: ["MyLoans"],
+      providesTags: ["MyLoans" ],
     }),
 
     getLoanApplicationPrefill: builder.query({
@@ -203,6 +220,16 @@ export const customerApi = baseApi.injectEndpoints({
       }),
       invalidatesTags: ["Notifications", "UnreadNotificationCount"],
     }),
+    /* ==========================
+   LOAN DOCUMENT UPLOAD
+========================== */
+    uploadLoanDocuments: builder.mutation({
+      query: (formData) => ({
+        url: "/applyloan/upload-documents",
+        method: "POST",
+        body: formData,
+      }),
+    }),
   }),
 });
 
@@ -220,6 +247,7 @@ export const {
   useGetMyLoansQuery,
   useGetSingleLoanDetailsQuery,
   useGetLoanApplicationPrefillQuery,
+  useGetLoanProductsByCategoryQuery,
 
   // Notification Preferences Hooks
   useGetNotificationPreferencesQuery,
@@ -234,4 +262,5 @@ export const {
   useMarkAllNotificationsAsReadMutation,
   useDeleteNotificationMutation,
   useDeleteAllNotificationsMutation,
+  useUploadLoanDocumentsMutation
 } = customerApi;

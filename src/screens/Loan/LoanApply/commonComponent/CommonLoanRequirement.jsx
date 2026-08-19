@@ -27,7 +27,7 @@ const CommonLoanRequirement = ({ formData, setFormData, errors, setErrors }) => 
 
   const handleAmountSelect = (amount) => {
     handleChange('loanAmount', amount);
-    handleChange('customLoanAmount', '');
+
   };
 
   const inputContainerStyle = {
@@ -91,17 +91,17 @@ fontFamily: theme.fonts.semiBold,
           </View>
         ))}
 
-        <CommonInput
-          placeholder="₹  Enter custom amount"
-          value={formData?.customLoanAmount || ''}
-          onChangeText={(text) => {
-            handleChange('customLoanAmount', text);
-            handleChange('loanAmount', '');
-          }}
-          keyboardType="numeric"
-          error={errors?.loanAmount || errors?.customLoanAmount}
-          inputContainerStyle={inputContainerStyle}
-        />
+     <CommonInput
+  placeholder="Enter custom amount"
+  value={String(formData?.loanAmount || '').replace(/[₹,]/g, '')}
+  onChangeText={(text) => {
+    const numericValue = text.replace(/\D/g, '');
+    handleChange('loanAmount', numericValue);
+  }}
+  keyboardType="numeric"
+  error={errors?.loanAmount}
+  inputContainerStyle={inputContainerStyle}
+/>
       </View>
 
       {/* ===== LOAN TENURE SECTION ===== */}

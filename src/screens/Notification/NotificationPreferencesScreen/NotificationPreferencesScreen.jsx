@@ -38,6 +38,7 @@ import {
   useUpdateNotificationPreferencesMutation,
 } from "../../../redux/features/customer/customerApi.js";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
+import LinearGradient from "react-native-linear-gradient";
 const DEFAULT_PREFERENCES = {
   emiReminders: false,
   paymentAlerts: false,
@@ -125,7 +126,7 @@ const SUMMARY_REPORTS = [
   },
 ];
 
-const NotificationPreferencesScreen = ({navigation}) => {
+const NotificationPreferencesScreen = ({ navigation }) => {
   const [loadingKey, setLoadingKey] = useState("");
   const [filterTab, setFilterTab] = useState("all");
 
@@ -268,138 +269,179 @@ const NotificationPreferencesScreen = ({navigation}) => {
         barStyle="dark-content"
       />
 
+
+
       {/* HEADER */}
 
-     {/* HEADER */}
+      {/* HEADER */}
 
-<View
-  style={{
-    backgroundColor: "#FFF8ED",
-    paddingHorizontal: theme.spacing.xxl,
-    paddingTop: insets.top + theme.spacing.xxxl,
-    paddingBottom:insets.top + theme.spacing.xxl,
-    // height: 100 + insets.top,
-    position: "relative",
-  }}
->
-  <View
-    style={{
-      flexDirection: "row",
-      alignItems: "center",
-    }}
-  >
-    <TouchableOpacity
-      onPress={() => navigation.goBack()}
-      activeOpacity={0.7}
-      style={{
-        width: 32,
-        height: 40,
-        alignItems: "flex-start",
-        justifyContent: "center",
-      }}
-    >
-      <ArrowLeft
-        size={24}
-        color={theme.colors.gray900}
-        strokeWidth={2}
-      />
-    </TouchableOpacity>
-
-    <View
-      style={{
-        marginLeft: 34,
-      }}
-    >
-      <Text
+      <LinearGradient
+        colors={["#FFFFFF", "#FCEDD6"]}
+        start={{ x: 0.5, y: 0 }}
+        end={{ x: 0.5, y: 1 }}
         style={{
-          fontSize: 20,
-          fontFamily: theme.fonts.semiBold,
-          color: theme.colors.gray900,
-          lineHeight: 24,
+          paddingHorizontal: theme.spacing.xxl,
+          paddingTop: insets.top + theme.spacing.xxxl,
+          paddingBottom: insets.top + theme.spacing.xxl,
+          position: "relative",
         }}
       >
-        Notification Preferences
-      </Text>
-
-      <Text
-        style={{
-          fontSize: theme.typography.b3,
-          fontFamily: theme.fonts.medium,
-          color: theme.colors.gray500,
-          marginTop: 3,
-          lineHeight: 16,
-        }}
-      >
-        Manage your alerts and notifications
-      </Text>
-    </View>
-  </View>
-
-  {/* FILTER */}
-
-  <View
-    style={{
-      position: "absolute",
-      left: theme.spacing.xxl,
-      right: theme.spacing.xxl,
-      bottom: -36,
-      height: 56,
-      backgroundColor: theme.colors.white,
-      borderRadius: theme.radius.pill,
-      borderWidth: 1,
-      borderColor: "#A8660B",
-      padding: 4,
-      flexDirection: "row",
-      zIndex: 10,
-    }}
-  >
-    {[
-      {
-        id: "all",
-        label: "All",
-      },
-      {
-        id: "enabled",
-        label: "Enabled",
-      },
-      {
-        id: "disabled",
-        label: "Disabled",
-      },
-    ].map((tab) => {
-      const isActive = filterTab === tab.id;
-
-      return (
-        <TouchableOpacity
-          key={tab.id}
-          onPress={() => setFilterTab(tab.id)}
-          activeOpacity={0.8}
+        <View
           style={{
-            flex: 1,
-            borderRadius: theme.radius.pill,
-            backgroundColor: isActive
-              ? "#A8660B"
-              : "transparent",
+            flexDirection: "row",
             alignItems: "center",
-            justifyContent: "center",
           }}
         >
-          <Text
+          {/* BACK */}
+
+          <TouchableOpacity
+            onPress={() =>
+              navigation.goBack()
+            }
+            activeOpacity={0.7}
             style={{
-              color: isActive
-                ? theme.colors.white
-                : theme.colors.gray700,
-              fontFamily: theme.fonts.semiBold,
-              fontSize: theme.typography.b3,
+              width: 32,
+              height: 40,
+              alignItems: "flex-start",
+              justifyContent: "center",
             }}
           >
-            {tab.label}
-          </Text>
-        </TouchableOpacity>
-      );
-    })}
-  </View>
-</View>
+            <ArrowLeft
+              size={24}
+              color={theme.colors.gray900}
+              strokeWidth={2}
+            />
+          </TouchableOpacity>
+
+          {/* TITLE */}
+
+          <View
+            style={{
+              marginLeft: 34,
+            }}
+          >
+            <Text
+              style={{
+                fontSize: 20,
+                fontFamily:
+                  theme.fonts.semiBold,
+                color:
+                  theme.colors.gray900,
+                lineHeight: 24,
+              }}
+            >
+              Notification Preferences
+            </Text>
+
+            <Text
+              style={{
+                fontSize:
+                  theme.typography.b3,
+                fontFamily:
+                  theme.fonts.medium,
+                color:
+                  theme.colors.gray500,
+                marginTop: 3,
+                lineHeight: 16,
+              }}
+            >
+              Manage your alerts and notifications
+            </Text>
+          </View>
+        </View>
+
+        {/* FILTER */}
+
+        <View
+          style={{
+            position: "absolute",
+
+            left: theme.spacing.xxl,
+            right: theme.spacing.xxl,
+
+            bottom: -36,
+
+            height: 56,
+
+            backgroundColor:
+              theme.colors.white,
+
+            borderRadius:
+              theme.radius.pill,
+
+            borderWidth: 1,
+
+            borderColor: "#A8660B",
+
+            padding: 4,
+
+            flexDirection: "row",
+
+            zIndex: 10,
+          }}
+        >
+          {[
+            {
+              id: "all",
+              label: "All",
+            },
+            {
+              id: "enabled",
+              label: "Enabled",
+            },
+            {
+              id: "disabled",
+              label: "Disabled",
+            },
+          ].map((tab) => {
+            const isActive =
+              filterTab === tab.id;
+
+            return (
+              <TouchableOpacity
+                key={tab.id}
+                onPress={() =>
+                  setFilterTab(tab.id)
+                }
+                activeOpacity={0.8}
+                style={{
+                  flex: 1,
+
+                  borderRadius:
+                    theme.radius.pill,
+
+                  backgroundColor:
+                    isActive
+                      ? "#A8660B"
+                      : "transparent",
+
+                  alignItems:
+                    "center",
+
+                  justifyContent:
+                    "center",
+                }}
+              >
+                <Text
+                  style={{
+                    color: isActive
+                      ? theme.colors.white
+                      : theme.colors.gray700,
+
+                    fontFamily:
+                      theme.fonts.semiBold,
+
+                    fontSize:
+                      theme.typography.b3,
+                  }}
+                >
+                  {tab.label}
+                </Text>
+              </TouchableOpacity>
+            );
+          })}
+        </View>
+      </LinearGradient>
 
       <ScrollView
         showsVerticalScrollIndicator={false}
@@ -413,7 +455,7 @@ const NotificationPreferencesScreen = ({navigation}) => {
         }
         contentContainerStyle={{
           paddingHorizontal: theme.spacing.xxl,
-          paddingTop: 48,
+          paddingTop: 60,
           paddingBottom: theme.spacing.massive,
         }}
       >

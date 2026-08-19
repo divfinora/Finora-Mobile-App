@@ -29,6 +29,8 @@ import ApplyRenovationLoan from '../screens/Loan/LoanApply/RenovationLoan/ApplyR
 import SingleLoanDetailsScreen from '../screens/GetLoan/SingleLoanDetails/SingleLoanDetailsScreen.jsx'
 import NotificationPreferencesScreen from '../screens/Notification/NotificationPreferencesScreen/NotificationPreferencesScreen.jsx'
 import GetNotificationScreen from '../screens/Notification/GetNotification/GetNotificationScreen.jsx';
+import LoanCategoryScreen
+  from "../screens/Loan/LoanProducts/LoanCategoryScreen.jsx";
 const Stack = createNativeStackNavigator();
 
 const AppStack = () => {
@@ -161,6 +163,10 @@ const AppStack = () => {
         name="get-notification-screen"
         component={GetNotificationScreen}
       />
+      <Stack.Screen
+  name="loan-category-screen"
+  component={LoanCategoryScreen}
+/>
 
     </Stack.Navigator>
   );

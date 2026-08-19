@@ -1,7 +1,7 @@
 import React, { useState, useCallback } from 'react';
 import { View, ScrollView, KeyboardAvoidingView, Platform, BackHandler } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { useFocusEffect } from '@react-navigation/native';
+import { useFocusEffect, useRoute } from '@react-navigation/native';
 
 // API Hooks & Custom Mutation Hook
 import { useApplyLoanMutation } from '../../../../redux/features/customer/customerApi.js'; // path match kar lein
@@ -22,6 +22,8 @@ import LoanRequirement from './components/LoanRequirement.jsx';
 import DocumentUpload from './components/DocumentUpload.jsx';
 
 import { theme } from '../../../../theme/index.js';
+import { useUploadLoanDocumentsMutation } from "../../../../redux/features/customer/customerApi.js"
+import {resetToTab}  from '../../../../navigation/navigationReset.js'
 
 // ==========================================
 // INDIVIDUAL STEP VALIDATION FUNCTIONS
@@ -76,11 +78,36 @@ const validateStep5 = (formData) => {
   return errors;
 };
 
+// const validateStep6 = (formData) => {
+//   const errors = {};
+//   if (!formData?.documentUploaded) errors.documentUploaded = 'Please upload all required documents';
+//   return {};
+// };
 const validateStep6 = (formData) => {
   const errors = {};
-  if (!formData?.documentUploaded) errors.documentUploaded = 'Please upload all required documents';
-  return {};
-};
+
+  const requiredDocuments = [
+    "aadharCard",
+    "panCard",
+    "addressProof",
+    "incomeProof",
+    "bankStatement",
+  ];
+
+  const documents = formData?.documents || [];
+
+  requiredDocuments.forEach((field) => {
+    const document = documents.find(
+      (item) => item?.type === field
+    );
+
+    if (!document?.files?.length) {
+      errors[field] = "Please upload this document";
+    }
+  });
+
+  return errors;
+};;
 
 const stepValidators = {
   1: validateStep1,
@@ -96,14 +123,63 @@ const stepValidators = {
 // ==========================================
 
 const ApplyGoldLoan = ({ navigation }) => {
-  const [currentStep, setCurrentStep] = useState(1);
-  const [formData, setFormData] = useState({});
-  const [errors, setErrors] = useState({});
 
+
+  const [currentStep, setCurrentStep] = useState(1);
+  const [formData, setFormData] = useState({
+    fullName: "Rahul Sharma",
+    mobileNumber: "9876543210",
+    email: "rahul.sharma@gmail.com",
+
+    aadhaarNumber: "990348903403",
+    aadharNumber: "990348903403",
+
+    employmentType: "SALARIED",
+    monthlyIncome: "55000",
+    existingEmi: "5000",
+    occupationDetails: "Software Engineer",
+
+    goldType: "GOLD_JEWELLERY",
+    goldWeight: "35",
+    goldPurity: "22K",
+    ornamentDescription:
+      "2 gold chains, 1 gold ring and 1 bracelet",
+
+    loanAmount: "200000",
+    tenure: 12,
+
+    repaymentMethod: "monthly_emi",
+    interestType: "fixed",
+
+    termsAccepted: true,
+    privacyConsent: true,
+
+    documents: [],
+  });
+  console.log(formData, "formdat")
+
+  const [errors, setErrors] = useState({});
+  const route = useRoute()
+  const product =
+    route?.params?.product;
+
+  const productId =
+    route?.params?.productId;
   const totalSteps = 6;
 
   // RTK Query & Mutation Helper
-  const [applyLoan, { isLoading }] = useApplyLoanMutation();
+  const [applyLoan, { isLoading: isApplyingLoan, }] = useApplyLoanMutation();
+  const [
+    uploadLoanDocuments,
+    {
+      isLoading: isUploadingDocuments,
+    },
+  ] = useUploadLoanDocumentsMutation();
+
+  const isLoading =
+    isApplyingLoan ||
+    isUploadingDocuments;
+
   const { handleMutation } = useHandleMutation();
 
   // Back Button Logic
@@ -147,35 +223,257 @@ const ApplyGoldLoan = ({ navigation }) => {
 
   // Submit Application API Call
   const submitApplication = async () => {
-    const payload = {
-      loanType: 'GOLD_LOAN',
-      ...formData,
+
+    // =====================================================
+    // DOCUMENT ID MAPPING
+    // =====================================================
+
+    const documentIdMap = {
+      aadharCard:
+        "6a4b57ab1f72b0160191314d",
+
+      panCard:
+        "6a4b57ab1f72b0160191314c",
+
+      addressProof:
+        "6a7c13541a8edbe134a0b670",
+
+      incomeProof:
+        "6a7c13541a8edbe134a0b671",
+
+      bankStatement:
+        "6a4b57ab1f72b0160191314f",
     };
 
+
+    // =====================================================
+    // CONVERT DOCUMENTS
+    // =====================================================
+    //
+    // formData:
+    //
+    // documents: [
+    //   {
+    //     type: "aadharCard",
+    //     files: [
+    //       { url: "AADHAAR_URL_1" },
+    //       { url: "AADHAAR_URL_2" }
+    //     ]
+    //   }
+    // ]
+    //
+    // Backend:
+    //
+    // documents: [
+    //   {
+    //     document: "AADHAAR_ID",
+    //     file: "AADHAAR_URL_1"
+    //   },
+    //   {
+    //     document: "AADHAAR_ID",
+    //     file: "AADHAAR_URL_2"
+    //   }
+    // ]
+    //
+    // =====================================================
+
+    const documents = (
+      formData?.documents || []
+    ).flatMap(
+      (document) => {
+
+        const documentId =
+          documentIdMap?.[
+          document?.type
+          ];
+
+
+        // -----------------------------------------------
+        // DOCUMENT ID NAHI MILI
+        // -----------------------------------------------
+
+        if (!documentId) {
+          return [];
+        }
+
+
+        // -----------------------------------------------
+        // EVERY FILE = ONE OBJECT
+        // -----------------------------------------------
+
+        return (
+          document?.files || []
+        )
+          .filter(
+            (file) =>
+              file?.url
+          )
+          .map(
+            (file) => ({
+
+              document:
+                documentId,
+
+              file:
+                file.url,
+
+            })
+          );
+
+      }
+    );
+
+
+    // =====================================================
+    // FINAL PAYLOAD
+    // =====================================================
+
+    const payload = {
+
+      loanType:
+        "GOLD_LOAN",
+
+      productId:
+        productId,
+
+
+      // ===================================================
+      // FORM DATA
+      // ===================================================
+
+      ...formData,
+
+
+      // ===================================================
+      // NUMBERS
+      // ===================================================
+
+      amount:
+        Number(
+          formData?.loanAmount || 0
+        ),
+
+      tenure:
+        Number(
+          formData?.tenure || 0
+        ),
+
+      goldWeight:
+        Number(
+          formData?.goldWeight || 0
+        ),
+
+      monthlyIncome:
+        Number(
+          formData?.monthlyIncome || 0
+        ),
+
+      existingEmi:
+        Number(
+          formData?.existingEmi || 0
+        ),
+
+
+      // ===================================================
+      // IMPORTANT
+      // BACKEND DOCUMENT FORMAT
+      // ===================================================
+
+      documents,
+
+    };
+
+
+
+
+    // =====================================================
+    // LOG
+    // =====================================================
+
+    console.log(
+      "GOLD LOAN PAYLOAD:",
+      JSON.stringify(
+        payload,
+        null,
+        2
+      )
+    );
+
+
+    console.log(
+      "GOLD LOAN DOCUMENTS:",
+      JSON.stringify(
+        documents,
+        null,
+        2
+      )
+    );
+
+
+    // =====================================================
+    // API CALL
+    // =====================================================
+
     await handleMutation({
-      apiFunc: applyLoan,
-      params: payload,
-      showSuccess: true,
-      customSuccessMsg: 'Gold Loan application submitted successfully!',
-      showError: true,
-      onSuccess: (res) => {
-        // Application submit hone ke baad redirect karein
-        navigation.navigate('MyLoans'); 
+
+      apiFunc:
+        applyLoan,
+
+      params:
+        payload,
+
+      showSuccess:
+        true,
+
+      customSuccessMsg:
+        "Gold Loan application submitted successfully!",
+
+      showError:
+        true,
+
+      onSuccess: (
+        response
+      ) => {
+
+        console.log(
+          "Gold Loan Response:",
+          response
+        );
+
+        resetToTab(navigation, "History")
+
+
       },
+
     });
+
   };
 
   // Handle Next / Submit Action
   const handleNext = () => {
-    const isValid = validateCurrentStep();
-    if (!isValid) return;
+
+    const isValid =
+      validateCurrentStep();
+
+    if (!isValid) {
+      return;
+    }
 
     if (currentStep < totalSteps) {
-      setCurrentStep((prev) => prev + 1);
+
+      setCurrentStep(
+        (prev) => prev + 1
+      );
+
       setErrors({});
-    } else {
-      submitApplication();
+
+      return;
     }
+
+    // STEP 6
+    // SUBMIT API
+
+    submitApplication();
   };
 
   const renderStep = () => {
@@ -214,16 +512,35 @@ const ApplyGoldLoan = ({ navigation }) => {
         <View
           style={{
             padding: theme.spacing.lg,
-            backgroundColor: theme.colors.white,
-            borderTopWidth: theme.borderWidth.thin,
-            borderTopColor: theme.colors.divider,
+
+            backgroundColor:
+              theme.colors.white,
+
+            borderTopWidth:
+              theme.borderWidth.thin,
+
+            borderTopColor:
+              theme.colors.divider,
           }}
         >
           <CommonButton
-            title={currentStep === totalSteps ? 'Submit Application' : 'Continue'}
-            onPress={handleNext}
-            loading={isLoading}
-            disabled={isLoading}
+            title={
+              currentStep === totalSteps
+                ? "Submit Application"
+                : "Continue"
+            }
+
+            onPress={
+              handleNext
+            }
+
+            loading={
+              isApplyingLoan
+            }
+
+            disabled={
+              isApplyingLoan
+            }
           />
         </View>
       </KeyboardAvoidingView>

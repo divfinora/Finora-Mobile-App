@@ -33,7 +33,14 @@ const REPAYMENT_METHODS = [
     description: 'Monthly interest + principal at end',
   },
 ];
-
+const TENURE_OPTIONS = [
+  { id: 3, title: '3 Months' },
+  { id: 6, title: '6 Months' },
+  { id: 12, title: '12 Months' },
+  { id: 18, title: '18 Months' },
+  { id: 24, title: '24 Months' },
+  { id: 36, title: '36 Months' },
+];
 const LoanRequirement = ({ formData, setFormData, errors, setErrors }) => {
   const handleChange = (field, value) => {
     setFormData((prev) => ({
@@ -247,6 +254,122 @@ const LoanRequirement = ({ formData, setFormData, errors, setErrors }) => {
         )}
       </View>
 
+ <View
+        style={{
+          marginBottom: theme.spacing.lg,
+        }}
+      >
+        <Text
+          style={{
+            fontSize: theme.typography.b1,
+            fontFamily: theme.fonts.medium,
+            color: theme.colors.gray700,
+            marginBottom: theme.spacing.sm,
+          }}
+        >
+          Loan Tenure{" "}
+          <Text style={{ color: theme.colors.error }}>
+            *
+          </Text>
+        </Text>
+
+        {TENURE_OPTIONS.map((item) => {
+
+          const isSelected =
+            Number(formData?.tenure) === item.id;
+
+          return (
+            <TouchableOpacity
+              key={item.id}
+              activeOpacity={0.8}
+              onPress={() =>
+                handleChange("tenure", item.id)
+              }
+              style={{
+                flexDirection: "row",
+                alignItems: "center",
+
+                backgroundColor: "#FFFFFF",
+
+                borderWidth:
+                  isSelected ? 1.5 : 0.3,
+
+                borderColor:
+                  isSelected
+                    ? theme.colors.primary500
+                    : "#48484a58",
+
+                borderRadius: 16,
+
+                padding: 16,
+
+                marginBottom:
+                  theme.spacing.sm,
+              }}
+            >
+
+              <View
+                style={{
+                  width: 22,
+                  height: 22,
+                  borderRadius: 6,
+
+                  borderWidth:
+                    isSelected ? 0 : 1.5,
+
+                  borderColor: "#94A3B8",
+
+                  backgroundColor:
+                    isSelected
+                      ? theme.colors.primary500
+                      : "transparent",
+
+                  justifyContent: "center",
+                  alignItems: "center",
+
+                  marginRight: 14,
+                }}
+              >
+                {isSelected && (
+                  <Text
+                    style={{
+                      color: "#FFFFFF",
+                      fontSize: 12,
+                      fontWeight: "bold",
+                    }}
+                  >
+                    ✓
+                  </Text>
+                )}
+              </View>
+
+              <Text
+                style={{
+                  fontSize: 15,
+                  fontFamily: theme.fonts.bold,
+                  color: theme.colors.text,
+                }}
+              >
+                {item.title}
+              </Text>
+
+            </TouchableOpacity>
+          );
+        })}
+
+        {errors?.tenure && (
+          <Text
+            style={{
+              color: theme.colors.error,
+              fontSize: 12,
+              marginTop: 4,
+            }}
+          >
+            {errors.tenure}
+          </Text>
+        )}
+
+      </View>
       {/* ===== Interest Rate Card ===== */}
       <View
         style={{
@@ -280,6 +403,10 @@ const LoanRequirement = ({ formData, setFormData, errors, setErrors }) => {
           • Our competitive interest rates start from 0.75% per month. Final rate depends on loan amount, tenure, and your profile.
         </Text>
       </View>
+
+      {/* ===== LOAN TENURE SECTION ===== */}
+
+     
     </View>
   );
 };

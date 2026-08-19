@@ -21,18 +21,18 @@ import { useNavigation } from '@react-navigation/native'
 import { theme } from "../../../theme";
 
 // Fake/Dummy Loan Data
-const FAKE_LOANS = [
-    { _id: "1", name: "Personal Loan", maxAmount: 1000000, processingType: "MANUAL" },
-    { _id: "2", name: "Gold Loan", maxAmount: 1000000, processingType: "MANUAL" },
-    { _id: "3", name: "Instant Loan", maxAmount: 500000, processingType: "INSTANT" },
-    { _id: "4", name: "Vehicle Loan", maxAmount: 1500000, processingType: "MANUAL" },
-    { _id: "5", name: "Property Loan", maxAmount: 5000000, processingType: "MANUAL" },
-    { _id: "6", name: "Education Loan", maxAmount: 2000000, processingType: "MANUAL" },
-    { _id: "7", name: "Agricultural Loan", maxAmount: 1000000, processingType: "MANUAL" },
-    { _id: "8", name: "Constructional Loan", maxAmount: 3000000, processingType: "MANUAL" },
-    { _id: "9", name: "Renovation Loan", maxAmount: 800000, processingType: "MANUAL" },
-    { _id: "10", name: "Commercial Loan", maxAmount: 5000000, processingType: "MANUAL" },
-];
+// const FAKE_LOANS = [
+//     { _id: "1", name: "Personal Loan", maxAmount: 1000000, processingType: "MANUAL" },
+//     { _id: "2", name: "Gold Loan", maxAmount: 1000000, processingType: "MANUAL" },
+//     { _id: "3", name: "Instant Loan", maxAmount: 500000, processingType: "INSTANT" },
+//     { _id: "4", name: "Vehicle Loan", maxAmount: 1500000, processingType: "MANUAL" },
+//     { _id: "5", name: "Property Loan", maxAmount: 5000000, processingType: "MANUAL" },
+//     { _id: "6", name: "Education Loan", maxAmount: 2000000, processingType: "MANUAL" },
+//     { _id: "7", name: "Agricultural Loan", maxAmount: 1000000, processingType: "MANUAL" },
+//     { _id: "8", name: "Constructional Loan", maxAmount: 3000000, processingType: "MANUAL" },
+//     { _id: "9", name: "Renovation Loan", maxAmount: 800000, processingType: "MANUAL" },
+//     { _id: "10", name: "Commercial Loan", maxAmount: 5000000, processingType: "MANUAL" },
+// ];
 
 const LoanSection = () => {
     const navigation = useNavigation()
@@ -54,8 +54,9 @@ const LoanSection = () => {
 
     // Fallback to FAKE_LOANS if API data is empty
     const apiLoans = data?.data || [];
-        //  const loans = apiLoans.length > 0 ? apiLoans : FAKE_LOANS;
-      const loans = FAKE_LOANS;
+    //   const loans = apiLoans.length > 0 ? apiLoans : FAKE_LOANS;
+      const loans =  apiLoans;
+    //   const loans = FAKE_LOANS;
 
     const loading =
         isLoading || isFetching;
@@ -78,66 +79,8 @@ const LoanSection = () => {
 
                 return (
                     <LoanCard
-                        onPress={() => {
-                            // 1. Check if explicit route exists in item
-                            if (item.route) {
-                                navigation.navigate(item.route, { product: item });
-                                return;
-                            }
-
-                            // 2. Dynamic navigation based on loan name or processing type
-                            const loanName = item?.name?.toLowerCase() || '';
-
-                            console.log(loanName, "name")
-
-                            if (loanName.includes('gold')) {
-                                navigation.navigate('apply-gold-loan', { product: item });
-                            } else if (loanName.includes('instant') || item.processingType === 'INSTANT') {
-                                navigation.navigate('apply-instant-loan', { product: item });
-                            } else if (loanName.includes('property')) {
-                                navigation.navigate('apply-property-loan', { product: item });
-                            } else if (loanName.includes('commercial')) {
-                                navigation.navigate('apply-commercial-loan', { product: item });
-                            }
-                            else if (loanName.includes('education')) {
-                                navigation.navigate('apply-education-loan', { product: item });
-                            }
-                            else if (loanName.includes('vehicle')) {
-                                navigation.navigate('apply-vechicle-loan', { product: item });
-                            }
-                            else if (loanName.includes('personal')) {
-                                navigation.navigate('apply-personal-loan', { product: item });
-                            }
-                            else if (loanName.includes('agricultural')) {
-                                navigation.navigate('apply-agriculture-loan', { product: item });
-                            }
-                            else if (loanName.includes('renovation')) {
-                                navigation.navigate('apply-renovation-loan', { product: item });
-                            }
-                            else {
-                                Alert.alert("not avalable navigation")
-                                // Default fallback   navigation.navigate('apply-personal-loan', { product: item });
-                            }
-                        }}
-                        // onPress={() => {
-                        //     console.log(item ,"item")
-
-                        //     if (item.processingType == "INSTANT") {
-                        //         navigation.navigate("apply-instant-loan", {
-                        //             product: item,
-                        //         });
-                        //     } else if (item.processingType == "MANUAL") {
-                        //         // navigation.navigate("apply-property-loan", {
-                        //         //     product: item,
-                        //         // });
-                        //         navigation.navigate("apply-personal-loan", {
-                        //             product: item,
-                        //         });
-                        //     }
-
-
-
-                        // }}
+                       onPress={() => handleLoanPress(item)}
+                         
                         loan={item}
                     />
                 );
@@ -161,6 +104,199 @@ const LoanSection = () => {
         );
 
 
+
+ const handleLoanPress = (item) => {
+    console.log("LOAN API ITEM:", item);
+
+    // ==========================================
+    // 1. MULTIPLE LOANS
+    // ==========================================
+
+    const loanCount =
+        item?.loanCount ??
+        item?.types?.reduce(
+            (total, type) =>
+                total + (type?.loanCount || 0),
+            0
+        );
+
+    if (loanCount > 1) {
+
+        navigation.navigate(
+        "loan-category-screen",
+        {
+            category: item?.category,
+            categoryName: item?.name,
+        }
+    );
+
+        return;
+    }
+
+    // ==========================================
+    // 2. SINGLE LOAN
+    // ==========================================
+
+    const loan = item?.loan;
+
+    if (!loan) {
+        Alert.alert(
+            "Loan Unavailable",
+            "Loan details are not available."
+        );
+        return;
+    }
+
+    // ==========================================
+    // 3. PROCESSING TYPE
+    // ==========================================
+
+    if (loan.processingType === "INSTANT") {
+
+        navigation.navigate(
+            "apply-instant-loan",
+            {
+                product: loan,
+            }
+        );
+
+        return;
+    }
+
+    // ==========================================
+    // 4. MANUAL LOAN
+    // ==========================================
+
+    const category = loan?.category;
+
+   switch (category) {
+
+  case "GOLD":
+
+    navigation.navigate(
+      "apply-gold-loan",
+      {
+        product: loan,
+        productId: loan?._id,
+      }
+    );
+
+    break;
+
+
+  case "PROPERTY":
+
+    navigation.navigate(
+      "apply-property-loan",
+      {
+        product: loan,
+        productId: loan?._id,
+      }
+    );
+
+    break;
+
+
+  case "VEHICLE":
+
+    navigation.navigate(
+      "apply-vechicle-loan",
+      {
+        product: loan,
+        productId: loan?._id,
+      }
+    );
+
+    break;
+
+
+  case "AGRICULTURE":
+
+    navigation.navigate(
+      "apply-agriculture-loan",
+      {
+        product: loan,
+        productId: loan?._id,
+      }
+    );
+
+    break;
+
+
+  case "RENOVATION":
+
+    navigation.navigate(
+      "apply-renovation-loan",
+      {
+        product: loan,
+        productId: loan?._id,
+      }
+    );
+
+    break;
+
+
+  case "COMMERCIAL":
+
+    navigation.navigate(
+      "apply-commercial-loan",
+      {
+        product: loan,
+        productId: loan?._id,
+      }
+    );
+
+    break;
+
+
+  case "PERSONAL":
+
+    navigation.navigate(
+      "apply-personal-loan",
+      {
+        product: loan,
+        productId: loan?._id,
+      }
+    );
+
+    break;
+
+
+  case "EDUCATION":
+
+    navigation.navigate(
+      "apply-education-loan",
+      {
+        product: loan,
+        productId: loan?._id,
+      }
+    );
+
+    break;
+
+
+  case "HOME":
+
+    navigation.navigate(
+      "apply-home-loan",
+      {
+        product: loan,
+        productId: loan?._id,
+      }
+    );
+
+    break;
+
+
+  default:
+
+    Alert.alert(
+      "Loan Unavailable",
+      "This loan is currently not available."
+    );
+
+}
+};
 
     return (
 
