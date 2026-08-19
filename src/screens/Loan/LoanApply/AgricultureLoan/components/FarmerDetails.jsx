@@ -1,5 +1,5 @@
 // components/FarmerDetails.jsx
-import React from 'react';
+import React, { useEffect } from 'react';
 import { View, Text, TouchableOpacity } from 'react-native';
 import { Tractor, CheckCircle2, Circle, ShieldCheck } from 'lucide-react-native';
 
@@ -8,8 +8,21 @@ import CommonInput from '../../../../../components/common/Input/CommonInput';
 import { theme } from '../../../../../theme/index.js';
 
 const FarmerDetails = ({ formData = {}, setFormData, errors = {}, setErrors }) => {
+  
+    useEffect(() => {
+    if (
+      formData?.hasExistingLoans === undefined ||
+      formData?.hasExistingLoans === null
+    ) {
+      setFormData?.((prev) => ({
+        ...prev,
+        hasExistingLoans: false,
+      }));
+    }
+  }, []);
+  
   // Form values with fallbacks
-  const farmerType = formData?.farmerType || 'Marginal Farmer';
+  const farmerType = formData?.farmerType || '';
   const annualIncome = formData?.annualIncome || '';
   const farmingExperience = formData?.farmingExperience || '';
   const hasExistingLoans = formData?.hasExistingLoans ?? false;

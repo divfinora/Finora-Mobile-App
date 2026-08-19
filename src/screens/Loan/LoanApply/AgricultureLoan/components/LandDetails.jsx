@@ -15,10 +15,11 @@ import {
 // Common Components & Theme
 import CommonInput from '../../../../../components/common/Input/CommonInput';
 import { theme } from '../../../../../theme/index.js';
+import CommonArrayDropdown from '../../../../../components/common/Modal/CommonArrayDropdown.jsx'
 
 const LandDetails = ({ formData = {}, setFormData, errors = {}, setErrors }) => {
   // Form values with fallbacks
-  const ownershipType = formData?.ownershipType || 'Leased land';
+  const ownershipType = formData?.ownershipType ||  '';
   const currentCropType = formData?.currentCropType || '';
   const landArea = formData?.landArea || '';
   const irrigationSource = formData?.irrigationSource || '';
@@ -217,14 +218,14 @@ const LandDetails = ({ formData = {}, setFormData, errors = {}, setErrors }) => 
         />
 
         {/* Irrigation Source */}
-        <CommonInput
+        {/* <CommonInput
           label="Irrigation Source"
           placeholder="Select irrigation type"
           value={irrigationSource}
           onChangeText={(text) => updateField('irrigationSource', text)}
           editable={false}
           onPress={() => {
-            /* Open Irrigation Modal / Dropdown */
+       
           }}
           error={errors?.irrigationSource}
           rightIcon={<ChevronDown size={theme.iconSize.sm} color={theme.colors.gray500} />}
@@ -235,7 +236,98 @@ const LandDetails = ({ formData = {}, setFormData, errors = {}, setErrors }) => 
             borderWidth: theme.borderWidth.thin,
             borderColor: theme.colors.gray200,
           }}
-        />
+        /> */}
+        <View
+  style={{
+    marginBottom: 0,
+  }}
+>
+  <Text
+    style={{
+      fontSize: theme.typography.b2,
+      fontFamily: theme.fonts.medium,
+      color: theme.colors.gray700,
+      marginBottom: theme.spacing.sm,
+    }}
+  >
+    Irrigation Source
+  </Text>
+
+  <CommonArrayDropdown
+    data={[
+      "Canal",
+      "Tubewell",
+      "Borewell",
+      "Rainfed",
+      "Other",
+    ]}
+    value={
+      irrigationSource
+        ? irrigationSource === "CANAL"
+          ? "Canal"
+          : irrigationSource === "TUBEWELL"
+          ? "Tubewell"
+          : irrigationSource === "BOREWELL"
+          ? "Borewell"
+          : irrigationSource === "RAINFED"
+          ? "Rainfed"
+          : "Other"
+        : ""
+    }
+    placeholder="Select irrigation type"
+    onChange={(value) => {
+
+      const valueMap = {
+        Canal: "CANAL",
+        Tubewell: "TUBEWELL",
+        Borewell: "BOREWELL",
+        Rainfed: "RAINFED",
+        Other: "OTHER",
+      };
+
+      updateField(
+        "irrigationSource",
+        valueMap[value]
+      );
+
+    }}
+    backgroundColor={
+      theme.colors.white
+    }
+    height={52}
+    borderRadius={
+      theme.radius.lg
+    }
+    borderWidth={
+      theme.borderWidth.thin
+    }
+    borderColor={
+      errors?.irrigationSource
+        ? theme.colors.error
+        : theme.colors.gray200
+    }
+  />
+
+  {errors?.irrigationSource && (
+    <Text
+      style={{
+        marginTop:
+          theme.spacing.xs,
+
+        fontSize:
+          theme.typography.b3,
+
+        color:
+          theme.colors.error,
+
+        fontFamily:
+          theme.fonts.regular,
+      }}
+    >
+      {errors.irrigationSource}
+    </Text>
+  )}
+</View>
       </View>
 
       {/* Accurate Information Banner */}
