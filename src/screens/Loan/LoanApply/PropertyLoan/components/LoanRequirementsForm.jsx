@@ -101,8 +101,8 @@ const LoanRequirementsForm = ({ formData, setFormData, errors, setErrors, produc
         error={errors.loanAmount}
         containerStyle={{ marginBottom: theme.spacing.lg }}
         inputContainerStyle={{ 
-          borderWidth: 1, 
-          borderColor: errors.loanAmount ? theme.colors.error : theme.colors.gray300 
+         borderWidth: 0.3,
+    borderColor: '#48484a58',
         }}
       />
 

@@ -1,38 +1,331 @@
-import React from 'react';
-import { View, Text } from 'react-native';
-import { theme } from '../../../../theme';
-import CommonInput from '../../../../components/common/Input/CommonInput';
-import RoundedChip from '../../../../components/common/Input/RoundedChip';
-import SquareChip from '../../../../components/common/Input/SquareChip';
-import { Calendar } from 'lucide-react-native';
+// CommonPersonalDetailsForm.jsx
 
-const CommonPersonalDetailsForm = ({ formData, setFormData, errors, setErrors }) => {
-  const genderOptions = ['Male', 'Female', 'Other'];
-  const employmentTypes = [
-    'Salaried',
-    'Self-Employed',
-    'Business',
-    'Professional',
-    'Student',
-    'Retired',
-    'Others',
-  ];
-  const maritalStatusOptions = ['Single', 'Married', 'Divorced', 'Widowed', 'Separated'];
+import React, { useState } from 'react';
 
-  // Input & Unselected Chip Border Styling
-  const commonBorderStyle = {
-    borderWidth: 0.3,
-    borderColor: '#48484a58',
+import {
+  View,
+  Text,
+  TouchableOpacity,
+} from 'react-native';
+
+import DateTimePicker
+  from '@react-native-community/datetimepicker';
+
+import {
+  CalendarDays,
+  Info,
+} from 'lucide-react-native';
+
+import CommonInput
+  from '../../../../components/common/Input/CommonInput';
+
+import SquareChip
+  from '../../../../components/common/Input/SquareChip';
+
+import RoundedChip
+  from '../../../../components/common/Input/RoundedChip';
+
+import { theme }
+  from '../../../../theme';
+
+
+// ======================================================
+// COMMON BORDER
+// ======================================================
+
+const commonBorderStyle = {
+  borderWidth: 0.3,
+  borderColor: '#48484a58',
+};
+
+
+// ======================================================
+// OPTIONS
+// ======================================================
+
+const GENDER_OPTIONS = [
+  'Male',
+  'Female',
+  'Other',
+];
+
+
+const EMPLOYMENT_TYPES = [
+  'Private',
+  'Government',
+  'Self Employed',
+  'Business',
+  'Public Sector',
+  'Other',
+];
+
+
+const MARITAL_STATUS = [
+  'Single',
+  'Married',
+  'Divorced',
+  'Widowed',
+];
+
+
+// ======================================================
+// DATE FORMAT
+// ======================================================
+
+const formatDate = (date) => {
+
+  if (!date) {
+    return '';
+  }
+
+  const day = String(
+    date.getDate()
+  ).padStart(2, '0');
+
+  const month = String(
+    date.getMonth() + 1
+  ).padStart(2, '0');
+
+  const year =
+    date.getFullYear();
+
+  return `${day}/${month}/${year}`;
+};
+
+
+// ======================================================
+// COMPONENT
+// ======================================================
+
+const CommonPersonalDetailsForm = ({
+  formData = {},
+  setFormData,
+  errors = {},
+  setErrors,
+}) => {
+
+  // ====================================================
+  // DATE PICKER STATE
+  // ====================================================
+
+  const [
+    showDatePicker,
+    setShowDatePicker,
+  ] = useState(false);
+
+
+  // ====================================================
+  // INITIAL DATE
+  // ====================================================
+
+  const getInitialDate = () => {
+
+    if (!formData?.dob) {
+
+      return new Date(
+        2000,
+        0,
+        1
+      );
+    }
+
+    const parts =
+      formData.dob.split('/');
+
+    if (parts.length === 3) {
+
+      const day =
+        Number(parts[0]);
+
+      const month =
+        Number(parts[1]) - 1;
+
+      const year =
+        Number(parts[2]);
+
+      const date =
+        new Date(
+          year,
+          month,
+          day
+        );
+
+      if (!isNaN(date.getTime())) {
+        return date;
+      }
+    }
+
+    return new Date(
+      2000,
+      0,
+      1
+    );
   };
 
-  const orangeActiveColor = theme.colors?.primary500 || '#FF6B00';
-  const orangeActiveBg = theme.colors?.primary50 || '#FFF0E6';
+
+  const [
+    selectedDate,
+    setSelectedDate,
+  ] = useState(
+    getInitialDate()
+  );
+
+
+  // ====================================================
+  // UPDATE FIELD
+  // ====================================================
+
+  const updateField = (
+    field,
+    value
+  ) => {
+
+    setFormData?.(
+      (prev) => ({
+        ...prev,
+        [field]: value,
+      })
+    );
+
+
+    // Clear field error
+    if (
+      errors?.[field] &&
+      setErrors
+    ) {
+
+      setErrors(
+        (prev) => ({
+          ...prev,
+          [field]: '',
+        })
+      );
+    }
+  };
+
+
+  // ====================================================
+  // GENDER
+  // ====================================================
+
+  const handleGender = (
+    gender
+  ) => {
+
+    updateField(
+      'gender',
+      gender
+    );
+  };
+
+
+  // ====================================================
+  // EMPLOYMENT TYPE
+  // ====================================================
+
+  const handleEmploymentType = (
+    type
+  ) => {
+
+    updateField(
+      'employmentType',
+      type
+    );
+  };
+
+
+  // ====================================================
+  // MARITAL STATUS
+  // ====================================================
+
+  const handleMaritalStatus = (
+    status
+  ) => {
+
+    updateField(
+      'maritalStatus',
+      status
+    );
+  };
+
+
+  // ====================================================
+  // DATE CHANGE
+  // ====================================================
+
+  const handleDateChange = (
+    event,
+    date
+  ) => {
+
+    setShowDatePicker(false);
+
+    if (!date) {
+      return;
+    }
+
+    setSelectedDate(date);
+
+    const formattedDate =
+      formatDate(date);
+
+    updateField(
+      'dob',
+      formattedDate
+    );
+  };
+
+
+  // ====================================================
+  // INPUT BORDER HELPER
+  // ====================================================
+
+  const getInputBorderStyle = (
+    field
+  ) => {
+
+    return {
+      backgroundColor:
+        theme.colors.gray100,
+
+      borderRadius:
+        theme.radius.lg,
+
+      ...commonBorderStyle,
+
+      ...(errors?.[field] && {
+        borderColor:
+          theme.colors.error,
+
+        borderWidth:
+          0.8,
+      }),
+    };
+  };
+
+
+  // ====================================================
+  // UI
+  // ====================================================
 
   return (
-    <View style={{ paddingVertical: theme.spacing?.sm || 8 }}>
-      {/* ===== Section Title ===== */}
+
+    <View
+      style={{
+        paddingTop:
+          theme.spacing.sm,
+
+        paddingBottom:
+          theme.spacing.xl,
+      }}
+    >
+
+      {/* ==================================================
+          SECTION TITLE
+      ================================================== */}
+
       <Text
-        style={{
+     style={{
           fontSize: theme.typography?.h3 || 18,
           fontFamily: theme.fonts?.bold,
           color: theme.colors?.text || '#1E293B',
@@ -42,304 +335,982 @@ const CommonPersonalDetailsForm = ({ formData, setFormData, errors, setErrors })
         Personal Details
       </Text>
 
-      {/* ===== Full Name ===== */}
+
+      {/* ==================================================
+          FULL NAME
+      ================================================== */}
+
       <CommonInput
-        label="Full Name ( as per Pan)"
+        label="Full Name ( as per PAN )"
         placeholder="As per PAN card"
-        value={formData?.fullName || ''}
-        onChangeText={(text) => {
-          setFormData((prev) => ({ ...prev, fullName: text }));
-          setErrors?.((prev) => ({ ...prev, fullName: '' }));
-        }}
-        error={errors?.fullName}
+
+        value={
+          formData?.fullName || ''
+        }
+
+        onChangeText={(text) =>
+          updateField(
+            'fullName',
+            text
+          )
+        }
+
+        error={
+          errors?.fullName
+        }
+
         required
-        inputContainerStyle={commonBorderStyle}
+
+        containerStyle={{
+          marginBottom:
+            theme.spacing.lg,
+        }}
+
+        inputContainerStyle={
+          getInputBorderStyle(
+            'fullName'
+          )
+        }
       />
 
-      {/* ===== Email ID ===== */}
+
+      {/* ==================================================
+          EMAIL
+      ================================================== */}
+
       <CommonInput
         label="Email ID"
         placeholder="Enter Your Email Address"
-        value={formData?.email || ''}
-        onChangeText={(text) => {
-          setFormData((prev) => ({ ...prev, email: text }));
-          setErrors?.((prev) => ({ ...prev, email: '' }));
-        }}
+
+        value={
+          formData?.email || ''
+        }
+
+        onChangeText={(text) =>
+          updateField(
+            'email',
+            text
+          )
+        }
+
         keyboardType="email-address"
+
         autoCapitalize="none"
-        error={errors?.email}
+
+        error={
+          errors?.email
+        }
+
         required
-        inputContainerStyle={commonBorderStyle}
+
+        containerStyle={{
+          marginBottom:
+            theme.spacing.lg,
+        }}
+
+        inputContainerStyle={
+          getInputBorderStyle(
+            'email'
+          )
+        }
       />
 
-      {/* ===== Mobile No. ===== */}
+
+      {/* ==================================================
+          MOBILE
+      ================================================== */}
+
       <CommonInput
         label="Mob. No."
         placeholder="Enter Your Phone No."
-        value={formData?.mobile || ''}
-        onChangeText={(text) => {
-          setFormData((prev) => ({ ...prev, mobile: text }));
-          setErrors?.((prev) => ({ ...prev, mobile: '' }));
-        }}
-        keyboardType="phone-pad"
-        maxLength={10}
-        error={errors?.mobile}
-        required
-        inputContainerStyle={commonBorderStyle}
-      />
 
-      {/* ===== Date of Birth ===== */}
-      <CommonInput
-        label="Date of Birth"
-        placeholder="DD/MM/YYYY"
-        value={formData?.dob || ''}
-        onChangeText={(text) => {
-          setFormData((prev) => ({ ...prev, dob: text }));
-          setErrors?.((prev) => ({ ...prev, dob: '' }));
-        }}
-        error={errors?.dob}
-        required
-        rightIcon={
-          <Calendar
-            size={theme.iconSize?.sm || 18}
-            color={theme.colors?.gray500 || '#64748B'}
-          />
+        value={
+          formData?.mobile || ''
         }
-        inputContainerStyle={commonBorderStyle}
+
+        onChangeText={(text) => {
+
+          const cleaned =
+            text.replace(
+              /[^0-9]/g,
+              ''
+            );
+
+          updateField(
+            'mobile',
+            cleaned
+          );
+        }}
+
+        keyboardType="phone-pad"
+
+        maxLength={10}
+
+        error={
+          errors?.mobile
+        }
+
+        required
+
+        containerStyle={{
+          marginBottom:
+            theme.spacing.lg,
+        }}
+
+        inputContainerStyle={
+          getInputBorderStyle(
+            'mobile'
+          )
+        }
       />
 
-      {/* ===== Gender (SquareChip) ===== */}
-      <View style={{ marginBottom: theme.spacing?.lg || 16 }}>
+
+      {/* ==================================================
+          DATE OF BIRTH
+      ================================================== */}
+
+      <View
+        style={{
+          marginBottom:
+            theme.spacing.lg,
+        }}
+      >
+
         <Text
           style={{
-            color: theme.colors?.gray700 || '#334155',
-            fontSize: theme.typography?.b2 || 14,
-            fontFamily: theme.fonts?.medium,
-            marginBottom: theme.spacing?.xs || 6,
+            fontSize:
+              theme.typography.b2,
+
+            fontFamily:
+              theme.fonts.medium,
+
+            color:
+              theme.colors.gray700,
+
+            marginBottom:
+              theme.spacing.sm,
           }}
         >
-          Gender <Text style={{ color: theme.colors?.error || '#EF4444' }}>*</Text>
-        </Text>
-        <View style={{ flexDirection: 'row', gap: theme.spacing?.sm || 8 }}>
-          {genderOptions.map((gender) => {
-            const isSelected = formData?.gender === gender;
-            return (
-              <SquareChip
-                key={gender}
-                title={gender}
-                selected={isSelected}
-                activeColor={orangeActiveColor}
-                activeBackgroundColor={orangeActiveBg}
-                onPress={() => {
-                  setFormData((prev) => ({ ...prev, gender }));
-                  setErrors?.((prev) => ({ ...prev, gender: '' }));
-                }}
-                style={[
-                  { flex: 1 },
-                  !isSelected && commonBorderStyle,
-                ]}
-              />
-            );
-          })}
-        </View>
-        {errors?.gender && (
+          Date of Birth
+
           <Text
             style={{
-              color: theme.colors?.error || '#EF4444',
-              fontSize: theme.typography?.b3 || 12,
-              marginTop: theme.spacing?.xs || 4,
-              fontFamily: theme.fonts?.medium,
+              color:
+                theme.colors.error,
+            }}
+          >
+            {' '}*
+          </Text>
+        </Text>
+
+
+        <TouchableOpacity
+          activeOpacity={0.8}
+
+          onPress={() =>
+            setShowDatePicker(true)
+          }
+
+          style={{
+            height: 56,
+
+            backgroundColor:
+              theme.colors.gray100,
+
+            borderRadius:
+              theme.radius.lg,
+
+            ...commonBorderStyle,
+
+            ...(errors?.dob && {
+              borderColor:
+                theme.colors.error,
+
+              borderWidth:
+                0.8,
+            }),
+
+            paddingHorizontal:
+              theme.spacing.lg,
+
+            flexDirection:
+              'row',
+
+            alignItems:
+              'center',
+
+            justifyContent:
+              'space-between',
+          }}
+        >
+
+          <Text
+            style={{
+              flex: 1,
+
+              fontSize:
+                theme.typography.b1,
+
+              fontFamily:
+                theme.fonts.medium,
+
+              color:
+                formData?.dob
+                  ? theme.colors.text
+                  : theme.colors.textLight,
+            }}
+          >
+            {
+              formData?.dob ||
+              'DD/MM/YYYY'
+            }
+          </Text>
+
+
+          <CalendarDays
+            size={20}
+
+            color={
+              theme.colors.gray500
+            }
+
+            strokeWidth={2}
+          />
+
+        </TouchableOpacity>
+
+
+        {!!errors?.dob && (
+
+          <Text
+            style={{
+              color:
+                theme.colors.error,
+
+              fontSize:
+                theme.typography.b3,
+
+              fontFamily:
+                theme.fonts.medium,
+
+              marginTop:
+                theme.spacing.xs,
+            }}
+          >
+            {errors.dob}
+          </Text>
+
+        )}
+
+      </View>
+
+
+      {/* ==================================================
+          DATE PICKER
+      ================================================== */}
+
+      {showDatePicker && (
+
+        <DateTimePicker
+
+          value={
+            selectedDate
+          }
+
+          mode="date"
+
+          display="default"
+
+          maximumDate={
+            new Date()
+          }
+
+          onChange={
+            handleDateChange
+          }
+
+        />
+
+      )}
+
+
+      {/* ==================================================
+          GENDER
+      ================================================== */}
+
+      <View
+        style={{
+          marginBottom:
+            theme.spacing.lg,
+        }}
+      >
+
+        <Text
+          style={{
+            fontSize:
+              theme.typography.b2,
+
+            fontFamily:
+              theme.fonts.medium,
+
+            color:
+              theme.colors.gray700,
+
+            marginBottom:
+              theme.spacing.sm,
+          }}
+        >
+          Gender
+
+          <Text
+            style={{
+              color:
+                theme.colors.error,
+            }}
+          >
+            {' '}*
+          </Text>
+        </Text>
+
+
+        <View
+          style={{
+            flexDirection:
+              'row',
+
+            gap:
+              theme.spacing.sm,
+          }}
+        >
+
+          {GENDER_OPTIONS.map(
+            (gender) => (
+
+              <SquareChip
+
+                key={gender}
+
+                title={gender}
+
+                selected={
+                  formData?.gender ===
+                  gender
+                }
+
+                onPress={() =>
+                  handleGender(
+                    gender
+                  )
+                }
+
+                height={48}
+
+                borderRadius={14}
+
+                selectedBackgroundColor={
+                  "#FDE2E0"
+                }
+
+                selectedBorderColor={
+                  "#F4A39D"
+                }
+
+                selectedTextColor={
+                  "#111827"
+                }
+
+                unselectedBackgroundColor={
+                  "#F4F5F8"
+                }
+
+                unselectedBorderColor={
+                  "transparent"
+                }
+
+                unselectedTextColor={
+                  "#6B7280"
+                }
+
+              />
+
+            )
+          )}
+
+        </View>
+
+
+        {!!errors?.gender && (
+
+          <Text
+            style={{
+              color:
+                theme.colors.error,
+
+              fontSize:
+                theme.typography.b3,
+
+              fontFamily:
+                theme.fonts.medium,
+
+              marginTop:
+                theme.spacing.xs,
             }}
           >
             {errors.gender}
           </Text>
+
         )}
+
       </View>
 
-      {/* ===== Father's/Spouse's Name ===== */}
+
+      {/* ==================================================
+          FATHER / SPOUSE NAME
+      ================================================== */}
+
       <CommonInput
         label="Father's/Spouse's Name"
-        placeholder="Enter Father's / Spouses's name"
-        value={formData?.fatherName || ''}
-        onChangeText={(text) => {
-          setFormData((prev) => ({ ...prev, fatherName: text }));
-          setErrors?.((prev) => ({ ...prev, fatherName: '' }));
-        }}
-        error={errors?.fatherName}
+        placeholder="Enter Father's / Spouse's name"
+
+        value={
+          formData?.fatherName || ''
+        }
+
+        onChangeText={(text) =>
+          updateField(
+            'fatherName',
+            text
+          )
+        }
+
+        error={
+          errors?.fatherName
+        }
+
         required
-        inputContainerStyle={commonBorderStyle}
+
+        containerStyle={{
+          marginBottom:
+            theme.spacing.lg,
+        }}
+
+        inputContainerStyle={
+          getInputBorderStyle(
+            'fatherName'
+          )
+        }
       />
 
-      {/* ===== PAN Number ===== */}
+
+      {/* ==================================================
+          PAN
+      ================================================== */}
+
       <CommonInput
         label="PAN Number"
         placeholder="Enter PAN Number"
-        value={formData?.panNumber || ''}
+
+        value={
+          formData?.panNumber || ''
+        }
+
         onChangeText={(text) => {
-          setFormData((prev) => ({ ...prev, panNumber: text.toUpperCase() }));
-          setErrors?.((prev) => ({ ...prev, panNumber: '' }));
+
+          const cleaned =
+            text
+              .toUpperCase()
+              .replace(
+                /[^A-Z0-9]/g,
+                ''
+              );
+
+          updateField(
+            'panNumber',
+            cleaned
+          );
         }}
+
         autoCapitalize="characters"
+
         maxLength={10}
-        error={errors?.panNumber}
+
+        error={
+          errors?.panNumber
+        }
+
         required
-        inputContainerStyle={commonBorderStyle}
+
+        containerStyle={{
+          marginBottom:
+            theme.spacing.lg,
+        }}
+
+        inputContainerStyle={
+          getInputBorderStyle(
+            'panNumber'
+          )
+        }
       />
 
-      {/* ===== Aadhaar Number ===== */}
+
+      {/* ==================================================
+          AADHAAR
+      ================================================== */}
+
       <CommonInput
         label="Aadhaar Number"
         placeholder="Enter Aadhaar Number"
-        value={formData?.aadhaarNumber || ''}
+
+        value={
+          formData?.aadhaarNumber || ''
+        }
+
         onChangeText={(text) => {
-          setFormData((prev) => ({ ...prev, aadhaarNumber: text }));
-          setErrors?.((prev) => ({ ...prev, aadhaarNumber: '' }));
+
+          const cleaned =
+            text.replace(
+              /[^0-9]/g,
+              ''
+            );
+
+          updateField(
+            'aadhaarNumber',
+            cleaned
+          );
         }}
+
         keyboardType="numeric"
+
         maxLength={12}
-        error={errors?.aadhaarNumber}
+
+        error={
+          errors?.aadhaarNumber
+        }
+
         required
-        inputContainerStyle={commonBorderStyle}
+
+        containerStyle={{
+          marginBottom:
+            theme.spacing.lg,
+        }}
+
+        inputContainerStyle={
+          getInputBorderStyle(
+            'aadhaarNumber'
+          )
+        }
       />
 
-      {/* ===== Annual Income ===== */}
+
+      {/* ==================================================
+          ANNUAL INCOME
+      ================================================== */}
+
       <CommonInput
         label="Annual Income (₹)"
         placeholder="e.g. 65,889"
-        value={formData?.annualIncome || ''}
+
+        value={
+          formData?.annualIncome || ''
+        }
+
         onChangeText={(text) => {
-          setFormData((prev) => ({ ...prev, annualIncome: text }));
-          setErrors?.((prev) => ({ ...prev, annualIncome: '' }));
+
+          const cleaned =
+            text.replace(
+              /[^0-9]/g,
+              ''
+            );
+
+          updateField(
+            'annualIncome',
+            cleaned
+          );
         }}
+
         keyboardType="numeric"
-        error={errors?.annualIncome}
+
+        error={
+          errors?.annualIncome
+        }
+
         required
-        inputContainerStyle={commonBorderStyle}
+
+        containerStyle={{
+          marginBottom:
+            theme.spacing.lg,
+        }}
+
+        inputContainerStyle={
+          getInputBorderStyle(
+            'annualIncome'
+          )
+        }
       />
 
-      {/* ===== Occupation ===== */}
+
+      {/* ==================================================
+          OCCUPATION
+      ================================================== */}
+
       <CommonInput
         label="Occupation"
         placeholder="Enter your Occupation"
-        value={formData?.occupation || ''}
-        onChangeText={(text) => {
-          setFormData((prev) => ({ ...prev, occupation: text }));
-          setErrors?.((prev) => ({ ...prev, occupation: '' }));
-        }}
-        error={errors?.occupation}
+
+        value={
+          formData?.occupation || ''
+        }
+
+        onChangeText={(text) =>
+          updateField(
+            'occupation',
+            text
+          )
+        }
+
+        error={
+          errors?.occupation
+        }
+
         required
-        inputContainerStyle={commonBorderStyle}
+
+        containerStyle={{
+          marginBottom:
+            theme.spacing.lg,
+        }}
+
+        inputContainerStyle={
+          getInputBorderStyle(
+            'occupation'
+          )
+        }
       />
 
-      {/* ===== Employment Type (RoundedChip) ===== */}
-      <View style={{ marginBottom: theme.spacing?.lg || 16 }}>
+
+      {/* ==================================================
+          EMPLOYMENT TYPE
+      ================================================== */}
+
+      <View
+        style={{
+          marginBottom:
+            theme.spacing.lg,
+        }}
+      >
+
         <Text
           style={{
-            color: theme.colors?.gray700 || '#334155',
-            fontSize: theme.typography?.b2 || 14,
-            fontFamily: theme.fonts?.medium,
-            marginBottom: theme.spacing?.xs || 6,
+            fontSize:
+              theme.typography.b2,
+
+            fontFamily:
+              theme.fonts.medium,
+
+            color:
+              theme.colors.gray700,
+
+            marginBottom:
+              theme.spacing.sm,
           }}
         >
-          Employment Type <Text style={{ color: theme.colors?.error || '#EF4444' }}>*</Text>
-        </Text>
-        <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: theme.spacing?.xs || 6 }}>
-          {employmentTypes.map((type) => {
-            const isSelected = formData?.employmentType === type;
-            return (
-              <RoundedChip
-                key={type}
-                title={type}
-                selected={isSelected}
-                activeColor={orangeActiveColor}
-                activeBackgroundColor={orangeActiveBg}
-                onPress={() => {
-                  setFormData((prev) => ({ ...prev, employmentType: type }));
-                  setErrors?.((prev) => ({ ...prev, employmentType: '' }));
-                }}
-                style={!isSelected ? commonBorderStyle : null}
-              />
-            );
-          })}
-        </View>
-        {errors?.employmentType && (
+          Employment Type
+
           <Text
             style={{
-              color: theme.colors?.error || '#EF4444',
-              fontSize: theme.typography?.b3 || 12,
-              marginTop: theme.spacing?.xs || 4,
-              fontFamily: theme.fonts?.medium,
+              color:
+                theme.colors.error,
+            }}
+          >
+            {' '}*
+          </Text>
+        </Text>
+
+
+        <View
+          style={{
+            flexDirection:
+              'row',
+
+            flexWrap:
+              'wrap',
+          }}
+        >
+
+          {EMPLOYMENT_TYPES.map(
+            (type) => (
+
+              <RoundedChip
+
+                key={type}
+
+                title={type}
+
+                selected={
+                  formData?.employmentType ===
+                  type
+                }
+
+                onPress={() =>
+                  handleEmploymentType(
+                    type
+                  )
+                }
+
+                // Selected colors
+                selectedBackgroundColor={
+                  "#FDE2E0"
+                }
+
+                selectedBorderColor={
+                  "#F4A39D"
+                }
+
+                selectedTextColor={
+                  "#111827"
+                }
+
+                // Unselected colors
+                unselectedBackgroundColor={
+                  "#F4F5F8"
+                }
+
+                unselectedBorderColor={
+                  "transparent"
+                }
+
+                unselectedTextColor={
+                  "#6B7280"
+                }
+
+                height={42}
+
+                minWidth={90}
+
+                paddingHorizontal={14}
+
+                marginRight={8}
+
+                marginBottom={8}
+
+              />
+
+            )
+          )}
+
+        </View>
+
+
+        {!!errors?.employmentType && (
+
+          <Text
+            style={{
+              color:
+                theme.colors.error,
+
+              fontSize:
+                theme.typography.b3,
+
+              fontFamily:
+                theme.fonts.medium,
+
+              marginTop:
+                theme.spacing.xs,
             }}
           >
             {errors.employmentType}
           </Text>
+
         )}
+
       </View>
 
-      {/* ===== Marital Status (RoundedChip) ===== */}
-      <View style={{ marginBottom: theme.spacing?.lg || 16 }}>
-        <Text
-          style={{
-            color: theme.colors?.gray700 || '#334155',
-            fontSize: theme.typography?.b2 || 14,
-            fontFamily: theme.fonts?.medium,
-            marginBottom: theme.spacing?.xs || 6,
-          }}
-        >
-          Marital Status (Optional)
-        </Text>
-        <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: theme.spacing?.xs || 6 }}>
-          {maritalStatusOptions.map((status) => {
-            const isSelected = formData?.maritalStatus === status;
-            return (
-              <RoundedChip
-                key={status}
-                title={status}
-                selected={isSelected}
-                activeColor={orangeActiveColor}
-                activeBackgroundColor={orangeActiveBg}
-                onPress={() => {
-                  setFormData((prev) => ({ ...prev, maritalStatus: status }));
-                  setErrors?.((prev) => ({ ...prev, maritalStatus: '' }));
-                }}
-                style={!isSelected ? commonBorderStyle : null}
-              />
-            );
-          })}
-        </View>
-      </View>
 
-      {/* ===== Info Box (Bottom Light Blue Box) ===== */}
+      {/* ==================================================
+          MARITAL STATUS
+      ================================================== */}
+
       <View
         style={{
-          flexDirection: 'row',
-          alignItems: 'flex-start',
-          backgroundColor: '#EFF6FF',
-          borderWidth: 1,
-          borderColor: '#BFDBFE',
-          padding: theme.spacing?.md || 12,
-          borderRadius: theme.radius?.lg || 16,
-          marginTop: theme.spacing?.sm || 8,
-          marginBottom: theme.spacing?.xl || 24,
+          marginBottom:
+            theme.spacing.xl,
         }}
       >
-        <Text style={{ fontSize: 16, marginRight: 8, color: '#2563EB' }}>
-          ℹ️
+
+        <Text
+          style={{
+            fontSize:
+              theme.typography.b2,
+
+            fontFamily:
+              theme.fonts.medium,
+
+            color:
+              theme.colors.gray700,
+
+            marginBottom:
+              theme.spacing.sm,
+          }}
+        >
+          Marital Status
+
+          <Text
+            style={{
+              color:
+                theme.colors.gray500,
+            }}
+          >
+            {' '} (Optional)
+          </Text>
         </Text>
+
+
+        <View
+          style={{
+            flexDirection:
+              'row',
+
+            flexWrap:
+              'wrap',
+          }}
+        >
+
+          {MARITAL_STATUS.map(
+            (status) => (
+
+              <RoundedChip
+
+                key={status}
+
+                title={status}
+
+                selected={
+                  formData?.maritalStatus ===
+                  status
+                }
+
+                onPress={() =>
+                  handleMaritalStatus(
+                    status
+                  )
+                }
+
+                selectedBackgroundColor={
+                  "#FDE2E0"
+                }
+
+                selectedBorderColor={
+                  "#F4A39D"
+                }
+
+                selectedTextColor={
+                  "#111827"
+                }
+
+                unselectedBackgroundColor={
+                  "#F4F5F8"
+                }
+
+                unselectedBorderColor={
+                  "transparent"
+                }
+
+                unselectedTextColor={
+                  "#6B7280"
+                }
+
+                height={42}
+
+                minWidth={82}
+
+                paddingHorizontal={14}
+
+                marginRight={8}
+
+                marginBottom={8}
+
+              />
+
+            )
+          )}
+
+        </View>
+
+      </View>
+
+
+      {/* ==================================================
+          SECURITY INFO
+      ================================================== */}
+
+      <View
+        style={{
+          backgroundColor:
+            '#EFF6FF',
+
+          borderRadius:
+            theme.radius.lg,
+
+          borderWidth:
+            1,
+
+          borderColor:
+            '#BFDBFE',
+
+          padding:
+            theme.spacing.lg,
+
+          flexDirection:
+            'row',
+
+          alignItems:
+            'flex-start',
+        }}
+      >
+
+        <Info
+          size={22}
+
+          color="#2563EB"
+
+          strokeWidth={2}
+
+          style={{
+            marginTop: 2,
+
+            marginRight:
+              theme.spacing.md,
+          }}
+        />
+
+
         <Text
           style={{
             flex: 1,
-            fontSize: 12,
-            color: '#1E40AF',
-            fontFamily: theme.fonts?.regular,
-            lineHeight: 18,
+
+            fontSize:
+              theme.typography.b2,
+
+            fontFamily:
+              theme.fonts.regular,
+
+            color:
+              '#0759B8',
+
+            lineHeight:
+              theme.lineHeight.b2,
           }}
         >
-          We use secure encryption to protect your personal details. Providing accurate information as per your official documents ensures a higher chance of loan approval.
+          We use secure encryption to protect your
+          personal details. Providing accurate
+          information as per your official documents
+          ensures a higher chance of loan approval.
         </Text>
+
       </View>
+
     </View>
   );
 };
+
 
 export default CommonPersonalDetailsForm;

@@ -1,365 +1,1327 @@
-import React from 'react';
-import { View, Text, TouchableOpacity, Image } from 'react-native';
-import * as ImagePicker from 'react-native-image-picker';
+import React, { useState } from 'react';
+
+import {
+  View,
+  Text,
+  Alert,
+} from 'react-native';
+
+import {
+  launchCamera,
+  launchImageLibrary,
+} from 'react-native-image-picker';
+
+import {
+  pick,
+  types,
+  isCancel,
+} from '@react-native-documents/picker';
+
 import { theme } from '../../../../../theme';
-import { 
-  UploadCloud, 
-  CheckCircle2, 
-  Camera, 
-  FileText, 
-  CheckSquare, 
-  Square 
-} from 'lucide-react-native';
 
-// ===== Individual Dashed Upload Card =====
-const UploadCard = ({ 
-  label, 
-  subtitle, 
-  required = false, 
-  isUploaded = false, 
-  fileName, 
-  onUpload 
+import DocumentUploadCard
+  from '../../../../../components/common/Input/DocumentUploadCard';
+
+import UploadBottomSheet
+  from '../../../../../components/common/Modal/UploadBottomSheet';
+
+import {
+  useUploadLoanDocumentsMutation,
+} from '../../../../../redux/features/customer/customerApi';
+
+
+// ======================================================
+// PROPERTY LOAN DOCUMENT CONFIG
+// ======================================================
+
+const DOCUMENT_TYPES = [
+
+  // ====================================================
+  // IDENTITY
+  // ====================================================
+
+  {
+    key: 'aadharCard',
+    title: 'Aadhar Card',
+    subtitle: 'Upload front & back side',
+    required: true,
+  },
+
+  {
+    key: 'panCard',
+    title: 'PAN Card',
+    subtitle: 'Upload clear front side',
+    required: true,
+  },
+
+
+  // ====================================================
+  // ADDRESS
+  // ====================================================
+
+  {
+    key: 'addressProof',
+    title: 'Address Proof',
+    subtitle: 'Electricity / Water / Gas bill or valid address proof',
+    required: true,
+  },
+
+
+  // ====================================================
+  // PROPERTY DOCUMENTS
+  // ====================================================
+
+  {
+    key: 'propertyTaxReceipt',
+    title: 'Property Tax Receipt',
+    subtitle: 'Latest property tax receipt',
+    required: false,
+  },
+
+  {
+    key: 'saleDeed',
+    title: 'Sale Deed',
+    subtitle: 'Upload clear copy of sale deed',
+    required: false,
+  },
+
+  {
+    key: 'encumbranceCertificate',
+    title: 'Encumbrance Certificate',
+    subtitle: 'Latest encumbrance certificate',
+    required: false,
+  },
+
+  {
+    key: 'approvedPropertyPlan',
+    title: 'Approved Property Plan',
+    subtitle: 'Upload approved building/property plan',
+    required: false,
+  },
+
+
+  // ====================================================
+  // INCOME DOCUMENTS
+  // ====================================================
+
+  {
+    key: 'incomeProof',
+    title: 'Income Proof',
+    subtitle: 'Upload valid income proof',
+    required: true,
+  },
+
+  {
+    key: 'salarySlips',
+    title: 'Salary Slips',
+    subtitle: 'Salary slips / income proof',
+    required: true,
+  },
+
+  {
+    key: 'itr',
+    title: 'ITR / Form 16',
+    subtitle: 'Last 2 years ITR / Form 16',
+    required: false,
+  },
+
+  {
+    key: 'bankStatement',
+    title: 'Bank Statement',
+    subtitle: 'Last 6 months bank statement',
+    required: true,
+  },
+
+
+  // ====================================================
+  // PROPERTY PHOTOS
+  // ====================================================
+
+  {
+    key: 'propertyPhotos',
+    title: 'Property Photos',
+    subtitle: 'Upload clear photos of the property',
+    required: false,
+  },
+
+
+  // ====================================================
+  // BACKEND PROPERTY PAPER
+  // ====================================================
+
+  {
+    key: 'propertyPaper',
+    title: 'Property Document / Ownership Papers',
+    subtitle: 'Upload property ownership document',
+    required: true,
+  },
+
+];
+
+
+// ======================================================
+// CONSTANTS
+// ======================================================
+
+const MAX_FILES_PER_DOCUMENT = 2;
+
+const MAX_FILE_SIZE =
+  5 * 1024 * 1024;
+
+
+// ======================================================
+// COMPONENT
+// ======================================================
+
+const PropertyDocumentUploadForm = ({
+  formData = {},
+  setFormData,
+  errors = {},
+  setErrors,
 }) => {
-  return (
-    <View style={{ marginBottom: theme.spacing.xl }}>
-      {/* Label with Checkbox Indicator */}
-      <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: theme.spacing.sm }}>
-        {isUploaded ? (
-          <CheckSquare size={18} color={theme.colors.primary500} style={{ marginRight: theme.spacing.xs }} />
-        ) : (
-          <Square size={18} color={theme.colors.gray300} style={{ marginRight: theme.spacing.xs }} />
-        )}
-        <Text
-          style={{
-            fontSize: theme.typography.b1,
-            fontFamily: theme.fonts.bold,
-            color: theme.colors.text,
-          }}
-        >
-          {label} {required && <Text style={{ color: theme.colors.error }}>*</Text>}
-        </Text>
-      </View>
 
-      {/* Dashed Upload Box */}
-      <TouchableOpacity
-        activeOpacity={0.8}
-        onPress={onUpload}
-        style={{
-          borderWidth: 1,
-          borderStyle: 'dashed',
-          borderColor: isUploaded ? theme.colors.primary500 : theme.colors.gray300,
-          borderRadius: theme.radius.lg,
-          backgroundColor: isUploaded ? theme.colors.primary50 : '#F8FAFC',
-          paddingVertical: theme.spacing.xl,
-          paddingHorizontal: theme.spacing.lg,
-          alignItems: 'center',
-          justifyContent: 'center',
-        }}
-      >
-        {isUploaded ? (
-          <CheckCircle2 size={32} color={theme.colors.success} style={{ marginBottom: theme.spacing.xs }} />
-        ) : (
-          <UploadCloud size={32} color={theme.colors.navy300} style={{ marginBottom: theme.spacing.xs }} />
-        )}
 
-        <Text
-          style={{
-            fontSize: theme.typography.b2,
-            fontFamily: theme.fonts.medium,
-            color: isUploaded ? theme.colors.success : theme.colors.text,
-            marginBottom: 2,
-          }}
-        >
-          {isUploaded ? 'Document Uploaded' : 'Click to upload'}
-        </Text>
+  // ====================================================
+  // BOTTOM SHEET
+  // ====================================================
 
-        {!!subtitle && !isUploaded && (
-          <Text
-            style={{
-              fontSize: theme.typography.b3,
-              fontFamily: theme.fonts.regular,
-              color: theme.colors.gray500,
-              marginBottom: theme.spacing.md,
-              textAlign: 'center',
-            }}
-          >
-            {subtitle}
-          </Text>
-        )}
+  const [
+    sheetVisible,
+    setSheetVisible,
+  ] = useState(false);
 
-        {isUploaded && !!fileName && (
-          <Text
-            style={{
-              fontSize: theme.typography.b3,
-              fontFamily: theme.fonts.regular,
-              color: theme.colors.gray700,
-              marginBottom: theme.spacing.md,
-            }}
-            numberOfLines={1}
-          >
-            {fileName}
-          </Text>
-        )}
 
-        {/* Upload Button Pill */}
-        <View
-          style={{
-            backgroundColor: isUploaded ? theme.colors.primary100 : theme.colors.white,
-            paddingVertical: theme.spacing.xs,
-            paddingHorizontal: theme.spacing.xl,
-            borderRadius: theme.radius.pill,
-            borderWidth: theme.borderWidth.thin,
-            borderColor: isUploaded ? theme.colors.primary300 : theme.colors.gray300,
-          }}
-        >
-          <Text
-            style={{
-              fontSize: theme.typography.b3,
-              fontFamily: theme.fonts.medium,
-              color: isUploaded ? theme.colors.primary700 : theme.colors.text,
-            }}
-          >
-            {isUploaded ? 'Change File' : 'Upload File'}
-          </Text>
-        </View>
-      </TouchableOpacity>
-    </View>
-  );
-};
+  const [
+    selectedDocument,
+    setSelectedDocument,
+  ] = useState(null);
 
-// ===== Section Category Header =====
-const CategoryHeader = ({ title }) => (
-  <Text
-    style={{
-      fontSize: theme.typography.b1,
-      fontFamily: theme.fonts.bold,
-      color: theme.colors.text,
-      marginBottom: theme.spacing.md,
-      marginTop: theme.spacing.sm,
-    }}
-  >
-    {title} :
-  </Text>
-);
 
-// ===== Main Component =====
-const DocumentUploadForm = ({ formData, setFormData, errors, setErrors, productDetails }) => {
+  // ====================================================
+  // UPLOADING STATE
+  // ====================================================
 
-  const handleUpload = (docKey) => {
-    ImagePicker.launchImageLibrary({ mediaType: 'photo', quality: 0.8 }, (response) => {
-      if (response.didCancel || response.errorCode) return;
+  const [
+    uploadingDocuments,
+    setUploadingDocuments,
+  ] = useState({});
 
-      if (response.assets && response.assets.length > 0) {
-        const file = response.assets[0];
-        setFormData((prev) => ({
+
+  // ====================================================
+  // API
+  // ====================================================
+
+  const [
+    uploadLoanDocuments,
+    {
+      isLoading: isUploading,
+    },
+  ] = useUploadLoanDocumentsMutation();
+
+
+  // ====================================================
+  // GET DOCUMENT
+  // ====================================================
+
+  const getDocument = (
+    documentKey
+  ) => {
+
+    const documents =
+      formData?.documents || [];
+
+    return documents.find(
+      item =>
+        item?.type === documentKey
+    );
+  };
+
+
+  // ====================================================
+  // GET FILES
+  // ====================================================
+
+  const getFiles = (
+    documentKey
+  ) => {
+
+    const document =
+      getDocument(documentKey);
+
+    return document?.files || [];
+  };
+
+
+  // ====================================================
+  // OPEN UPLOAD SHEET
+  // ====================================================
+
+  const handleUpload = (
+    documentKey
+  ) => {
+
+    const files =
+      getFiles(documentKey);
+
+
+    if (
+      files.length >=
+      MAX_FILES_PER_DOCUMENT
+    ) {
+
+      Alert.alert(
+        'Maximum Files',
+        'You can upload maximum 2 files for this document.'
+      );
+
+      return;
+    }
+
+
+    setSelectedDocument(
+      documentKey
+    );
+
+    setSheetVisible(true);
+  };
+
+
+  // ====================================================
+  // SET UPLOADING
+  // ====================================================
+
+  const setDocumentUploading = (
+    documentKey,
+    value
+  ) => {
+
+    setUploadingDocuments(
+      prev => ({
+        ...prev,
+        [documentKey]: value,
+      })
+    );
+  };
+
+
+  // ====================================================
+  // SAVE SERVER FILE
+  // ====================================================
+
+  const saveUploadedFile = (
+    documentKey,
+    serverFile
+  ) => {
+
+    setFormData(prev => {
+
+      const documents =
+        prev?.documents || [];
+
+
+      const existingIndex =
+        documents.findIndex(
+          item =>
+            item?.type === documentKey
+        );
+
+
+      // ==============================================
+      // FIRST FILE
+      // ==============================================
+
+      if (
+        existingIndex === -1
+      ) {
+
+        return {
+
           ...prev,
-          documents: {
-            ...prev?.documents,
-            [docKey]: file,
-          },
-        }));
 
-        if (setErrors) {
-          setErrors((prev) => ({
-            ...prev,
-            [docKey]: '',
-          }));
+          documents: [
+
+            ...documents,
+
+            {
+
+              type:
+                documentKey,
+
+              files: [
+                serverFile,
+              ],
+
+            },
+
+          ],
+
+        };
+      }
+
+
+      // ==============================================
+      // EXISTING DOCUMENT
+      // ==============================================
+
+      const updatedDocuments =
+        [...documents];
+
+
+      const existingFiles =
+        updatedDocuments[
+          existingIndex
+        ]?.files || [];
+
+
+      if (
+        existingFiles.length >=
+        MAX_FILES_PER_DOCUMENT
+      ) {
+
+        return prev;
+      }
+
+
+      updatedDocuments[
+        existingIndex
+      ] = {
+
+        ...updatedDocuments[
+          existingIndex
+        ],
+
+        files: [
+
+          ...existingFiles,
+
+          serverFile,
+
+        ],
+
+      };
+
+
+      return {
+
+        ...prev,
+
+        documents:
+          updatedDocuments,
+
+      };
+
+    });
+
+
+    // ==============================================
+    // CLEAR VALIDATION ERROR
+    // ==============================================
+
+    if (
+      errors?.[documentKey] &&
+      setErrors
+    ) {
+
+      setErrors(prev => ({
+        ...prev,
+        [documentKey]: '',
+      }));
+    }
+  };
+
+
+  // ====================================================
+  // DIRECT SERVER UPLOAD
+  // ====================================================
+
+  const uploadFileToServer = async (
+    documentKey,
+    file
+  ) => {
+
+    if (!file?.uri) {
+
+      Alert.alert(
+        'File Missing',
+        'Selected file is not available.'
+      );
+
+      return false;
+    }
+
+
+    // ==================================================
+    // FILE SIZE
+    // ==================================================
+
+    if (
+      file?.size >
+      MAX_FILE_SIZE
+    ) {
+
+      Alert.alert(
+        'File Too Large',
+        'Maximum file size is 5 MB.'
+      );
+
+      return false;
+    }
+
+
+    try {
+
+      setDocumentUploading(
+        documentKey,
+        true
+      );
+
+
+      // ==================================================
+      // FORMDATA
+      // ==================================================
+
+      const body =
+        new FormData();
+
+
+      body.append(
+        'files',
+        {
+
+          uri:
+            file.uri,
+
+          name:
+            file.name ||
+            `property_${documentKey}_${Date.now()}.jpg`,
+
+          type:
+            file.type ||
+            'application/octet-stream',
+
+        }
+      );
+
+
+      // ==================================================
+      // DEBUG
+      // ==================================================
+
+      console.log(
+        '================================'
+      );
+
+      console.log(
+        'PROPERTY DOCUMENT UPLOAD'
+      );
+
+      console.log(
+        'Document:',
+        documentKey
+      );
+
+      console.log(
+        'File:',
+        {
+          name: file.name,
+          type: file.type,
+          size: file.size,
+        }
+      );
+
+
+      // ==================================================
+      // API
+      // ==================================================
+
+      const response =
+        await uploadLoanDocuments(
+          body
+        ).unwrap();
+
+
+      console.log(
+        'PROPERTY DOCUMENT RESPONSE:',
+        response
+      );
+
+
+      // ==================================================
+      // GET UPLOADED FILE
+      // ==================================================
+
+      const uploadedFile =
+        response?.data?.[0];
+
+
+      const cloudinaryUrl =
+        uploadedFile?.file;
+
+
+      if (!cloudinaryUrl) {
+
+        throw new Error(
+          'Server did not return uploaded file URL.'
+        );
+      }
+
+
+      // ==================================================
+      // SERVER FILE OBJECT
+      // ==================================================
+
+      const serverFile = {
+
+        name:
+          uploadedFile?.name ||
+          file.name ||
+          'Property Document',
+
+        url:
+          cloudinaryUrl,
+
+        publicId:
+          uploadedFile?.publicId ||
+          null,
+
+        type:
+          file.type ||
+          'application/octet-stream',
+
+        uploaded:
+          true,
+
+      };
+
+
+      // ==================================================
+      // SAVE
+      // ==================================================
+
+      saveUploadedFile(
+        documentKey,
+        serverFile
+      );
+
+
+      console.log(
+        'PROPERTY DOCUMENT UPLOADED:',
+        serverFile
+      );
+
+
+      return true;
+
+    } catch (error) {
+
+      console.log(
+        'PROPERTY DOCUMENT UPLOAD ERROR:',
+        error
+      );
+
+
+      Alert.alert(
+        'Upload Failed',
+
+        error?.data?.message ||
+        error?.message ||
+        'Unable to upload document. Please try again.'
+      );
+
+
+      return false;
+
+    } finally {
+
+      setDocumentUploading(
+        documentKey,
+        false
+      );
+    }
+  };
+
+
+  // ====================================================
+  // CAMERA
+  // ====================================================
+
+  const handleCamera = async () => {
+
+    try {
+
+      const result =
+        await launchCamera({
+
+          mediaType:
+            'photo',
+
+          cameraType:
+            'back',
+
+          quality:
+            0.85,
+
+          includeBase64:
+            false,
+
+        });
+
+
+      if (
+        result?.didCancel
+      ) {
+
+        return;
+      }
+
+
+      if (
+        result?.errorCode
+      ) {
+
+        Alert.alert(
+          'Camera Error',
+
+          result?.errorMessage ||
+          'Unable to open camera.'
+        );
+
+        return;
+      }
+
+
+      const asset =
+        result?.assets?.[0];
+
+
+      if (
+        !asset?.uri
+      ) {
+
+        return;
+      }
+
+
+      const file = {
+
+        uri:
+          asset.uri,
+
+        name:
+          asset.fileName ||
+          `property_${selectedDocument}_${Date.now()}.jpg`,
+
+        type:
+          asset.type ||
+          'image/jpeg',
+
+        size:
+          asset.fileSize ||
+          0,
+
+      };
+
+
+      setSheetVisible(false);
+
+
+      await uploadFileToServer(
+        selectedDocument,
+        file
+      );
+
+    } catch (error) {
+
+      console.log(
+        'PROPERTY CAMERA ERROR:',
+        error
+      );
+
+
+      Alert.alert(
+        'Error',
+        'Unable to capture image.'
+      );
+    }
+  };
+
+
+  // ====================================================
+  // GALLERY
+  // ====================================================
+
+  const handleGallery = async () => {
+
+    try {
+
+      const currentFiles =
+        getFiles(
+          selectedDocument
+        );
+
+
+      const remainingSlots =
+        MAX_FILES_PER_DOCUMENT -
+        currentFiles.length;
+
+
+      if (
+        remainingSlots <= 0
+      ) {
+
+        Alert.alert(
+          'Maximum Files',
+          'You can upload maximum 2 files.'
+        );
+
+        return;
+      }
+
+
+      const result =
+        await launchImageLibrary({
+
+          mediaType:
+            'photo',
+
+          selectionLimit:
+            remainingSlots,
+
+          quality:
+            0.85,
+
+          includeBase64:
+            false,
+
+        });
+
+
+      if (
+        result?.didCancel
+      ) {
+
+        return;
+      }
+
+
+      if (
+        result?.errorCode
+      ) {
+
+        Alert.alert(
+          'Gallery Error',
+
+          result?.errorMessage ||
+          'Unable to open gallery.'
+        );
+
+        return;
+      }
+
+
+      const assets =
+        result?.assets || [];
+
+
+      if (
+        assets.length === 0
+      ) {
+
+        return;
+      }
+
+
+      setSheetVisible(false);
+
+
+      // ==================================================
+      // UPLOAD ONE BY ONE
+      // ==================================================
+
+      for (
+        const asset of assets
+      ) {
+
+        if (!asset?.uri) {
+          continue;
+        }
+
+
+        const file = {
+
+          uri:
+            asset.uri,
+
+          name:
+            asset.fileName ||
+            `property_${selectedDocument}_${Date.now()}.jpg`,
+
+          type:
+            asset.type ||
+            'image/jpeg',
+
+          size:
+            asset.fileSize ||
+            0,
+
+        };
+
+
+        const success =
+          await uploadFileToServer(
+            selectedDocument,
+            file
+          );
+
+
+        if (!success) {
+          break;
         }
       }
+
+    } catch (error) {
+
+      console.log(
+        'PROPERTY GALLERY ERROR:',
+        error
+      );
+
+
+      Alert.alert(
+        'Error',
+        'Unable to select image.'
+      );
+    }
+  };
+
+
+  // ====================================================
+  // PDF / DOCUMENT PICKER
+  // ====================================================
+
+  const handleDocument = async () => {
+
+    try {
+
+      const currentFiles =
+        getFiles(
+          selectedDocument
+        );
+
+
+      if (
+        currentFiles.length >=
+        MAX_FILES_PER_DOCUMENT
+      ) {
+
+        Alert.alert(
+          'Maximum Files',
+          'You can upload maximum 2 files.'
+        );
+
+        return;
+      }
+
+
+      const [
+        result
+      ] = await pick({
+
+        type: [
+
+          types.pdf,
+
+          types.images,
+
+        ],
+
+        allowMultiSelection:
+          false,
+
+      });
+
+
+      if (!result) {
+        return;
+      }
+
+
+      const file = {
+
+        uri:
+          result.uri,
+
+        name:
+          result.name ||
+          `property_${selectedDocument}_${Date.now()}`,
+
+        type:
+          result.type ||
+          'application/octet-stream',
+
+        size:
+          result.size ||
+          0,
+
+      };
+
+
+      // ==================================================
+      // SIZE VALIDATION
+      // ==================================================
+
+      if (
+        file.size >
+        MAX_FILE_SIZE
+      ) {
+
+        Alert.alert(
+          'File Too Large',
+          'Maximum file size is 5 MB.'
+        );
+
+        return;
+      }
+
+
+      // ==================================================
+      // EXTENSION VALIDATION
+      // ==================================================
+
+      const extension =
+        file.name
+          ?.split('.')
+          ?.pop()
+          ?.toLowerCase();
+
+
+      const allowedExtensions = [
+
+        'pdf',
+
+        'jpg',
+
+        'jpeg',
+
+        'png',
+
+        'webp',
+
+      ];
+
+
+      if (
+        !allowedExtensions.includes(
+          extension
+        )
+      ) {
+
+        Alert.alert(
+          'Invalid File',
+          'Only PDF, JPG, JPEG, PNG and WEBP files are allowed.'
+        );
+
+        return;
+      }
+
+
+      setSheetVisible(false);
+
+
+      await uploadFileToServer(
+        selectedDocument,
+        file
+      );
+
+    } catch (error) {
+
+      if (
+        isCancel(error)
+      ) {
+
+        return;
+      }
+
+
+      console.log(
+        'PROPERTY DOCUMENT PICK ERROR:',
+        error
+      );
+
+
+      Alert.alert(
+        'Error',
+        'Unable to select document.'
+      );
+    }
+  };
+
+
+  // ====================================================
+  // REMOVE FILE
+  // ====================================================
+
+  const removeFile = (
+    documentKey,
+    fileIndex
+  ) => {
+
+    setFormData(prev => {
+
+      const documents =
+        prev?.documents || [];
+
+
+      const updatedDocuments =
+        documents
+
+          .map(document => {
+
+            if (
+              document?.type !==
+              documentKey
+            ) {
+
+              return document;
+            }
+
+
+            return {
+
+              ...document,
+
+              files:
+                document.files.filter(
+                  (_, index) =>
+                    index !== fileIndex
+                ),
+
+            };
+
+          })
+
+          .filter(
+            document =>
+              document.files?.length > 0
+          );
+
+
+      return {
+
+        ...prev,
+
+        documents:
+          updatedDocuments,
+
+      };
+
     });
   };
 
-  const getDoc = (key) => formData?.documents?.[key];
+
+  // ====================================================
+  // RENDER
+  // ====================================================
 
   return (
-    <View style={{ paddingVertical: theme.spacing.sm }}>
 
-      {/* ===== SECTION 1: Identity Proof ===== */}
-      <CategoryHeader title="Identity Proof" />
+    <View
+      style={{
+        paddingTop:
+          theme.spacing?.md ||
+          16,
+      }}
+    >
 
-      <UploadCard
-        label="Aadhar Card"
-        subtitle="Upload both front & back side"
-        isUploaded={!!getDoc('aadhar')}
-        fileName={getDoc('aadhar')?.fileName}
-        onUpload={() => handleUpload('aadhar')}
-      />
+      {/* =================================================
+          DOCUMENT CARDS
+      ================================================= */}
 
-      <UploadCard
-        label="Pan Card"
-        subtitle="Form 16"
-        isUploaded={!!getDoc('pan')}
-        fileName={getDoc('pan')?.fileName}
-        onUpload={() => handleUpload('pan')}
-      />
+      {DOCUMENT_TYPES.map(
+        document => {
 
-      {/* ===== SECTION 2: Address Proof ===== */}
-      <CategoryHeader title="Address Proof" />
+          const files =
+            getFiles(
+              document.key
+            );
 
-      <UploadCard
-        label="Utility Bill (Electricity / Water )"
-        subtitle="Utility bill should be on name registered"
-        required
-        isUploaded={!!getDoc('utilityBill')}
-        fileName={getDoc('utilityBill')?.fileName}
-        onUpload={() => handleUpload('utilityBill')}
-      />
 
-      {/* ===== SECTION 3: Property Document ===== */}
-      <CategoryHeader title="Property Document" />
+          return (
 
-      <UploadCard
-        label="Property Tax Receipt"
-        required
-        isUploaded={!!getDoc('propertyTax')}
-        fileName={getDoc('propertyTax')?.fileName}
-        onUpload={() => handleUpload('propertyTax')}
-      />
+            <DocumentUploadCard
 
-      <UploadCard
-        label="Sale Deed"
-        required
-        isUploaded={!!getDoc('saleDeed')}
-        fileName={getDoc('saleDeed')?.fileName}
-        onUpload={() => handleUpload('saleDeed')}
-      />
+              key={
+                document.key
+              }
 
-      <UploadCard
-        label="Encumbrance Certificate"
-        required
-        isUploaded={!!getDoc('encumbranceCert')}
-        fileName={getDoc('encumbranceCert')?.fileName}
-        onUpload={() => handleUpload('encumbranceCert')}
-      />
+              title={
+                document.title
+              }
 
-      <UploadCard
-        label="Approved Plan"
-        required
-        isUploaded={!!getDoc('approvedPlan')}
-        fileName={getDoc('approvedPlan')?.fileName}
-        onUpload={() => handleUpload('approvedPlan')}
-      />
+              subtitle={
+                document.subtitle
+              }
 
-      <UploadCard
-        label="Salary Slip"
-        subtitle="Last 3 months"
-        required
-        isUploaded={!!getDoc('salarySlip')}
-        fileName={getDoc('salarySlip')?.fileName}
-        onUpload={() => handleUpload('salarySlip')}
-      />
+              uploadedFile={
+                files
+              }
 
-      <UploadCard
-        label="ITR ( Form 16 )"
-        subtitle="From 16 for 2 Yrs/ No 2"
-        required
-        isUploaded={!!getDoc('itr')}
-        fileName={getDoc('itr')?.fileName}
-        onUpload={() => handleUpload('itr')}
-      />
+              uploading={
+                !!uploadingDocuments[
+                  document.key
+                ]
+              }
 
-      <UploadCard
-        label="Bank Statement"
-        subtitle="Last 6 month's bank statement"
-        required
-        isUploaded={!!getDoc('bankStatement')}
-        fileName={getDoc('bankStatement')?.fileName}
-        onUpload={() => handleUpload('bankStatement')}
-      />
+              onUpload={() =>
+                handleUpload(
+                  document.key
+                )
+              }
 
-      {/* ===== Special Blue Card: Latest Property Photos ===== */}
-      <TouchableOpacity
-        activeOpacity={0.8}
-        onPress={() => handleUpload('propertyPhotos')}
-        style={{
-          backgroundColor: '#EBF3FF',
-          borderRadius: theme.radius.xl,
-          padding: theme.spacing.xl,
-          alignItems: 'center',
-          justifyContent: 'center',
-          marginBottom: theme.spacing.xl,
-        }}
-      >
-        <View
-          style={{
-            width: 48,
-            height: 48,
-            borderRadius: 24,
-            backgroundColor: '#2563EB',
-            justifyContent: 'center',
-            alignItems: 'center',
-            marginBottom: theme.spacing.sm,
-          }}
-        >
-          <Camera size={24} color={theme.colors.white} />
-        </View>
+              onRemove={(index) =>
+                removeFile(
+                  document.key,
+                  index
+                )
+              }
 
-        <Text
-          style={{
-            fontSize: theme.typography.b1,
-            fontFamily: theme.fonts.bold,
-            color: theme.colors.text,
-            marginBottom: theme.spacing.xs,
-          }}
-        >
-          Latest Property Photos
-        </Text>
+              error={
+                errors?.[
+                  document.key
+                ]
+              }
 
-        <Text
-          style={{
-            fontSize: theme.typography.b2,
-            fontFamily: theme.fonts.regular,
-            color: theme.colors.gray700,
-            textAlign: 'center',
-            lineHeight: theme.lineHeight.b2,
-          }}
-        >
-          Upload at least 4 photos (Front, Interior, Side, Entrance)
-        </Text>
-      </TouchableOpacity>
+              required={
+                document.required
+              }
 
-      {/* ===== Yellow Card: Document Guidelines ===== */}
+            />
+
+          );
+
+        }
+      )}
+
+
+      {/* =================================================
+          DOCUMENT GUIDELINES
+      ================================================= */}
+
       <View
         style={{
-          backgroundColor: '#FFFBEB',
-          borderColor: '#FCD34D',
-          borderWidth: 1,
-          borderRadius: theme.radius.lg,
-          padding: theme.spacing.lg,
-          marginBottom: theme.spacing.lg,
+          backgroundColor:
+            '#FFFBEB',
+
+          borderWidth:
+            1,
+
+          borderColor:
+            '#FCD34D',
+
+          borderRadius:
+            16,
+
+          padding:
+            theme.spacing?.lg ||
+            20,
+
+          marginTop:
+            theme.spacing?.xs ||
+            4,
+
+          marginBottom:
+            theme.spacing?.xl ||
+            24,
         }}
       >
-        <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: theme.spacing.sm }}>
-          <FileText size={20} color="#D97706" style={{ marginRight: theme.spacing.xs }} />
-          <Text
-            style={{
-              fontSize: theme.typography.b1,
-              fontFamily: theme.fonts.bold,
-              color: '#92400E',
-            }}
-          >
-            Document Guidelines
-          </Text>
-        </View>
 
-        <View style={{ gap: 4, paddingLeft: 4 }}>
-          <Text style={{ fontSize: theme.typography.b3, fontFamily: theme.fonts.regular, color: '#B45309' }}>
-            • Ensure documents are clear and readable
-          </Text>
-          <Text style={{ fontSize: theme.typography.b3, fontFamily: theme.fonts.regular, color: '#B45309' }}>
-            • All documents should be valid and not expired
-          </Text>
-          <Text style={{ fontSize: theme.typography.b3, fontFamily: theme.fonts.regular, color: '#B45309' }}>
-            • File size should not exceed 5MB per document
-          </Text>
-          <Text style={{ fontSize: theme.typography.b3, fontFamily: theme.fonts.regular, color: '#B45309' }}>
-            • Accepted formats: PDF, JPG, PNG
-          </Text>
-        </View>
+        <Text
+          style={{
+            fontSize:
+              theme.typography?.b1 ||
+              16,
+
+            fontFamily:
+              theme.fonts?.bold ||
+              'Manrope-Bold',
+
+            color:
+              '#B45309',
+
+            marginBottom:
+              theme.spacing?.xs ||
+              4,
+          }}
+        >
+          📄 Document Guidelines
+        </Text>
+
+
+        <Text
+          style={{
+            fontSize:
+              13,
+
+            fontFamily:
+              theme.fonts?.medium ||
+              theme.fonts?.regular ||
+              'Manrope-Medium',
+
+            color:
+              '#92400E',
+
+            lineHeight:
+              20,
+          }}
+        >
+          Ensure all documents are clear and readable
+          {'\n'}
+          • All documents should be valid and not expired
+          {'\n'}
+          • Maximum file size: 5 MB per file
+          {'\n'}
+          • Accepted formats: PDF, JPG, JPEG, PNG, WEBP
+          {'\n'}
+          • Property documents should be clearly visible
+        </Text>
+
       </View>
 
+
+      {/* =================================================
+          BOTTOM SHEET
+      ================================================= */}
+
+      <UploadBottomSheet
+
+        sheetVisible={
+          sheetVisible
+        }
+
+        setSheetVisible={
+          setSheetVisible
+        }
+
+        openCamera={
+          handleCamera
+        }
+
+        openGallery={
+          handleGallery
+        }
+
+        openDocument={
+          handleDocument
+        }
+
+        type="photo"
+
+      />
+
     </View>
+
   );
 };
 
-export default DocumentUploadForm;
+
+export default PropertyDocumentUploadForm;

@@ -10,10 +10,12 @@ import LoanScreen from "../screens/Loan/LoanScreen.jsx";
 import HistoryScreen from "../screens/History/HistoryScreen.jsx";
 import ProfileScreen from "../screens/Profile/ProfileScreen.jsx";
 import MyLoanScreen from "../screens/GetLoan/MyLoan/MyLoanScreen.jsx";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 const Tab = createBottomTabNavigator();
 
 const BottomTabNavigator = () => {
+   const insets = useSafeAreaInsets();
   return (
     <Tab.Navigator
       initialRouteName="Home"
@@ -24,7 +26,7 @@ const BottomTabNavigator = () => {
         tabBarInactiveTintColor: "#9CA3AF",
 
         tabBarStyle: {
-          height: 65,
+           height: 65 + insets.bottom,
           backgroundColor: "#FFFFFF",
           borderTopWidth: 1,
           borderTopColor: "#E5E7EB",

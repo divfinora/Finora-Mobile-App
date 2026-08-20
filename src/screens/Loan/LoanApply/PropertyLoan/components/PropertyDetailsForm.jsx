@@ -8,49 +8,122 @@ import CustomDropdown from '../../../../../components/common/Modal/CustomDropdow
 
 
 // ===== Option Card Button using Theme Tokens =====
-const OptionCard = ({ title, selected, onPress, showCheckIcon = false }) => {
+// ======================================================
+// OPTION CARD
+// ======================================================
+
+const OptionCard = ({
+  title,
+  selected,
+  onPress,
+  showCheckIcon = false,
+}) => {
+
   return (
     <TouchableOpacity
       activeOpacity={0.8}
       onPress={onPress}
       style={{
         flex: 1,
-        height: 56,
-        borderRadius: theme.radius.md,
-        borderWidth: theme.borderWidth.thin,
-        borderColor: selected ? theme.colors.primary500 : theme.colors.gray300,
-        backgroundColor: selected ? theme.colors.card : theme.colors.white,
-        flexDirection: 'row',
-        alignItems: 'center',
-        justifyContent: 'center',
-        paddingHorizontal: theme.spacing.sm,
+
+        height: 66,
+
+        borderRadius:
+          theme.radius.md,
+
+        borderWidth:
+          theme.borderWidth.thin,
+
+        borderColor:
+          selected
+            ? theme.colors.primary500
+            : theme.colors.gray300,
+
+        backgroundColor:
+          selected
+            ? theme.colors.card
+            : theme.colors.white,
+
+        flexDirection: "row",
+
+        alignItems: "center",
+
+        justifyContent: "center",
+
+        paddingHorizontal: 8,
+
+        // IMPORTANT
+        minWidth: 0,
       }}
     >
+
+      {/* SELECTED CHECK */}
+
       {selected && showCheckIcon && (
+
         <View
           style={{
-            width: 18,
-            height: 18,
-            borderRadius: theme.radius.circle,
-            backgroundColor: theme.colors.primary500,
-            justifyContent: 'center',
-            alignItems: 'center',
-            marginRight: theme.spacing.xs,
+            width: 20,
+
+            height: 20,
+
+            borderRadius:
+              theme.radius.circle,
+
+            backgroundColor:
+              theme.colors.primary500,
+
+            justifyContent:
+              "center",
+
+            alignItems:
+              "center",
+
+            marginRight: 6,
+
+            flexShrink: 0,
           }}
         >
-          <Check size={12} color={theme.colors.white} strokeWidth={3} />
+
+          <Check
+            size={13}
+            color={
+              theme.colors.white
+            }
+            strokeWidth={3}
+          />
+
         </View>
+
       )}
+
+
+      {/* TITLE */}
+
       <Text
+        numberOfLines={2}
+        adjustsFontSizeToFit={false}
         style={{
-          fontSize: theme.typography.b2,
-          fontFamily: theme.fonts.medium,
-          color: theme.colors.text,
-          textAlign: 'center',
+          fontSize:
+            theme.typography.b2,
+
+          fontFamily:
+            theme.fonts.medium,
+
+          color:
+            theme.colors.text,
+
+          textAlign:
+            "center",
+
+          flexShrink: 1,
+
+          lineHeight: 20,
         }}
       >
         {title}
       </Text>
+
     </TouchableOpacity>
   );
 };
@@ -61,7 +134,19 @@ const PropertyDetailsForm = ({ formData, setFormData, errors, setErrors }) => {
   const ownershipTypes = ['Self-owned', 'Rented', 'Leased', 'Parental'];
   const constructionStatuses = ['Ready to Move', 'Under Construction'];
   const occupiedBy = ['Self', 'Tenant', 'Vacant'];
+const commonBorderStyle = {
 
+
+
+  borderWidth: 0.3,
+
+
+
+  borderColor: '#48484a58',
+
+
+
+}
   return (
     <View style={{ paddingVertical: theme.spacing.sm }}>
       
@@ -75,6 +160,7 @@ const PropertyDetailsForm = ({ formData, setFormData, errors, setErrors }) => {
           setFormData((prev) => ({ ...prev, propertyType: value }));
           setErrors((prev) => ({ ...prev, propertyType: '' }));
         }}
+        inputContainerStyle={commonBorderStyle}
         error={errors?.propertyType}
       />
 
@@ -88,6 +174,7 @@ const PropertyDetailsForm = ({ formData, setFormData, errors, setErrors }) => {
           setFormData((prev) => ({ ...prev, propertyOwnership: value }));
           setErrors((prev) => ({ ...prev, propertyOwnership: '' }));
         }}
+        inputContainerStyle={commonBorderStyle}
         error={errors?.propertyOwnership}
       />
 
