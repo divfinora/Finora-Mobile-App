@@ -54,8 +54,8 @@ const RenovationDetails = ({ formData = {}, setFormData, errors = {}, setErrors 
     }
   };
 
-  const selectedType = details.renovationType || 'Bathroom';
-  const selectedTimeline = details.timeline || '3 to 6 months';
+  const selectedType = details.renovationType || '';
+  const selectedTimeline = details.timeline || '' ;
 
   return (
     <View style={{ marginTop: 12, gap: 16 }}>
