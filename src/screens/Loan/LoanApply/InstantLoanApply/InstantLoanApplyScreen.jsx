@@ -31,7 +31,8 @@ import {
     useApplyLoanMutation,
 } from "../../../../redux/features/customer/customerApi";
 import SuccessApplicationModal from "../../../../components/common/Modal/SuccessApplicationModal.jsx";
-const InstantLoanApplyScreen = ({ route }) => {
+import { resetToTab } from "../../../../navigation/navigationReset.js";
+const InstantLoanApplyScreen = ({ route ,navigation}) => {
 
     const [successModal, setSuccessModal] = useState(false);
     const { product } = route.params;
@@ -142,7 +143,10 @@ const InstantLoanApplyScreen = ({ route }) => {
 
             onSuccess: (res) => {
 
-                console.log("Apply Loan Success", res);
+                  resetToTab(
+                               navigation,
+                               'History'
+                             );
 
                 // navigation.navigate("LoanStatus", {
                 //   applicationId: res?.data?.applicationId,

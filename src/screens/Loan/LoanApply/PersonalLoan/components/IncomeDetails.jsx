@@ -5,7 +5,7 @@ import { CheckCircle2 } from 'lucide-react-native';
 
 const IncomeDetails = ({ formData, setFormData, errors, setErrors }) => {
   // Current selected employment type (defaults to 'salaried')
-  const selectedType = formData?.incomeDetails?.employmentType || 'salaried';
+  const selectedType = formData?.incomeDetails?.employmentType || '';
 
   // Income type options data mapping
   const employmentOptions = [

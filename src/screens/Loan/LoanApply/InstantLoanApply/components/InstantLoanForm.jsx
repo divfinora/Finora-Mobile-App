@@ -300,3 +300,5 @@ const InstantLoanForm = ({
 };
 
 export default InstantLoanForm;
+
+
