@@ -476,25 +476,49 @@ const validateStep5 = (formData) => {
   // ===================================================
 
   if (
-    employmentType === "salaried"
+  employmentType === "salaried"
+) {
+
+  // ===============================================
+  // SALARY SLIP
+  // ===============================================
+
+  const salarySlip =
+    incomeDocs.find(
+      (item) =>
+        item?.type === "salarySlip"
+    );
+
+  if (
+    !salarySlip?.files?.length
   ) {
 
-    const salarySlip =
-      incomeDocs.find(
-        (item) =>
-          item?.type === "salarySlip"
-      );
-
-    if (
-      !salarySlip?.files?.length
-    ) {
-
-      errors.salarySlip =
-        "Please upload Salary Slip";
-
-    }
+    errors.salarySlip =
+      "Please upload Salary Slip";
 
   }
+
+
+  // ===============================================
+  // BANK STATEMENT
+  // ===============================================
+
+  const bankStatement =
+    incomeDocs.find(
+      (item) =>
+        item?.type === "bankStatement"
+    );
+
+  if (
+    !bankStatement?.files?.length
+  ) {
+
+    errors.bankStatement =
+      "Please upload Bank Statement";
+
+  }
+
+}
 
 
   // ===================================================
@@ -662,7 +686,7 @@ const stepValidators = {
     "6a4b57ab1f72b0160191314d", // Aadhaar
 
   addressProof:
-    "ADDRESS_DOCUMENT_ID", // TODO: actual Address Proof ID
+    "6a7c13541a8edbe134a0b670", // TODO: actual Address Proof ID
 
   panCard:
     "6a4b57ab1f72b0160191314c", // PAN
@@ -852,88 +876,16 @@ const buildIncomeDocuments = (
 
   // ===================================================
   // SALARIED
+  // Salary Slip + Bank Statement
   // ===================================================
 
   if (
     employmentType === "salaried"
   ) {
 
-    const salarySlip =
-      incomeDocs.find(
-        (item) =>
-          item?.type === "salarySlip"
-      );
-
-
-    const documentId =
-      documentIdMap.salarySlip;
-
-
-    if (!documentId) {
-
-      console.warn(
-        "Missing Salary Slip document ID"
-      );
-
-      return [];
-
-    }
-
-
-    const files =
-      Array.isArray(
-        salarySlip?.files
-      )
-        ? salarySlip.files
-        : [];
-
-
-    return files
-      .map(
-        (file) => {
-
-          const fileUrl =
-            getFileUrl(file);
-
-
-          if (!fileUrl) {
-            return null;
-          }
-
-
-          return {
-
-            document:
-              documentId,
-
-            file:
-              fileUrl,
-
-          };
-
-        }
-      )
-      .filter(Boolean);
-
-  }
-
-
-  // ===================================================
-  // SELF EMPLOYED
-  // ===================================================
-
-  if (
-    employmentType ===
-    "self_employed"
-  ) {
-
     const allowedTypes = [
 
-      "form16",
-
-      "companyId",
-
-      "offerLetter",
+      "salarySlip",
 
       "bankStatement",
 
@@ -941,12 +893,14 @@ const buildIncomeDocuments = (
 
 
     return incomeDocs
+
       .filter(
         (document) =>
           allowedTypes.includes(
             document?.type
           )
       )
+
       .flatMap(
         (document) => {
 
@@ -977,6 +931,7 @@ const buildIncomeDocuments = (
 
 
           return files
+
             .map(
               (file) => {
 
@@ -985,7 +940,9 @@ const buildIncomeDocuments = (
 
 
                 if (!fileUrl) {
+
                   return null;
+
                 }
 
 
@@ -1001,6 +958,105 @@ const buildIncomeDocuments = (
 
               }
             )
+
+            .filter(Boolean);
+
+        }
+      );
+
+  }
+
+
+  // ===================================================
+  // SELF EMPLOYED
+  // Form 16 + Company ID + Offer Letter + Bank Statement
+  // ===================================================
+
+  if (
+    employmentType ===
+    "self_employed"
+  ) {
+
+    const allowedTypes = [
+
+      "form16",
+
+      "companyId",
+
+      "offerLetter",
+
+      "bankStatement",
+
+    ];
+
+
+    return incomeDocs
+
+      .filter(
+        (document) =>
+          allowedTypes.includes(
+            document?.type
+          )
+      )
+
+      .flatMap(
+        (document) => {
+
+          const documentId =
+            documentIdMap[
+              document?.type
+            ];
+
+
+          if (!documentId) {
+
+            console.warn(
+              "Missing income document ID:",
+              document?.type
+            );
+
+            return [];
+
+          }
+
+
+          const files =
+            Array.isArray(
+              document?.files
+            )
+              ? document.files
+              : [];
+
+
+          return files
+
+            .map(
+              (file) => {
+
+                const fileUrl =
+                  getFileUrl(file);
+
+
+                if (!fileUrl) {
+
+                  return null;
+
+                }
+
+
+                return {
+
+                  document:
+                    documentId,
+
+                  file:
+                    fileUrl,
+
+                };
+
+              }
+            )
+
             .filter(Boolean);
 
         }

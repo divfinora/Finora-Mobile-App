@@ -328,6 +328,10 @@ const ReviewDocument = ({
           'salaried'
         ) {
 
+          // =============================================
+          // SALARY SLIP
+          // =============================================
+
           list.push({
 
             id:
@@ -338,6 +342,27 @@ const ReviewDocument = ({
 
             subtitle:
               'Last 3 Months',
+
+            source:
+              incomeDocuments,
+
+          });
+
+
+          // =============================================
+          // BANK STATEMENT
+          // =============================================
+
+          list.push({
+
+            id:
+              'bankStatement',
+
+            title:
+              'Bank Statement',
+
+            subtitle:
+              'Last 6 Months',
 
             source:
               incomeDocuments,
@@ -516,7 +541,7 @@ const ReviewDocument = ({
   const allDocumentsReady =
     totalDocumentCount > 0 &&
     uploadedCount ===
-      totalDocumentCount;
+    totalDocumentCount;
 
 
   // ===================================================
@@ -806,9 +831,9 @@ const ReviewDocument = ({
                   {document.isUploaded
 
                     ? (
-                        document.fileName ||
-                        'Uploaded document'
-                      )
+                      document.fileName ||
+                      'Uploaded document'
+                    )
 
                     : 'Not uploaded'}
 

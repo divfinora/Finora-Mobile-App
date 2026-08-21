@@ -100,18 +100,18 @@ const IncomeDocument = ({
   // DOCUMENT CONFIG
   // ====================================================
 
-  const SALARIED_DOCUMENTS = [
-
-    {
-      id: 'salarySlip',
-
-      title: 'Salary Slip',
-
-      subtitle:
-        'Upload last 3 months salary slips',
-    },
-
-  ];
+const SALARIED_DOCUMENTS = [
+  {
+    id: 'salarySlip',
+    title: 'Salary Slip',
+    subtitle: 'Upload last 3 months salary slips',
+  },
+  {
+    id: 'bankStatement',
+    title: 'Bank Statement',
+    subtitle: 'Upload last 6 months bank statement',
+  },
+];
 
 
   const SELF_EMPLOYED_DOCUMENTS = [
