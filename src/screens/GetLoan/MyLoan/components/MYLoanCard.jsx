@@ -5,6 +5,7 @@ import { theme } from '../../../../theme';
  
 
 const MYLoanCard = ({ item, onPressSeeMore }) => {
+   console.log(item ,"item====")
   // Amount Formatting
   const rawAmount = item?.approvedAmount || item?.disbursedAmount || item?.outstandingAmount || 20000;
   const formattedAmount = `₹${Number(rawAmount).toLocaleString('en-IN')}`;

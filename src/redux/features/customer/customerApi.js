@@ -102,12 +102,12 @@ export const customerApi = baseApi.injectEndpoints({
         method: "POST",
         body,
       }),
-        invalidatesTags: [
-    "MyLoans",
-    "LoanDetails",
-    "Notifications",
-    "UnreadNotificationCount",
-  ],
+      invalidatesTags: [
+        "MyLoans",
+        "LoanDetails",
+        "Notifications",
+        "UnreadNotificationCount",
+      ],
     }),
 
     getMyLoans: builder.query({
@@ -115,7 +115,7 @@ export const customerApi = baseApi.injectEndpoints({
         url: "/applyloan/my-loans",
         method: "GET",
       }),
-      providesTags: ["MyLoans" ],
+      providesTags: ["MyLoans"],
     }),
 
     getLoanApplicationPrefill: builder.query({
@@ -230,6 +230,77 @@ export const customerApi = baseApi.injectEndpoints({
         body: formData,
       }),
     }),
+
+    // =====================================================
+    // PAYMENT / EMI
+    // =====================================================
+
+    createEMIPayment: builder.mutation({
+
+      query: ({
+        emiId,
+      }) => ({
+
+        url:
+          '/payemt/create-payment',
+
+        method:
+          'POST',
+
+        body: {
+          emiId,
+        },
+
+      }),
+
+    }),
+
+
+    submitEMIUTR: builder.mutation({
+
+      query: ({
+        paymentId,
+        utrNumber,
+        customerRemark,
+      }) => ({
+
+        url:
+          '/payemt/submit',
+
+        method:
+          'PUT',
+
+        body: {
+
+          paymentId,
+
+          utrNumber,
+
+          customerRemark:
+            customerRemark ||
+            'Payment made through UPI',
+
+        },
+
+      }),
+      invalidatesTags: [
+        "MyLoans",
+        "LoanDetails",
+      ],
+    }),
+    getMyRepayments: builder.query({
+
+      query: () => ({
+
+        url:
+          '/payemt/my',
+
+        method:
+          'GET',
+
+      }),
+
+    }),
   }),
 });
 
@@ -262,5 +333,9 @@ export const {
   useMarkAllNotificationsAsReadMutation,
   useDeleteNotificationMutation,
   useDeleteAllNotificationsMutation,
-  useUploadLoanDocumentsMutation
+  useUploadLoanDocumentsMutation,
+
+  useCreateEMIPaymentMutation,
+  useSubmitEMIUTRMutation,
+  useGetMyRepaymentsQuery,
 } = customerApi;

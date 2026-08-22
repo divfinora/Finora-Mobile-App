@@ -8,7 +8,7 @@ const TotalPaidFooter = ({ totalPaidAmount = 0, status = 'Active' }) => {
   return (
     <View
       style={{
-        marginTop: theme?.spacing?.xl || 20,
+        marginTop: theme?.spacing?.sm   ,
         backgroundColor: '#FFFFFF',
         borderRadius: 16,
         borderWidth: 1.5,

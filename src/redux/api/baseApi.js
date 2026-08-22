@@ -25,6 +25,8 @@ const baseQuery = fetchBaseQuery({
     // ===============================
 
     if (tokens?.accessToken) {
+
+       console.log("access token" ,tokens.accessToken )
       headers.set(
         "Authorization",
         `Bearer ${tokens.accessToken}`

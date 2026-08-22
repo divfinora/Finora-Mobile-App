@@ -29,8 +29,11 @@ import ApplyRenovationLoan from '../screens/Loan/LoanApply/RenovationLoan/ApplyR
 import SingleLoanDetailsScreen from '../screens/GetLoan/SingleLoanDetails/SingleLoanDetailsScreen.jsx'
 import NotificationPreferencesScreen from '../screens/Notification/NotificationPreferencesScreen/NotificationPreferencesScreen.jsx'
 import GetNotificationScreen from '../screens/Notification/GetNotification/GetNotificationScreen.jsx';
-import LoanCategoryScreen
-  from "../screens/Loan/LoanProducts/LoanCategoryScreen.jsx";
+import LoanCategoryScreen from "../screens/Loan/LoanProducts/LoanCategoryScreen.jsx";
+import SingleLoanDetailsFeeDetailsScreen from '../screens/GetLoan/SingleLoanDetails/components/SingleLoanDetailsFeeDetailsScreen.jsx';
+import SingleLoanDetailsCompleteEMIScreen from '../screens/GetLoan/SingleLoanDetails/components/SingleLoanDetailsCompleteEMIScreen.jsx';
+
+ 
 const Stack = createNativeStackNavigator();
 
 const AppStack = () => {
@@ -164,9 +167,26 @@ const AppStack = () => {
         component={GetNotificationScreen}
       />
       <Stack.Screen
-  name="loan-category-screen"
-  component={LoanCategoryScreen}
-/>
+        name="loan-category-screen"
+        component={LoanCategoryScreen}
+      />
+
+ 
+      <Stack.Screen
+        name="single-loan-detail-fee-details-screen"
+        component={SingleLoanDetailsFeeDetailsScreen}
+        options={{
+          headerShown: false,
+        }}
+      />
+
+      <Stack.Screen
+        name="single-loan-detail-complete-emi-screen"
+        component={SingleLoanDetailsCompleteEMIScreen}
+        options={{
+          headerShown: false,
+        }}
+      />
 
     </Stack.Navigator>
   );

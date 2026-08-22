@@ -13,7 +13,7 @@ const LoanDetailsSkeleton = () => {
       <ScrollView
         showsVerticalScrollIndicator={false}
         contentContainerStyle={{
-          paddingHorizontal: theme?.screen?.horizontalPadding || 20,
+           
           paddingTop: 16,
           paddingBottom: 170,
         }}
@@ -72,7 +72,7 @@ const LoanDetailsSkeleton = () => {
             borderColor: '#F3F4F6',
           }}
         >
-          {[1, 2, 3, 4, 5, 6].map((item, index) => (
+          {[1, 2, 3, 4, ].map((item, index) => (
             <View
               key={item}
               style={{
@@ -119,26 +119,7 @@ const LoanDetailsSkeleton = () => {
       </ScrollView>
 
       {/* ==================== 4. STICKY BOTTOM BUTTONS SKELETON ==================== */}
-      <View
-        style={{
-          position: 'absolute',
-          bottom: 0,
-          left: 0,
-          right: 0,
-          backgroundColor: '#FFFFFF',
-          paddingHorizontal: theme?.screen?.horizontalPadding || 20,
-          paddingTop: 16,
-          paddingBottom: 24,
-          borderTopWidth: 1,
-          borderTopColor: '#F3F4F6',
-          alignItems: 'center',
-          gap: 12,
-        }}
-      >
-        <ShimmerPlaceholder width="100%" height={52} borderRadius={16} />
-        <ShimmerPlaceholder width={120} height={14} borderRadius={4} />
-        <ShimmerPlaceholder width={180} height={12} borderRadius={4} />
-      </View>
+    
     </View>
   );
 };

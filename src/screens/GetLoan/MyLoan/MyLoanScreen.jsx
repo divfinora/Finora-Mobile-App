@@ -11,48 +11,7 @@ import { theme } from '../../../theme/index.js';
 const HEADER_BG = '#FAF5EE';
 const SCREEN_BG = theme?.screen?.background || '#F8F9FA';
 
-const MOCK_LOANS_DATA = [
-  {
-    loanId: '6a62fcf16d5d38d97d87b5cd',
-    applicationId: 'APP-1784872177270',
-    loanNumber: 'LOAN-99000C0B0V16CVX0',
-    productName: 'Personal Loan',
-    approvedAmount: 20000,
-    disbursedAmount: 20000,
-    outstandingAmount: 20000,
-    status: 'ACTIVE',
-  },
-  {
-    loanId: '6a62fcf16d5d38d97d87b5ce',
-    applicationId: 'APP-1784872177271',
-    loanNumber: 'LOAN-99000C0B0V16CVX1',
-    productName: 'Education Loan',
-    approvedAmount: 20000,
-    disbursedAmount: 20000,
-    outstandingAmount: 20000,
-    status: 'ACTIVE',
-  },
-  {
-    loanId: '6a62fcf16d5d38d97d87b5cf',
-    applicationId: 'APP-1784872177272',
-    loanNumber: 'LOAN-99000C0B0V16CVX2',
-    productName: 'Home Loan',
-    approvedAmount: 20000,
-    disbursedAmount: 20000,
-    outstandingAmount: 20000,
-    status: 'ACTIVE',
-  },
-  {
-    loanId: '6a62fcf16d5d38d97d87b5cg',
-    applicationId: 'APP-1784872177273',
-    loanNumber: 'LOAN-99000C0B0V16CVX3',
-    productName: 'Agriculture Loan',
-    approvedAmount: 20000,
-    disbursedAmount: 20000,
-    outstandingAmount: 20000,
-    status: 'ACTIVE',
-  },
-];
+ 
 
 
 const GetLoanScreen = ({ navigation }) => {
