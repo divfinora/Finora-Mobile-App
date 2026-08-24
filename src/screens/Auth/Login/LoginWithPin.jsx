@@ -18,7 +18,6 @@ import {
     useWindowDimensions,
     ActivityIndicator,
 } from "react-native";
-
 import {
     SafeAreaView,
 } from "react-native-safe-area-context";
@@ -43,6 +42,7 @@ import useHandleMutation
 import { useDispatch } from "react-redux";
 import { saveAuth } from "../../../utils/saveAuth"
 import {syncProfile} from '../../../utils/profileSync'
+ 
 const PIN_LENGTH = 4;
 
 const LoginWithPin = ({
@@ -50,7 +50,7 @@ const LoginWithPin = ({
 }) => {
  const dispatch = useDispatch()
     //  Api CAlll 
-
+ 
     const {
         handleMutation,
     } = useHandleMutation();
@@ -332,6 +332,8 @@ const LoginWithPin = ({
                                     Mobile Number
                                 </Text>
 
+
+
                                 <TextInput
                                     ref={phoneRef}
                                     value={phone}
@@ -385,6 +387,10 @@ const LoginWithPin = ({
                                             theme.colors.black,
                                     }}
                                 />
+
+                                <TouchableOpacity onPress={()=>{ navigation.navigate("visitor-login-pannel")}}>
+                                    <Text>Visitory Login</Text>
+                                </TouchableOpacity>
 
                                 {/* ===================================== */}
                                 {/* PIN */}

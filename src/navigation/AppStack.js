@@ -32,7 +32,7 @@ import GetNotificationScreen from '../screens/Notification/GetNotification/GetNo
 import LoanCategoryScreen from "../screens/Loan/LoanProducts/LoanCategoryScreen.jsx";
 import SingleLoanDetailsFeeDetailsScreen from '../screens/GetLoan/SingleLoanDetails/components/SingleLoanDetailsFeeDetailsScreen.jsx';
 import SingleLoanDetailsCompleteEMIScreen from '../screens/GetLoan/SingleLoanDetails/components/SingleLoanDetailsCompleteEMIScreen.jsx';
-
+import VisitorLoginScreen from '../screens/Auth/Visitor/VisitorLoginScreen.jsx'
  
 const Stack = createNativeStackNavigator();
 
@@ -187,6 +187,15 @@ const AppStack = () => {
           headerShown: false,
         }}
       />
+    
+
+
+       
+
+       {/* Visitory Flow ---------- start  */}
+
+
+       {/* Visitory Flow ----------  end */}
 
     </Stack.Navigator>
   );

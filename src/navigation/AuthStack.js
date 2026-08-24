@@ -13,6 +13,7 @@ import LoginScreen from "../screens/Auth/Regester/LoginScreen";
 import EnterOtpScreen from "../screens/Auth/Regester/EnterOtpScreen.jsx";
 import CreatePinScreen from "../screens/Auth/Regester/CreatePinScreen.jsx";
 import LoginWithPin from "../screens/Auth/Login/LoginWithPin.jsx";
+import VisitorLoginScreen from "../screens/Auth/Visitor/VisitorLoginScreen.jsx";
 
 const Stack = createNativeStackNavigator();
 
@@ -50,6 +51,10 @@ const AuthStack = () => {
       <Stack.Screen
         name="enter-mpin-login-user"
         component={LoginWithPin}
+      />
+      <Stack.Screen
+        name="visitor-login-pannel"
+        component={VisitorLoginScreen}
       />
 
 
