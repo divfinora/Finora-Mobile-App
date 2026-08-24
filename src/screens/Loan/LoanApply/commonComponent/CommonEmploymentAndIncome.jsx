@@ -1,99 +1,362 @@
-  import React from 'react';
-  import { View, Text } from 'react-native';
-  import CommonInput from '../../../../components/common/Input/CommonInput';
-  import CustomDropdown from '../../../../components/common/Modal/CustomDropdown';
-  import { theme } from '../../../../theme';
+import React from "react";
 
-  const EMPLOYMENT_TYPES = [
-    'Salaried',
-    'Self-Employed / Business',
-    'Professional',
-    'Student',
-    'Retired / Other',
-  ];
+import {
+  View,
+  Text,
+} from "react-native";
 
-  const CommonEmploymentAndIncome = ({ formData, setFormData, errors, setErrors }) => {
-    const handleChange = (field, value) => {
-      setFormData((prev) => ({
+import CommonInput from "../../../../components/common/Input/CommonInput";
+import SquareChip from "../../../../components/common/Input/SquareChip";
+import { theme } from "../../../../theme";
+
+
+const EMPLOYMENT_TYPES = [
+  {
+    value: "SALARIED",
+    label: "Salaried",
+    width: 98,
+  },
+  {
+    value: "SELF_EMPLOYED",
+    label: "Self Employed",
+    width: 132,
+  },
+  {
+    value: "BUSINESS",
+    label: "Business",
+    width: 100,
+  },
+  {
+    value: "STUDENT",
+    label: "Student",
+    width: 100,
+  },
+];
+
+
+const CommonEmploymentAndIncome = ({
+  formData,
+  setFormData,
+  errors,
+  setErrors,
+}) => {
+
+  // ==========================================
+  // HANDLE CHANGE
+  // ==========================================
+
+  const handleChange = (field, value) => {
+
+    setFormData((prev) => ({
+      ...prev,
+      [field]: value,
+    }));
+
+
+    // Clear field error immediately
+    if (errors?.[field]) {
+
+      setErrors?.((prev) => ({
         ...prev,
-        [field]: value,
+        [field]: "",
       }));
 
-      // Selection/Typing par us field ka error instantly clear ho jayega
-      if (errors?.[field]) {
-        setErrors?.((prev) => ({
-          ...prev,
-          [field]: '',
-        }));
-      }
-    };
+    }
 
-    const borderStyle = {
-      borderWidth: 0.3,
-      borderColor: '#48484a58',
-    };
-
-    return (
-      <View style={{ paddingTop: theme.spacing.md }}>
-        {/* ===== Title ===== */}
-        <Text
-          style={{
-            fontSize: theme.typography.h3,
-            fontFamily: theme.fonts.headingBold || theme.fonts.bold,
-            color: theme.colors.text,
-            marginBottom: theme.spacing.lg,
-          }}
-        >
-          Employment & Income
-        </Text>
-
-        {/* ===== Employment Type Dropdown Field ===== */}
-        <CustomDropdown
-          label="Employment Type"
-          required
-          placeholder="Select employment Type"
-          options={EMPLOYMENT_TYPES}
-          selectedValue={formData?.employmentType || ''}
-          onSelect={(item) => handleChange('employmentType', item)}
-          error={errors?.employmentType}
-          inputContainerStyle={borderStyle}
-        />
-
-        {/* ===== Monthly Income Field ===== */}
-        <CommonInput
-          label="Monthly Income (₹)"
-          placeholder="Enter monthly Income"
-          value={formData?.monthlyIncome || ''}
-          onChangeText={(val) => handleChange('monthlyIncome', val)}
-          keyboardType="numeric"
-          error={errors?.monthlyIncome}
-          inputContainerStyle={borderStyle}
-        />
-
-        {/* ===== Existing EMI Field ===== */}
-        <CommonInput
-          label="Existing EMI"
-          required
-          placeholder="Enter Existing EMI amount"
-          value={formData?.existingEmi || ''}
-          onChangeText={(val) => handleChange('existingEmi', val)}
-          keyboardType="numeric"
-          error={errors?.existingEmi}
-          inputContainerStyle={borderStyle}
-        />
-
-        {/* ===== Occupation Details Field ===== */}
-        <CommonInput
-          label="Occupation Details"
-          required
-          placeholder="e.g., Software engineer, Shop-owner"
-          value={formData?.occupationDetails || ''}
-          onChangeText={(val) => handleChange('occupationDetails', val)}
-          error={errors?.occupationDetails}
-          inputContainerStyle={borderStyle}
-        />
-      </View>
-    );
   };
 
-  export default CommonEmploymentAndIncome;
+
+  // ==========================================
+  // COMMON BORDER
+  // ==========================================
+
+  const borderStyle = {
+    borderWidth: 0.3,
+    borderColor: "#48484a58",
+  };
+
+
+  return (
+
+    <View
+      style={{
+        paddingTop: theme.spacing.md,
+      }}
+    >
+
+      {/* ==========================================
+          TITLE
+      ========================================== */}
+
+      <Text
+        style={{
+          fontSize: theme.typography.h3,
+
+          fontFamily:
+            theme.fonts.headingBold ||
+            theme.fonts.bold,
+
+          color: theme.colors.text,
+
+          marginBottom:
+            theme.spacing.lg,
+        }}
+      >
+        Employment & Income
+      </Text>
+
+
+      {/* ==========================================
+          EMPLOYMENT TYPE
+      ========================================== */}
+
+      <Text
+        style={{
+          fontSize: theme.typography.b2,
+
+          lineHeight: 21,
+
+          color:
+            theme.colors.textSecondary ||
+            "#374151",
+
+          fontFamily:
+            theme.fonts.regular,
+
+          marginBottom:
+            theme.spacing.sm,
+        }}
+      >
+        Employment Type
+        <Text
+          style={{
+            color: "#FF6B35",
+          }}
+        >
+          *
+        </Text>
+      </Text>
+
+
+      {/* ==========================================
+          EMPLOYMENT CHIPS
+      ========================================== */}
+
+      <View
+        style={{
+          flexDirection: "row",
+
+          flexWrap: "wrap",
+
+          gap: 12,
+
+          marginBottom:
+            errors?.employmentType
+              ? 6
+              : theme.spacing.lg,
+        }}
+      >
+
+        {EMPLOYMENT_TYPES.map((item) => {
+
+          const selected =
+            formData?.employmentType ===
+            item.value;
+
+
+          return (
+
+            <SquareChip
+              key={item.value}
+
+              title={item.label}
+
+              selected={selected}
+
+              onPress={() =>
+                handleChange(
+                  "employmentType",
+                  item.value
+                )
+              }
+
+              width={item.width}
+
+              height={42}
+
+              borderRadius={10}
+
+              borderWidth={1}
+
+              selectedBackgroundColor="#FFF4E5"
+
+              selectedBorderColor="#FF7043"
+
+              selectedTextColor="#202020"
+
+              unselectedBackgroundColor="#F5F5F7"
+
+              unselectedBorderColor="transparent"
+
+              unselectedTextColor="#747784"
+
+              textStyle={{
+                fontSize: 14,
+
+                lineHeight: 20,
+
+                fontFamily:
+                  theme.fonts.medium ||
+                  "Manrope-Medium",
+
+                textTransform:
+                  "capitalize",
+
+                textAlign: "center",
+
+              }}
+
+              style={{
+                flex: 0,
+
+                paddingHorizontal: 8,
+              }}
+            />
+
+          );
+
+        })}
+
+      </View>
+
+
+      {/* ==========================================
+          EMPLOYMENT ERROR
+      ========================================== */}
+
+      {!!errors?.employmentType && (
+
+        <Text
+          style={{
+            color:
+              theme.colors.error ||
+              "#DC2626",
+
+            fontSize: 12,
+
+            fontFamily:
+              theme.fonts.regular,
+
+            marginBottom:
+              theme.spacing.md,
+          }}
+        >
+          {errors.employmentType}
+        </Text>
+
+      )}
+
+
+      {/* ==========================================
+          COMPANY NAME
+      ========================================== */}
+
+      <CommonInput
+        label="Company Name"
+        required
+
+        placeholder="Enter company name"
+
+        value={
+          formData?.companyName || ""
+        }
+
+        onChangeText={(value) =>
+          handleChange(
+            "companyName",
+            value
+          )
+        }
+
+        error={
+          errors?.companyName
+        }
+
+        inputContainerStyle={
+          borderStyle
+        }
+      />
+
+
+      {/* ==========================================
+          MONTHLY INCOME
+      ========================================== */}
+
+      <CommonInput
+        label="Monthly Income (₹)"
+        required
+
+        placeholder="Enter monthly income"
+
+        value={
+          formData?.monthlyIncome || ""
+        }
+
+        onChangeText={(value) =>
+          handleChange(
+            "monthlyIncome",
+            value
+          )
+        }
+
+        keyboardType="numeric"
+
+        error={
+          errors?.monthlyIncome
+        }
+
+        inputContainerStyle={
+          borderStyle
+        }
+      />
+
+
+      {/* ==========================================
+          EXISTING EMI
+          OPTIONAL AS PER BACKEND
+      ========================================== */}
+
+      <CommonInput
+        label="Existing EMI (If Any)"
+        placeholder="Enter existing EMI amount"
+
+        value={
+          formData?.existingEmi || ""
+        }
+
+        onChangeText={(value) =>
+          handleChange(
+            "existingEmi",
+            value
+          )
+        }
+
+        keyboardType="numeric"
+
+        error={
+          errors?.existingEmi
+        }
+
+        inputContainerStyle={
+          borderStyle
+        }
+      />
+
+    </View>
+
+  );
+
+};
+
+
+export default CommonEmploymentAndIncome;
