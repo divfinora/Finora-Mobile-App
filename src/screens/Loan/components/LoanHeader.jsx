@@ -53,6 +53,8 @@ const LoanHeader = () => {
         ,
         paddingTop:
           insets.top + theme.spacing.lg,
+        // paddingTop:
+        //   -7,
 
         paddingHorizontal:
           theme.spacing.xxl,

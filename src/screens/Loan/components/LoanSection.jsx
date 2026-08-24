@@ -384,7 +384,7 @@ const LoanSection = () => {
                             theme.colors.navy900,
 
                         fontSize:
-                            theme.typography.h3,
+                            theme.typography.h4,
 
                         fontFamily:
                             theme.fonts.headingBold,

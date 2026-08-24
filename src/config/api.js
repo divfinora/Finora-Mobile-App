@@ -3,11 +3,11 @@
 // ============================================
 
 // Development URL
-  const DEV_BASE_URL = "https://finsarthi.onrender.com";
+  const DEV_BASE_URL = "https://finora-app-i8ge.onrender.com";
  
 
 // Production URL
-  const PROD_BASE_URL = "https://finsarthi.onrender.com";
+  const PROD_BASE_URL = "https://finora-app-i8ge.onrender.com";
  
 
 // Automatically choose URL

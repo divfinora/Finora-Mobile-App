@@ -8,7 +8,7 @@ import {
 } from "react-native";
 
 import {
-    CheckCircle,
+    Check,
     ArrowRight,
 } from "lucide-react-native";
 
@@ -67,7 +67,7 @@ const OfferCard = ({
 
         <View
             style={{
-               
+
                 marginHorizontal:
                     theme.spacing.xl,
 
@@ -160,52 +160,66 @@ const OfferCard = ({
 
                 {/* POINTS */}
 
+                {/* ==========================================
+    POINTS
+========================================== */}
+
                 <View
                     style={{
-                        marginTop:
-                            theme.spacing.lg,
+                        marginTop: theme.spacing.lg,
                     }}
                 >
-
                     {offer.points.map((point) => (
 
                         <View
                             key={point}
                             style={{
-                                flexDirection:
-                                    "row",
-
-                                alignItems:
-                                    "center",
-
-                                marginBottom:
-                                    theme.spacing.sm,
+                                flexDirection: "row",
+                                alignItems: "center",
+                                marginBottom: theme.spacing.sm,
                             }}
                         >
 
-                            <CheckCircle
-                                size={16}
-                                color="#0759C9"
-                                fill="#0759C9"
-                                strokeWidth={2}
-                            />
+                            {/* BLUE CIRCLE */}
+
+                            <View
+                                style={{
+                                    width: 16,
+                                    height: 16,
+
+                                    borderRadius: 8,
+
+                                    backgroundColor: "#0759C9",
+
+                                    alignItems: "center",
+                                    justifyContent: "center",
+
+                                    flexShrink: 0,
+                                }}
+                            >
+
+                                <Check
+                                    size={10}
+                                    color="#FFFFFF"
+                                    strokeWidth={3}
+                                />
+
+                            </View>
+
+
+                            {/* TEXT */}
 
                             <Text
                                 style={{
-                                    marginLeft:
-                                        theme.spacing.sm,
+                                    marginLeft: 8,
 
-                                    color:
-                                        theme.colors.gray700,
+                                    color: theme.colors.gray700,
 
-                                    fontSize:
-                                        theme.typography.caption,
+                                    fontSize: theme.typography.caption,
 
-                                    lineHeight:
-                                        16,
+                                    lineHeight: 16,
 
-                                    fontFamily:
-                                        theme.fonts.medium,
+                                    fontFamily: theme.fonts.medium,
 
                                     flexShrink: 1,
                                 }}
@@ -216,7 +230,6 @@ const OfferCard = ({
                         </View>
 
                     ))}
-
                 </View>
 
 
@@ -321,8 +334,8 @@ const OffersJustForYou = ({
 
         <View
             style={{
-                 marginTop:
-                         theme.spacing.lg,
+                marginTop:
+                    theme.spacing.lg,
 
                 paddingTop:
                     theme.spacing.lg,
@@ -332,7 +345,7 @@ const OffersJustForYou = ({
 
                 backgroundColor:
                     theme.colors.white,
-                    
+
             }}
         >
 

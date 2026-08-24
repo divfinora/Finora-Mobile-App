@@ -1,10 +1,10 @@
-import React from "react";
+import React, { memo } from "react";
 
 import {
   View,
   Text,
-  Image,
   TouchableOpacity,
+  Image,
 } from "react-native";
 
 import {
@@ -13,29 +13,40 @@ import {
 
 import { theme } from "../../../../theme";
 
+
 const LoanCard = ({
   loan,
   onPress,
 }) => {
 
+  // ==========================================
+  // FORMAT AMOUNT
+  // ==========================================
+
   const formatAmount = (value) => {
 
-    if (!value) return "0";
+    if (!value) {
+      return "0";
+    }
 
-    if (value >= 10000000)
+    if (value >= 10000000) {
       return `${(value / 10000000).toFixed(0)}Cr`;
+    }
 
-    if (value >= 100000)
+    if (value >= 100000) {
       return `${(value / 100000).toFixed(0)}L`;
+    }
 
-    if (value >= 1000)
+    if (value >= 1000) {
       return `${(value / 1000).toFixed(0)}K`;
+    }
 
     return value;
   };
 
+
   // ==========================================
-  // GET LOAN COUNT FROM API
+  // LOAN COUNT
   // ==========================================
 
   const loanCount =
@@ -47,146 +58,252 @@ const LoanCard = ({
     ) ??
     0;
 
+
+  // ==========================================
+  // LOAN NAME
+  // WORD BASED WRAPPING
+  // ==========================================
+
+  const loanName =
+    String(`${loan?.name} ` || "").trim();
+
+  const loanNameParts =
+    loanName.split(/\s+/);
+
+  const firstLine =
+    loanNameParts[0] || "";
+
+  const secondLine =
+    loanNameParts
+      .slice(1)
+      .join(" ");
+
+
   return (
 
     <TouchableOpacity
       activeOpacity={0.9}
       onPress={() => onPress?.(loan)}
+
       style={{
         width: "48%",
-        minHeight: 100,
 
-        backgroundColor: theme.colors.white,
+        minHeight: 138,
 
-        borderRadius: theme.radius.xl,
+        backgroundColor:
+          theme.colors.white,
 
-        borderWidth: 0.5,
-        borderColor: "#F4DFC5",
+        borderRadius: 24,
 
-        padding: theme.spacing.lg,
+        borderWidth: 1,
 
-        justifyContent: "space-between",
+        borderColor:
+          "#FCEDD6",
+
+        padding:
+          theme.spacing.lg,
+
+        justifyContent:
+          "space-between",
 
         ...theme.shadows.card,
       }}
     >
 
-      {/* TOP */}
+      {/* ======================================
+          TOP
+      ====================================== */}
+
       <View
         style={{
           flexDirection: "row",
-          justifyContent: "space-between",
-          alignItems: "flex-start",
+
+          justifyContent:
+            "space-between",
+
+          alignItems:
+            "flex-start",
         }}
       >
 
-        {/* LOAN NAME */}
+        {/* ====================================
+            LOAN NAME
+        ==================================== */}
+
         <View
           style={{
             flex: 1,
-            marginRight: theme.spacing.sm,
+
+            marginRight:
+              theme.spacing.sm,
+
+            minWidth: 0,
           }}
         >
 
           <Text
             numberOfLines={2}
+
             style={{
-              color: theme.colors.black,
+              color:
+                theme.colors.black,
 
-              fontSize: theme.typography.h4,
+              fontSize: 17,
 
-              fontFamily: theme.fonts.headingBold,
+              lineHeight: 22,
 
-              lineHeight: theme.lineHeight.h4,
+              fontFamily:
+                theme.fonts.headingBold,
+
+              letterSpacing: -0.2,
+
+              textTransform:
+                "capitalize",
             }}
           >
-            {loan?.name}
+
+            {firstLine}
+
+            {secondLine ? "\n" : ""}
+
+            {secondLine}
+
           </Text>
 
-          {/* LOAN COUNT */}
+
+          {/* ==================================
+              LOAN COUNT
+          ================================== */}
+
           <View
             style={{
-              alignSelf: "flex-start",
+              alignSelf:
+                "flex-start",
 
               marginTop: 6,
 
               paddingHorizontal: 8,
+
               paddingVertical: 3,
 
               borderRadius: 10,
 
-              backgroundColor: "#FFF4E5",
+              backgroundColor:
+                "#FFF4E5",
             }}
           >
+
             <Text
               style={{
-                color: theme.colors.primary500,
+                color:
+                  theme.colors.primary500,
 
                 fontSize: 10,
 
-                fontFamily: theme.fonts.bold,
+                fontFamily:
+                  theme.fonts.bold,
               }}
             >
               {loanCount}{" "}
-              {loanCount === 1 ? "Loan" : "Loans"}
+              {loanCount === 1
+                ? "Loan"
+                : "Loans"}
             </Text>
+
           </View>
 
         </View>
 
-        {/* ICON */}
+
+        {/* ====================================
+            ICON
+        ==================================== */}
+
         <Image
           source={{
-            uri: "https://cdn-icons-png.flaticon.com/512/1170/1170576.png",
+            uri:
+              "https://cdn-icons-png.flaticon.com/512/1170/1170576.png",
           }}
+
           resizeMode="contain"
+
           style={{
-            width: 44,
-            height: 44,
+            width: 32,
+
+            height: 32,
+
+            flexShrink: 0,
           }}
         />
 
       </View>
 
-      {/* BOTTOM */}
+
+      {/* ======================================
+          BOTTOM
+      ====================================== */}
+
       <View
         style={{
           flexDirection: "row",
 
-          justifyContent: "space-between",
+          justifyContent:
+            "space-between",
 
-          alignItems: "flex-end",
+          alignItems:
+            "flex-end",
 
-          marginTop: theme.spacing.md,
+          marginTop:
+            theme.spacing.md,
         }}
       >
 
-        <View>
+        {/* ====================================
+            AMOUNT
+        ==================================== */}
+
+        <View
+          style={{
+            flex: 1,
+          }}
+        >
 
           <Text
             style={{
-              color: theme.colors.gray500,
+              color:
+                theme.colors.gray500,
 
-              fontSize: theme.typography.b2,
+              fontSize: 14,
 
-              fontFamily: theme.fonts.medium,
+              lineHeight: 21,
+
+              fontFamily:
+                theme.fonts.regular,
+
+              textTransform:
+                "capitalize",
             }}
           >
             Get Up To
           </Text>
 
+
           <Text
             style={{
               marginTop: 2,
 
-              color: theme.colors.black,
+              color:
+                theme.colors.black,
 
-              fontSize: theme.typography.b1,
+              fontSize:
+                theme.typography.b1,
 
-              fontFamily: theme.fonts.bold,
+              fontFamily:
+                theme.fonts.bold,
             }}
           >
-            ₹{formatAmount(
+            ₹
+            {formatAmount(
               loan?.maxAmount ??
               loan?.loan?.maxAmount
             )}
@@ -194,15 +311,27 @@ const LoanCard = ({
 
         </View>
 
+
+        {/* ====================================
+            ARROW
+        ==================================== */}
+
         <ChevronRight
-          size={theme.iconSize.md}
-          color={theme.colors.black}
+          size={
+            theme.iconSize.md
+          }
+
+          color={
+            theme.colors.black
+          }
         />
 
       </View>
 
     </TouchableOpacity>
+
   );
 };
 
-export default LoanCard;
+
+export default memo(LoanCard);
