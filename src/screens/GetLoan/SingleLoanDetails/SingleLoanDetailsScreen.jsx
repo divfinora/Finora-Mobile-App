@@ -116,7 +116,7 @@ const SingleLoanDetailsScreen = ({
   const data =
     responseData?.data;
 
-
+ console.log(data ,"data=========")
   const {
     loanDetails,
 
@@ -129,6 +129,7 @@ const SingleLoanDetailsScreen = ({
   } =
     data || {};
 
+      console.log(feeDetails  ,"FeeDetailsModalFeeDetailsModalFeeDetailsModalFeeDetailsModalFeeDetailsModal")
 
   // ===================================================
   // TOTAL PAID AMOUNT

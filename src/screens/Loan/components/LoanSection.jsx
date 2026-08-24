@@ -20,19 +20,7 @@ import {
 import { useNavigation } from '@react-navigation/native'
 import { theme } from "../../../theme";
 
-// Fake/Dummy Loan Data
-// const FAKE_LOANS = [
-//     { _id: "1", name: "Personal Loan", maxAmount: 1000000, processingType: "MANUAL" },
-//     { _id: "2", name: "Gold Loan", maxAmount: 1000000, processingType: "MANUAL" },
-//     { _id: "3", name: "Instant Loan", maxAmount: 500000, processingType: "INSTANT" },
-//     { _id: "4", name: "Vehicle Loan", maxAmount: 1500000, processingType: "MANUAL" },
-//     { _id: "5", name: "Property Loan", maxAmount: 5000000, processingType: "MANUAL" },
-//     { _id: "6", name: "Education Loan", maxAmount: 2000000, processingType: "MANUAL" },
-//     { _id: "7", name: "Agricultural Loan", maxAmount: 1000000, processingType: "MANUAL" },
-//     { _id: "8", name: "Constructional Loan", maxAmount: 3000000, processingType: "MANUAL" },
-//     { _id: "9", name: "Renovation Loan", maxAmount: 800000, processingType: "MANUAL" },
-//     { _id: "10", name: "Commercial Loan", maxAmount: 5000000, processingType: "MANUAL" },
-// ];
+ 
 
 const LoanSection = () => {
     const navigation = useNavigation()
@@ -304,6 +292,8 @@ const LoanSection = () => {
             style={{
                 marginTop:
                     theme.spacing.xxxl,
+                
+                    
             }}
         >
 
@@ -410,10 +400,10 @@ const LoanSection = () => {
                         marginTop: 2,
 
                         color:
-                            theme.colors.gray500,
+                            '#64748B',
 
                         fontSize:
-                            theme.typography.b1,
+                            theme.typography.b2,
 
                         fontFamily:
                             theme.fonts.medium,
@@ -443,9 +433,9 @@ const LoanSection = () => {
                         width: 'auto',
                         marginHorizontal:
                             theme.spacing.xl,
+                         borderWidth:0.1 ,
 
-                        marginBottom:
-                            theme.spacing.massive,
+                                  ...theme.shadows.card,
 
                     }}
 

@@ -15,6 +15,8 @@ import { theme } from "../../theme";
 import LoanHeader from './components/LoanHeader'
 import LoanSection from './components/LoanSection.jsx'
 import UpiCard from './components/UpiCard.jsx'
+import HowItWorks from './components/HowItWorks.jsx'
+import OffersJustForYou from './components/OffersJustForYou.jsx'
 import { useGetAllLoanQuery } from "../../redux/features/customer/customerApi.js";
 
 const LoanScreen = () => {
@@ -45,7 +47,7 @@ const LoanScreen = () => {
     return (
 
         <SafeAreaView
-            edges={["left", "bottom", 'right']}
+            edges={["left",   'right']}
             style={{
 
                 flex: 1,
@@ -55,10 +57,10 @@ const LoanScreen = () => {
         >
 
             <StatusBar
-                translucent={false}
-                backgroundColor={
-                    theme.statusBar.backgroundColor
-                }
+                translucent={true}
+                backgroundColor="transparent"
+
+
                 barStyle={
                     theme.statusBar.dark
                 }
@@ -79,8 +81,7 @@ const LoanScreen = () => {
                 }
 
                 contentContainerStyle={{
-                    paddingBottom:
-                        theme.spacing.massive,
+
                 }}
 
                 refreshControl={
@@ -112,19 +113,16 @@ const LoanScreen = () => {
                     <>
                         <LoanHeader />
                         <LoanSection />
-                        {/* LoanHeader */}
-
-                        <UpiCard />
-{/* <PropertyLoanApplyScreen /> */}
-                        {/* BannerSlider */}
 
 
+                        <HowItWorks />
 
-                        {/* ReferEarn */}
 
-                        {/* How It Works */}
+                        <OffersJustForYou />
 
-                        {/* Offers */}
+
+
+
 
                     </>
 

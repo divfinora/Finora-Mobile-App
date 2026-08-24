@@ -14,14 +14,24 @@ import {
   Info,
 } from "lucide-react-native";
 
-import { theme } from "../../../theme";
-import { useSafeAreaInsets } from "react-native-safe-area-context";
+import {
+  theme,
+} from "../../../theme";
+
+import {
+  useSafeAreaInsets,
+} from "react-native-safe-area-context";
+
+
 const LoanHeader = () => {
- const insets = useSafeAreaInsets();
+
+  const insets =
+    useSafeAreaInsets();
+
+
   return (
 
     <LinearGradient
-
       colors={[
         "#D1913C",
         "#FFD194",
@@ -38,59 +48,55 @@ const LoanHeader = () => {
       }}
 
       style={{
- paddingTop: insets.top + theme.spacing.lg,
-        // height: 235,
+        paddingBottom:theme.spacing.xl
+        
+        ,
+        paddingTop:
+          insets.top + theme.spacing.lg,
 
-        borderBottomRightRadius: 44,
- borderBottomLeftRadius: 44,
         paddingHorizontal:
           theme.spacing.xxl,
 
-        // paddingTop:
-        //   theme.spacing.xxl,
+        borderBottomLeftRadius:
+          44,
 
+        borderBottomRightRadius:
+          44,
+
+        overflow: "hidden",
       }}
-
     >
 
-      {/* ====================================== */}
-      {/* TOP BAR */}
-      {/* ====================================== */}
+      {/* ==========================================
+          TOP BAR
+      ========================================== */}
 
       <View
-
         style={{
-
           flexDirection: "row",
-
-          justifyContent: "space-between",
 
           alignItems: "center",
 
+          justifyContent: "space-between",
         }}
-
       >
 
-        {/* LEFT */}
+        {/* ========================================
+            LEFT
+        ======================================== */}
 
         <View
-
           style={{
-
             flexDirection: "row",
 
             alignItems: "center",
-
           }}
-
         >
 
           {/* LOGO */}
 
           <View
-
             style={{
-
               width: 42,
 
               height: 42,
@@ -104,15 +110,11 @@ const LoanHeader = () => {
               justifyContent: "center",
 
               alignItems: "center",
-
             }}
-
           >
 
             <View
-
               style={{
-
                 width: 18,
 
                 height: 18,
@@ -123,23 +125,20 @@ const LoanHeader = () => {
                   theme.colors.white,
 
                 transform: [
-
                   {
                     rotate: "45deg",
                   },
-
                 ],
-
               }}
-
             />
 
           </View>
 
+
+          {/* APP NAME */}
+
           <Text
-
             style={{
-
               marginLeft:
                 theme.spacing.md,
 
@@ -149,144 +148,151 @@ const LoanHeader = () => {
               fontSize:
                 theme.typography.h4,
 
+              lineHeight:
+                theme.lineHeight.h4,
+
               fontFamily:
-                theme.fonts.headingSemiBold,
+                theme.fonts.headingBold,
 
+              fontWeight: "700",
+
+              letterSpacing:
+                theme.letterSpacing.xs,
             }}
-
           >
-
             Jamify
-
           </Text>
 
         </View>
 
-        {/* RIGHT */}
+
+        {/* ========================================
+            RIGHT
+        ======================================== */}
 
         <View
-
           style={{
-
             flexDirection: "row",
 
             alignItems: "center",
-
           }}
-
         >
 
-          {/* CARD */}
+          {/* CARD NUMBER */}
 
           <TouchableOpacity
-
             activeOpacity={0.8}
 
             style={{
-
               height: 36,
+
+              paddingHorizontal:
+                theme.spacing.md,
 
               borderRadius:
                 theme.radius.pill,
 
-              paddingHorizontal:
-                theme.spacing.lg,
-
               backgroundColor:
-                "rgba(255,255,255,0.18)",
+                "rgba(255,255,255,0.14)",
 
               flexDirection: "row",
 
               alignItems: "center",
 
+              justifyContent: "center",
             }}
-
           >
 
             <Text
-
               style={{
-
                 color:
                   theme.colors.white,
 
                 fontSize:
                   theme.typography.b2,
 
+                lineHeight:
+                  theme.lineHeight.b2,
+
                 fontFamily:
                   theme.fonts.bold,
 
+                fontWeight: "700",
               }}
-
             >
-
               *2589
-
             </Text>
 
+
             <ChevronDown
-
-              color={
-                theme.colors.white
-              }
-
               size={
                 theme.iconSize.xs
               }
 
-              style={{
+              color={
+                theme.colors.white
+              }
 
+              strokeWidth={2}
+
+              style={{
                 marginLeft:
                   theme.spacing.xs,
-
               }}
-
             />
 
           </TouchableOpacity>
 
+
           {/* BELL */}
 
           <TouchableOpacity
-
             activeOpacity={0.8}
 
             style={{
-
               marginLeft:
-                theme.spacing.lg,
+                theme.spacing.md,
 
+              width: 32,
+
+              height: 36,
+
+              justifyContent:
+                "center",
+
+              alignItems:
+                "center",
             }}
-
           >
 
             <Bell
+              size={
+                theme.iconSize.md
+              }
 
               color={
                 theme.colors.white
               }
 
-              size={
-                theme.iconSize.md
-              }
-
+              strokeWidth={1.8}
             />
 
+
+            {/* NOTIFICATION DOT */}
+
             <View
-
               style={{
-
                 position: "absolute",
 
-                right: -1,
+                right: 1,
 
-                top: -1,
+                top: 2,
 
-                width: 9,
+                width: 8,
 
-                height: 9,
+                height: 8,
 
-                borderRadius: 5,
+                borderRadius: 4,
 
                 backgroundColor:
                   "#FF4C4C",
@@ -295,9 +301,7 @@ const LoanHeader = () => {
 
                 borderColor:
                   theme.colors.white,
-
               }}
-
             />
 
           </TouchableOpacity>
@@ -306,80 +310,143 @@ const LoanHeader = () => {
 
       </View>
 
-      {/* ====================================== */}
-      {/* CREDIT SCORE */}
-      {/* ====================================== */}
+
+      {/* ==========================================
+          CREDIT SCORE
+      ========================================== */}
 
       <View
-
         style={{
-
           marginTop:
-            theme.spacing.huge,
-
+            theme.spacing.xl,
         }}
-
       >
 
+        {/* LABEL */}
+
         <Text
-
           style={{
-
             color:
-              "rgba(255,255,255,.85)",
+              "rgba(255,255,255,0.88)",
 
             fontSize:
-              theme.typography.b1,
+              theme.typography.b2,
+
+            lineHeight:
+              theme.lineHeight.b2,
 
             fontFamily:
               theme.fonts.medium,
 
+            fontWeight: "500",
           }}
-
         >
-
           Credit Score
-
         </Text>
-                <View
+
+
+        {/* ========================================
+            SCORE
+        ======================================== */}
+
+        <View
           style={{
             flexDirection: "row",
+
             alignItems: "center",
-            marginTop: theme.spacing.sm,
+
+            marginTop:
+              theme.spacing.xs,
           }}
         >
+
           <Text
             style={{
-              color: theme.colors.white,
-              fontSize: theme.typography.displayXL,
-              lineHeight: theme.lineHeight.displayXL,
-              fontFamily: theme.fonts.headingBold,
+              color:
+                theme.colors.white,
+
+              fontSize:
+                theme.typography.displayLG,
+
+              lineHeight:
+                theme.lineHeight.displayLG,
+
+              fontFamily:
+                theme.fonts.headingBold,
+
+              fontWeight: "700",
+
+              letterSpacing:
+                theme.letterSpacing.xs,
             }}
           >
-            ₹ 2,987.56
+            $ 2,987.56
           </Text>
+
+
+          {/* INFO */}
 
           <TouchableOpacity
             activeOpacity={0.8}
+
             style={{
-              marginLeft: theme.spacing.sm,
-              marginTop: theme.spacing.sm,
+              marginLeft:
+                theme.spacing.xs,
+
+              marginTop:
+                theme.spacing.sm,
+
+              width: 20,
+
+              height: 20,
+
+              justifyContent:
+                "center",
+
+              alignItems:
+                "center",
             }}
           >
+
             <Info
-              size={theme.iconSize.sm}
-              color="rgba(255,255,255,0.95)"
+              size={
+                theme.iconSize.xs
+              }
+
+              color={
+                "rgba(255,255,255,0.90)"
+              }
+
+              strokeWidth={2}
             />
+
           </TouchableOpacity>
+
         </View>
+
+
+        {/* ========================================
+            UPDATED
+        ======================================== */}
 
         <Text
           style={{
-            marginTop: theme.spacing.sm,
-            color: "rgba(255,255,255,0.75)",
-            fontSize: theme.typography.b3,
-            lineHeight: theme.lineHeight.b3,
-            fontFamily: theme.fonts.medium,
+            marginTop:
+              theme.spacing.xs,
+
+            color:
+              "rgba(255,255,255,0.72)",
+
+            fontSize:
+              theme.typography.b3,
+
+            lineHeight:
+              theme.lineHeight.b3,
+
+            fontFamily:
+              theme.fonts.medium,
+
+            fontWeight: "500",
           }}
         >
           Updated 2 mins ago
@@ -387,20 +454,10 @@ const LoanHeader = () => {
 
       </View>
 
-      {/* ====================================== */}
-      {/* BOTTOM SPACER */}
-      {/* ====================================== */}
-
-      <View
-        style={{
-          flex: 1,
-        }}
-      />
-
     </LinearGradient>
 
   );
-
 };
+
 
 export default LoanHeader;
