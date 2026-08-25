@@ -12,9 +12,19 @@ import {
 import HomeComponent from "./HomeComponent";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { theme } from "../../theme";
+import { useGetVisitorDashboardQuery } from "../../redux/features/visitor/visitorApi";
 
 const HomeScreen = () => {
 
+//   const {
+//   data,
+//   isLoading,
+//   isFetching,
+//   isError,
+//   error,
+//   refetch,
+// } = useGetVisitorDashboardQuery();
+  // console.log(data ,"data=======")
   return (
 
     <SafeAreaView

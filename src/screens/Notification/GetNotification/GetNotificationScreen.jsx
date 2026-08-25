@@ -26,7 +26,7 @@ import NotificationTabFilter from "./components/NotificationTabFilter.jsx";
 import NotificationCard from "./components/NotificationCard.jsx";
 import NotificationSkeleton from "./components/NotificationSkeleton.jsx";
 import NotificationEmptyState from "./components/NotificationEmptyState.jsx";
-import InlineRetry from "../../components/common/RetryScreen/InlineRetry.jsx";
+ 
 
 import {
   useGetAllNotificationsQuery,
@@ -36,6 +36,7 @@ import {
 } from "../../../redux/features/customer/customerApi.js";
 
 import { theme } from "../../../theme/index.js";
+import InlineRetry from "../../../components/common/RetryScreen/InlineRetry.jsx";
 
 const LIMIT = 20;
 
