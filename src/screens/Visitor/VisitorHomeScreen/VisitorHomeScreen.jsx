@@ -9,7 +9,6 @@ import {
   Text,
   RefreshControl,
   FlatList,
-  
 } from "react-native";
 
 import {
@@ -17,30 +16,30 @@ import {
 } from "@react-navigation/native";
 
 import {
+  SafeAreaView,
+} from "react-native-safe-area-context";
+
+import {
   theme,
 } from "../../../theme";
 
 import {
   useGetVisitorDashboardQuery,
-  useGetVisitorApplicationsQuery,
 } from "../../../redux/features/visitor/visitorApi";
 
-import DashboardHeader from "./components/VisitorHomeScreenHeader";
+import VisitorHomeScreenHeader from "./components/VisitorHomeScreenHeader";
 
-import DashboardStats from "./components/VisitorHomeScreenStats";
+import VisitorHomeScreenStats from "./components/VisitorHomeScreenStats";
 
 import JobTabs from "./components/VisitorHomeScreenJobTabs";
 
-import JobCard from "./components/VisitorHomeScreenJobCard";
+import VisitorHomeScreenJobCard from "./components/VisitorHomeScreenJobCard";
 
-import CurrentJobCard from "./components/VisitorHomeScreenCurrentJobCard";
-
-import DashboardSkeleton from "./components/VisitorHomeScreenSkeleton";
+import VisitorHomeScreenSkeleton from "./components/VisitorHomeScreenSkeleton";
 
 import DashboardEmpty from "./components/VisitorHomeScreenEmpty";
 
 import DashboardRetry from "./components/VisitorHomeScreenRetry";
-import { SafeAreaView } from "react-native-safe-area-context";
 
 
 const VisitorDashboardScreen = () => {
@@ -50,13 +49,13 @@ const VisitorDashboardScreen = () => {
 
 
   // =====================================================
-  // TAB
+  // ACTIVE TAB
   // =====================================================
 
   const [
     activeTab,
     setActiveTab,
-  ] = useState("today");
+  ] =  useState("today");
 
 
   // =====================================================
@@ -64,15 +63,14 @@ const VisitorDashboardScreen = () => {
   // =====================================================
 
   const {
-
     data:
       dashboardResponse,
 
     isLoading:
-      dashboardLoading,
+      isLoadingDashboard,
 
     isFetching:
-      dashboardFetching,
+      isFetchingDashboard,
 
     isError:
       dashboardError,
@@ -85,37 +83,19 @@ const VisitorDashboardScreen = () => {
 
 
   // =====================================================
-  // APPLICATIONS API
+  // COMMON LOADING
+  //
+  // Initial API loading +
+  // Pull to refresh / refetch
   // =====================================================
 
-  const {
-
-    data:
-      applicationsResponse,
-
-    isLoading:
-      applicationsLoading,
-
-    isFetching:
-      applicationsFetching,
-
-    isError:
-      applicationsError,
-
-    refetch:
-      refetchApplications,
-
-  } =
-    useGetVisitorApplicationsQuery();
+  const loading =
+    isLoadingDashboard ||
+    isFetchingDashboard;
 
 
-    //  console.log(applicationsResponse ,"applicationsResponse")
-
-      // console.log(dashboardResponse ,"dashboardResponse")
-
- 
   // =====================================================
-  // REFRESH
+  // REFRESHING
   // =====================================================
 
   const [
@@ -132,13 +112,7 @@ const VisitorDashboardScreen = () => {
 
         try {
 
-          await Promise.all([
-
-            refetchDashboard(),
-
-            refetchApplications(),
-
-          ]);
+          await refetchDashboard();
 
         } finally {
 
@@ -149,43 +123,73 @@ const VisitorDashboardScreen = () => {
       },
       [
         refetchDashboard,
-        refetchApplications,
       ]
     );
 
 
   // =====================================================
-  // RESPONSE DATA
+  // DASHBOARD RESPONSE
   // =====================================================
 
   const dashboard =
     dashboardResponse?.data ||
-    dashboardResponse;
+    dashboardResponse ||
+    {};
 
 
-  const applications =
-    applicationsResponse?.data ||
-    applicationsResponse ||
-    [];
-
+  // =====================================================
+  // VISITOR
+  // =====================================================
 
   const visitor =
     dashboard?.visitor ||
     {};
 
 
+  // =====================================================
+  // SUMMARY
+  // =====================================================
+
   const summary =
     dashboard?.summary ||
     {};
 
 
+  // =====================================================
+  // NOTIFICATION COUNT
+  // =====================================================
+
+  const unreadCount =
+    dashboard?.notifications
+      ?.unread || 0;
+
+
+  // =====================================================
+  // current-job JOBS
+  //
+  // IMPORTANT:
+  //
+  // Backend currently sends today's jobs.
+  //
+  // UI will show these as
+  // "Current Jobs".
+  //
+  // Later backend can send the
+  // current/in-progress job inside
+  // this same todayJobs array.
+  // =====================================================
+
   const todayJobs =
     Array.isArray(
       dashboard?.todayJobs
     )
-      ? dashboard.todayJobs
+      ?dashboard.todayJobs
       : [];
 
+
+  // =====================================================
+  // UPCOMING TASKS
+  // =====================================================
 
   const upcomingTasks =
     Array.isArray(
@@ -196,81 +200,26 @@ const VisitorDashboardScreen = () => {
 
 
   // =====================================================
-  // CURRENT JOB
-  // =====================================================
-
-  const currentJob =
-    useMemo(() => {
-
-      if (
-        !Array.isArray(
-          applications
-        )
-      ) {
-        return null;
-      }
-
-
-      return (
-        applications.find(
-          (item) =>
-            item?.verificationStatus ===
-              "IN_PROGRESS" ||
-            item?.status ===
-              "VISITOR_IN_PROGRESS"
-        ) ||
-        null
-      );
-
-    }, [
-      applications,
-    ]);
-
-
-  // =====================================================
   // LIST DATA
   // =====================================================
 
   const listData =
     useMemo(() => {
 
-      const source =
+      if (
         activeTab === "today"
-          ? todayJobs
-          : upcomingTasks;
-
-
-      if (
-        source.length
       ) {
 
-        return source;
+        return todayJobs;
 
       }
 
-
-      // If dashboard todayJobs is empty,
-      // use applications as current jobs.
-
-      if (
-        activeTab === "today" &&
-        Array.isArray(
-          applications
-        )
-      ) {
-
-        return applications;
-
-      }
-
-
-      return [];
+      return upcomingTasks;
 
     }, [
       activeTab,
       todayJobs,
       upcomingTasks,
-      applications,
     ]);
 
 
@@ -279,17 +228,7 @@ const VisitorDashboardScreen = () => {
   // =====================================================
 
   const hasError =
-    dashboardError ||
-    applicationsError;
-
-
-  // =====================================================
-  // LOADING
-  // =====================================================
-
-  const initialLoading =
-    dashboardLoading ||
-    applicationsLoading;
+    !!dashboardError;
 
 
   // =====================================================
@@ -297,8 +236,7 @@ const VisitorDashboardScreen = () => {
   // =====================================================
 
   const fetching =
-    dashboardFetching ||
-    applicationsFetching;
+    isFetchingDashboard;
 
 
   // =====================================================
@@ -315,16 +253,20 @@ const VisitorDashboardScreen = () => {
 
 
         if (!loanId) {
+
           return;
+
         }
 
 
-        navigation.navigate(
-          "VisitorApplicationDetails",
-          {
-            loanId,
-          }
-        );
+        
+
+      navigation.navigate(
+      "visitor-investingation-screen",
+      {
+        job: item,
+      }
+    );
 
       },
       [
@@ -341,60 +283,44 @@ const VisitorDashboardScreen = () => {
     useCallback(
       async () => {
 
-        await handleRefresh();
+        await refetchDashboard();
 
       },
       [
-        handleRefresh,
+        refetchDashboard,
       ]
     );
 
 
   // =====================================================
-  // INITIAL LOADING
+  // EMPTY TITLE
   // =====================================================
 
-  if (
-    initialLoading &&
-    !dashboardResponse &&
-    !applicationsResponse
-  ) {
+  const emptyTitle =
+    activeTab === "today"
 
-    return (
+      ? "No current jobs"
 
-      <SafeAreaView
-        style={{
-          flex: 1,
+      : "No upcoming tasks";
 
-          backgroundColor:
-            "#F7F8F8",
-        }}
-      >
 
-        <FlatList
+  // =====================================================
+  // EMPTY DESCRIPTION
+  // =====================================================
 
-          data={[]}
+  const emptyDescription =
+    activeTab === "today"
 
-          renderItem={
-            null
-          }
+      ? "You don't have any current verification jobs assigned."
 
-          ListHeaderComponent={
-            
-            <DashboardSkeleton />
-          }
+      : "You don't have any upcoming verification tasks.";
 
-          showsVerticalScrollIndicator={
-            false
-          }
 
-        />
+  // =====================================================
+  // SECTION TITLE
+  // =====================================================
 
-      </SafeAreaView>
-
-    );
-
-  }
+  
 
 
   // =====================================================
@@ -404,7 +330,6 @@ const VisitorDashboardScreen = () => {
   return (
 
     <SafeAreaView
-
       style={{
         flex: 1,
 
@@ -412,15 +337,58 @@ const VisitorDashboardScreen = () => {
           "#F7F8F8",
       }}
 
+      edges={[
+        "right",
+        "left",
+      ]}
     >
+
+      {/* =================================================
+          HEADER
+      ================================================= */}
+
+      <VisitorHomeScreenHeader
+
+        visitor={
+          visitor
+        }
+
+        unreadCount={
+          unreadCount
+        }
+
+        onNotificationPress={() => {
+
+          navigation.navigate(
+            "VisitorNotifications"
+          );
+
+        }}
+
+      />
+
+
+      {/* =================================================
+          MAIN LIST
+      ================================================= */}
 
       <FlatList
 
         data={
-          hasError
+
+          hasError ||
+          loading
+
             ? []
+
             : listData
+
         }
+
+
+        // =================================================
+        // KEY
+        // =================================================
 
         keyExtractor={(
           item,
@@ -428,11 +396,21 @@ const VisitorDashboardScreen = () => {
         ) => (
 
           String(
+
+            item?.jobId ||
+
+            item?.verificationId ||
+
             item?.loanId ||
+
             item?.applicationId ||
+
             item?._id ||
+
             item?.id ||
+
             index
+
           )
 
         )}
@@ -445,9 +423,8 @@ const VisitorDashboardScreen = () => {
         renderItem={({
           item,
         }) => (
-       
 
-          <JobCard
+          <VisitorHomeScreenJobCard
 
             item={
               item
@@ -470,70 +447,31 @@ const VisitorDashboardScreen = () => {
 
           <View>
 
-            {/* HEADER */}
+            {/* ===========================================
+                STATS
+            =========================================== */}
 
-            <DashboardHeader
-
-              visitor={
-                visitor
-              }
-
-              unreadCount={
-                dashboard
-                  ?.notifications
-                  ?.unread || 0
-              }
-
-              onNotificationPress={() => {
-
-                navigation.navigate(
-                  "VisitorNotifications"
-                );
-
-              }}
-
-            />
-
-
-            {/* STATS */}
-
-            <DashboardStats
+            <VisitorHomeScreenStats
 
               summary={
                 summary
               }
 
+              loading={
+                loading
+              }
+
             />
 
 
-            {/* CURRENT JOB */}
-
-            {currentJob && (
-
-              <View
-                style={{
-                  marginTop: 2,
-                }}
-              >
-
-                <CurrentJobCard
-
-                  job={
-                    currentJob
-                  }
-
-                />
-
-              </View>
-
-            )}
-
-
-            {/* TABS */}
+            {/* ===========================================
+                TABS
+            =========================================== */}
 
             <View
               style={{
                 marginTop: 8,
+
                 marginBottom: 2,
               }}
             >
@@ -553,57 +491,56 @@ const VisitorDashboardScreen = () => {
             </View>
 
 
-            {/* =========================================
-                RETRY
-            ========================================= */}
+            {/* ===========================================
+                JOB SKELETON
+            =========================================== */}
 
-            {hasError && (
-           
+            {loading && (
 
-              <DashboardRetry
+              <View
+                style={{
+                  marginTop: 4,
+                }}
+              >
 
-                onRetry={
-                  handleRetry
-                }
+                <VisitorHomeScreenSkeleton />
 
-                loading={
-                  fetching
-                }
+                <VisitorHomeScreenSkeleton />
 
-              />
+                <VisitorHomeScreenSkeleton />
+
+              </View>
 
             )}
 
 
-            {/* =========================================
-                SECTION TITLE
-            ========================================= */}
+            {/* ===========================================
+                RETRY
+            =========================================== */}
 
-            {!hasError &&
-              listData.length > 0 && (
+            {!loading &&
+              hasError && (
 
-                <Text
-                  style={{
-                    marginHorizontal: 24,
+                <DashboardRetry
 
-                    marginTop: 20,
+                  onRetry={
+                    handleRetry
+                  }
 
-                    marginBottom: 4,
+                  loading={
+                    fetching
+                  }
 
-                    fontSize: 17,
-
-                    color: "#202020",
-
-                    fontFamily:
-                      theme.fonts.headingSemiBold,
-                  }}
-                >
-                  {activeTab === "today"
-                    ? "Today's Jobs"
-                    : "Upcoming Tasks"}
-                </Text>
+                />
 
               )}
+
+
+            {/* ===========================================
+                SECTION TITLE
+            =========================================== */}
+
+        
 
           </View>
 
@@ -611,30 +548,34 @@ const VisitorDashboardScreen = () => {
 
 
         // =================================================
-        // EMPTY
+        // NOT FOUND / EMPTY
+        //
+        // IMPORTANT:
+        //
+        // Loading ke time NULL.
+        //
+        // Error ke time NULL.
+        //
+        // Sirf API response ke baad
+        // empty data hone par show hoga.
         // =================================================
 
         ListEmptyComponent={
 
+          !loading &&
           !hasError ? (
 
             <DashboardEmpty
 
               title={
-                activeTab === "today"
-                  ? "No jobs for today"
-                  : "No upcoming tasks"
+                emptyTitle
               }
 
               description={
-                activeTab === "today"
-                  ? "You don't have any verification jobs assigned for today."
-                  : "You don't have any upcoming verification tasks."
+                emptyDescription
               }
 
             />
-
-          
 
           ) : null
 
@@ -647,13 +588,15 @@ const VisitorDashboardScreen = () => {
 
         ListFooterComponent={
 
-          fetching &&
-          !initialLoading ? (
+          !loading &&
+          fetching ? (
 
             <View
               style={{
                 paddingVertical: 20,
-                alignItems: "center",
+
+                alignItems:
+                  "center",
               }}
             >
 
@@ -661,10 +604,12 @@ const VisitorDashboardScreen = () => {
                 style={{
                   fontSize: 12,
 
-                  color: "#888888",
+                  color:
+                    "#888888",
 
                   fontFamily:
-                    theme.fonts.regular,
+                    theme.fonts
+                      .regular,
                 }}
               >
                 Updating...
@@ -686,7 +631,7 @@ const VisitorDashboardScreen = () => {
 
 
         // =================================================
-        // REFRESH
+        // PULL TO REFRESH
         // =================================================
 
         refreshControl={
@@ -694,7 +639,8 @@ const VisitorDashboardScreen = () => {
           <RefreshControl
 
             refreshing={
-              refreshing
+              refreshing ||
+              isFetchingDashboard
             }
 
             onRefresh={
@@ -702,7 +648,8 @@ const VisitorDashboardScreen = () => {
             }
 
             tintColor={
-              theme.colors.primary500
+              theme.colors
+                .primary500
             }
 
           />
@@ -713,6 +660,7 @@ const VisitorDashboardScreen = () => {
         showsVerticalScrollIndicator={
           false
         }
+
 
         contentContainerStyle={{
           paddingBottom: 20,

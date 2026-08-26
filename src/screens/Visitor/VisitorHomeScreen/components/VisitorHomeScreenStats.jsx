@@ -18,6 +18,8 @@ import {
   theme,
 } from "../../../../theme";
 
+import ShimmerPlaceholder from "../../../../components/common/Loader/ShimmerPlaceholder";
+
 
 const StatCard = ({
   icon,
@@ -27,6 +29,7 @@ const StatCard = ({
   suffix,
   growth,
   growthColor,
+  loading = false,
 }) => {
 
   return (
@@ -46,7 +49,7 @@ const StatCard = ({
 
         marginBottom: 14,
 
-        borderWidth: 1,
+        borderWidth: 0.4,
 
         borderColor:
           "#EEEEEE",
@@ -55,47 +58,79 @@ const StatCard = ({
       }}
     >
 
+      {/* =================================================
+          TOP ROW
+      ================================================= */}
+
       <View
         style={{
           flexDirection: "row",
+
           alignItems: "center",
-          justifyContent: "space-between",
+
+          justifyContent:
+            "space-between",
         }}
       >
+
+        {/* ICON */}
 
         <View
           style={{
             width: 24,
+
             height: 24,
-            justifyContent: "center",
-            alignItems: "center",
+
+            justifyContent:
+              "center",
+
+            alignItems:
+              "center",
           }}
         >
           {icon}
         </View>
 
 
+        {/* GROWTH */}
+
         {!!growth && (
 
-          <Text
-            style={{
-              fontSize: 14,
+          loading ? (
 
-              fontFamily:
-                theme.fonts.semiBold,
+            <ShimmerPlaceholder
+              width={38}
+              height={14}
+              borderRadius={6}
+            />
 
-              color:
-                growthColor ||
-                "#1261C9",
-            }}
-          >
-            {growth}
-          </Text>
+          ) : (
+
+            <Text
+              style={{
+                fontSize: 14,
+
+                fontFamily:
+                  theme.fonts.semiBold,
+
+                color:
+                  growthColor ||
+                  "#1261C9",
+              }}
+            >
+              {growth}
+            </Text>
+
+          )
 
         )}
 
       </View>
 
+
+      {/* =================================================
+          TITLE
+      ================================================= */}
 
       <Text
         style={{
@@ -103,7 +138,8 @@ const StatCard = ({
 
           fontSize: 14,
 
-          color: "#77777D",
+          color:
+            "#77777D",
 
           fontFamily:
             theme.fonts.regular,
@@ -113,43 +149,71 @@ const StatCard = ({
       </Text>
 
 
+      {/* =================================================
+          VALUE
+      ================================================= */}
+
       <View
         style={{
           flexDirection: "row",
-          alignItems: "baseline",
-          marginTop: 3,
+
+          alignItems:
+            "baseline",
+
+          marginTop: 6,
+
+          minHeight: 30,
         }}
       >
 
-        <Text
-          style={{
-            fontSize: 25,
+        {loading ? (
 
-            color: "#202020",
+          <ShimmerPlaceholder
+            width={55}
+            height={27}
+            borderRadius={7}
+          />
 
-            fontFamily:
-              theme.fonts.headingBold,
-          }}
-        >
-          {value ?? 0}
-        </Text>
+        ) : (
 
-        {!!suffix && (
+          <>
 
-          <Text
-            style={{
-              marginLeft: 5,
+            <Text
+              style={{
+                fontSize: 24,
 
-              fontSize: 12,
+                color:
+                  "#202020",
 
-              color: "#202020",
+                fontFamily:
+                  theme.fonts.headingBold,
+              }}
+            >
+              {value ?? 0}
+            </Text>
 
-              fontFamily:
-                theme.fonts.semiBold,
-            }}
-          >
-            {suffix}
-          </Text>
+
+            {!!suffix && (
+
+              <Text
+                style={{
+                  marginLeft: 5,
+
+                  fontSize: 12,
+
+                  color:
+                    "#202020",
+
+                  fontFamily:
+                    theme.fonts.bold,
+                }}
+              >
+                {suffix}
+              </Text>
+
+            )}
+
+          </>
 
         )}
 
@@ -163,6 +227,7 @@ const StatCard = ({
 
 const VisitorHomeScreenStats = ({
   summary,
+  loading = false,
 }) => {
 
   const completionRate =
@@ -183,12 +248,17 @@ const VisitorHomeScreenStats = ({
       <View
         style={{
           flexDirection: "row",
+
           flexWrap: "wrap",
-          justifyContent: "space-between",
+
+          justifyContent:
+            "space-between",
         }}
       >
 
-        {/* Visits */}
+        {/* =================================================
+            VISITS
+        ================================================= */}
 
         <StatCard
 
@@ -209,10 +279,16 @@ const VisitorHomeScreenStats = ({
             />
           }
 
+          loading={
+            loading
+          }
+
         />
 
 
-        {/* Completed */}
+        {/* =================================================
+            COMPLETED
+        ================================================= */}
 
         <StatCard
 
@@ -237,10 +313,16 @@ const VisitorHomeScreenStats = ({
             />
           }
 
+          loading={
+            loading
+          }
+
         />
 
 
-        {/* High Priority */}
+        {/* =================================================
+            HIGH PRIORITY
+        ================================================= */}
 
         <StatCard
 
@@ -261,10 +343,16 @@ const VisitorHomeScreenStats = ({
             />
           }
 
+          loading={
+            loading
+          }
+
         />
 
 
-        {/* Assigned */}
+        {/* =================================================
+            ASSIGNED
+        ================================================= */}
 
         <StatCard
 
@@ -289,6 +377,10 @@ const VisitorHomeScreenStats = ({
             />
           }
 
+          loading={
+            loading
+          }
+
         />
 
       </View>
@@ -298,8 +390,7 @@ const VisitorHomeScreenStats = ({
   );
 };
 
+
 export default memo(
   VisitorHomeScreenStats
 );
-
- 

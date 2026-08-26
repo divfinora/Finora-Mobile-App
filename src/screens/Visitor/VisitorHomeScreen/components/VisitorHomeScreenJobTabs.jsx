@@ -7,6 +7,7 @@ import {
   Text,
   TouchableOpacity,
 } from "react-native";
+import { theme } from "../../../../theme";
 
 
 const VisitorHomeScreenJobTabs = ({
@@ -19,6 +20,7 @@ const VisitorHomeScreenJobTabs = ({
     <View
       style={{
         marginHorizontal: 24,
+ marginBottom:theme.spacing.xl,
 
         height: 55,
 
@@ -55,7 +57,7 @@ const VisitorHomeScreenJobTabs = ({
 
         <Text
           style={{
-            fontSize: 14,
+            fontSize: 16,
 
             color:
               activeTab === "today"
@@ -68,7 +70,7 @@ const VisitorHomeScreenJobTabs = ({
                 : "Inter-Regular",
           }}
         >
-          Today Jobs
+          Current Jobs
         </Text>
 
       </TouchableOpacity>
@@ -96,7 +98,7 @@ const VisitorHomeScreenJobTabs = ({
 
         <Text
           style={{
-            fontSize: 14,
+            fontSize: 16,
 
             color:
               activeTab === "upcoming"

@@ -7,7 +7,10 @@ import {
   Text,
   Image,
   TouchableOpacity,
+  StatusBar,
 } from "react-native";
+
+import LinearGradient from "react-native-linear-gradient";
 
 import {
   Bell,
@@ -17,12 +20,20 @@ import {
   theme,
 } from "../../../../theme";
 
+import {
+  useSafeAreaInsets,
+} from "react-native-safe-area-context";
+
 
 const VisitorHomeScreenHeader = ({
   visitor,
   unreadCount = 0,
   onNotificationPress,
 }) => {
+
+  const insets =
+    useSafeAreaInsets();
+
 
   // =====================================================
   // PROFILE IMAGE
@@ -33,240 +44,246 @@ const VisitorHomeScreenHeader = ({
     "https://i.pravatar.cc/150?img=12";
 
 
-  // =====================================================
-  // RENDER
-  // =====================================================
-
   return (
 
-    <View
-      style={{
-        paddingHorizontal: 24,
-        paddingTop: 14,
-        paddingBottom: 16,
-      }}
-    >
-
+    <>
       {/* =================================================
-          TOP ROW
+          STATUS BAR
       ================================================= */}
 
-      <View
+      <StatusBar
+        barStyle="dark-content"
+        backgroundColor="transparent"
+        translucent={true}
+      />
+
+
+      {/* =================================================
+          HEADER
+      ================================================= */}
+
+      <LinearGradient
+        colors={[
+          "#FFFFFF",
+          "#FFF9F1",
+          "#F7F8F7",
+        ]}
+        locations={[
+          0,
+          0.55,
+          1,
+        ]}
+        start={{
+          x: 0.5,
+          y: 0,
+        }}
+        end={{
+          x: 0.5,
+          y: 1,
+        }}
         style={{
-          flexDirection: "row",
+          width: "100%",
 
-          alignItems: "center",
+          // Status bar area
+          paddingTop:
+            insets.top + 8,
 
-          justifyContent:
-            "space-between",
+          paddingHorizontal: 24,
+
+          paddingBottom: theme.spacing.sm,
         }}
       >
 
-        {/* ===============================================
-            TITLE
-        =============================================== */}
-
-        <Text
-          style={{
-            fontSize: 22,
-
-            fontFamily:
-              theme.fonts.headingSemiBold,
-
-            color: "#181818",
-          }}
-        >
-          Visit Officer
-        </Text>
-
-
-        {/* ===============================================
-            RIGHT SECTION
-        =============================================== */}
+        {/* =================================================
+            HEADER ROW
+        ================================================= */}
 
         <View
           style={{
+            height: 48,
+
             flexDirection: "row",
 
             alignItems: "center",
+
+            justifyContent:
+              "space-between",
           }}
         >
 
-          {/* =============================================
-              NOTIFICATION
-          ============================================= */}
+          {/* =================================================
+              TITLE
+          ================================================= */}
 
-          <TouchableOpacity
-            activeOpacity={0.8}
-
-            onPress={
-              onNotificationPress
-            }
-
+          <Text
             style={{
-              marginRight: 16,
+              fontSize: 21,
 
-              position: "relative",
+              lineHeight: 28,
+
+              fontFamily:
+                theme.fonts.headingSemiBold,
+
+              color: "#181818",
             }}
           >
-
-            <Bell
-              size={25}
-              color="#FF4E16"
-              strokeWidth={2}
-            />
+            Visit Officer
+          </Text>
 
 
-            {/* =========================================
-                UNREAD COUNT
-            ========================================= */}
-
-            {unreadCount > 0 && (
-
-              <View
-                style={{
-                  position: "absolute",
-
-                  right: -8,
-
-                  top: -8,
-
-                  minWidth: 19,
-
-                  height: 19,
-
-                  borderRadius: 10,
-
-                  backgroundColor:
-                    "#C91818",
-
-                  alignItems: "center",
-
-                  justifyContent: "center",
-
-                  paddingHorizontal: 3,
-                }}
-              >
-
-                <Text
-                  style={{
-                    color:
-                      "#FFFFFF",
-
-                    fontSize: 11,
-
-                    fontFamily:
-                      theme.fonts.bold,
-                  }}
-                >
-
-                  {unreadCount > 99
-                    ? "99+"
-                    : unreadCount}
-
-                </Text>
-
-              </View>
-
-            )}
-
-          </TouchableOpacity>
-
-
-          {/* =============================================
-              PROFILE IMAGE
-          ============================================= */}
+          {/* =================================================
+              RIGHT SECTION
+          ================================================= */}
 
           <View
             style={{
-              width: 36,
+              flexDirection: "row",
 
-              height: 36,
-
-              borderRadius: 18,
-
-              overflow: "hidden",
-
-              borderWidth: 2,
-
-              borderColor:
-                "#FF6B2C",
-
-              backgroundColor:
-                "#E5E7EB",
+              alignItems: "center",
             }}
           >
 
-            <Image
-              source={{
-                uri: profileImage,
-              }}
-              style={{
-                width: "100%",
+            {/* ===============================================
+                NOTIFICATION
+            =============================================== */}
 
-                height: "100%",
+            <TouchableOpacity
+              activeOpacity={0.8}
+
+              onPress={
+                onNotificationPress
+              }
+
+              style={{
+                width: 34,
+
+                height: 38,
+
+                alignItems:
+                  "center",
+
+                justifyContent:
+                  "center",
+
+                marginRight: 16,
+
+                position:
+                  "relative",
               }}
-              resizeMode="cover"
-            />
+            >
+
+              <Bell
+                size={25}
+                color="#FF4E16"
+                strokeWidth={2}
+              />
+
+
+              {/* =========================================
+                  UNREAD BADGE
+              ========================================= */}
+
+              {unreadCount > 0 && (
+
+                <View
+                  style={{
+                    position:
+                      "absolute",
+
+                    right: -2,
+
+                    top: -2,
+
+                    minWidth: 19,
+
+                    height: 19,
+
+                    borderRadius: 10,
+
+                    backgroundColor:
+                      "#C91818",
+
+                    alignItems:
+                      "center",
+
+                    justifyContent:
+                      "center",
+
+                    paddingHorizontal: 3,
+                  }}
+                >
+
+                  <Text
+                    style={{
+                      color:
+                        "#FFFFFF",
+
+                      fontSize: 11,
+
+                      lineHeight: 14,
+
+                      fontFamily:
+                        theme.fonts.bold,
+                    }}
+                  >
+                    {unreadCount > 99
+                      ? "99+"
+                      : unreadCount}
+                  </Text>
+
+                </View>
+
+              )}
+
+            </TouchableOpacity>
+
+
+            {/* ===============================================
+                PROFILE
+            =============================================== */}
+
+            <View
+              style={{
+                width: 36,
+
+                height: 36,
+
+                borderRadius: 18,
+
+                overflow: "hidden",
+
+                borderWidth: 2,
+
+                borderColor:
+                  "#FF6B2C",
+
+                backgroundColor:
+                  "#E5E7EB",
+              }}
+            >
+
+              <Image
+                source={{
+                  uri:
+                    profileImage,
+                }}
+                style={{
+                  width: "100%",
+
+                  height: "100%",
+                }}
+                resizeMode="cover"
+              />
+
+            </View>
 
           </View>
 
         </View>
 
-      </View>
+      </LinearGradient>
 
-
-      {/* =================================================
-          GREETING
-      ================================================= */}
-
-      <View
-        style={{
-          marginTop: 28,
-        }}
-      >
-
-        <Text
-          style={{
-            fontSize: 18,
-
-            fontFamily:
-              theme.fonts.headingSemiBold,
-
-            color: "#202020",
-          }}
-        >
-
-          Good Morning,{" "}
-
-          {visitor?.fullName ||
-            "Visitor"}
-
-        </Text>
-
-
-        <Text
-          style={{
-            marginTop: 5,
-
-            fontSize: 14,
-
-            fontFamily:
-              theme.fonts.regular,
-
-            color: "#77777D",
-          }}
-        >
-
-          {visitor?.designation ||
-            "Field Verification Officer"}
-
-        </Text>
-
-      </View>
-
-    </View>
-
+    </>
   );
 };
 

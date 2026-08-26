@@ -32,8 +32,9 @@ import GetNotificationScreen from '../screens/Notification/GetNotification/GetNo
 import LoanCategoryScreen from "../screens/Loan/LoanProducts/LoanCategoryScreen.jsx";
 import SingleLoanDetailsFeeDetailsScreen from '../screens/GetLoan/SingleLoanDetails/components/SingleLoanDetailsFeeDetailsScreen.jsx';
 import SingleLoanDetailsCompleteEMIScreen from '../screens/GetLoan/SingleLoanDetails/components/SingleLoanDetailsCompleteEMIScreen.jsx';
-import VisitorLoginScreen from '../screens/Auth/Visitor/VisitorLoginScreen.jsx'
- 
+import VisitorInvestigationScreen from '../screens/Visitor/VisitorInvestigation/VisitorInvestigationScreen.jsx';
+
+
 const Stack = createNativeStackNavigator();
 
 const AppStack = () => {
@@ -171,7 +172,7 @@ const AppStack = () => {
         component={LoanCategoryScreen}
       />
 
- 
+
       <Stack.Screen
         name="single-loan-detail-fee-details-screen"
         component={SingleLoanDetailsFeeDetailsScreen}
@@ -187,15 +188,21 @@ const AppStack = () => {
           headerShown: false,
         }}
       />
-    
 
 
-       
-
-       {/* Visitory Flow ---------- start  */}
 
 
-       {/* Visitory Flow ----------  end */}
+
+      {/* Visitory Flow ---------- start  */}
+
+      <Stack.Screen
+        name="visitor-investingation-screen"
+        component={VisitorInvestigationScreen}
+        options={{
+          headerShown: false,
+        }}
+      />
+      {/* Visitory Flow ----------  end */}
 
     </Stack.Navigator>
   );

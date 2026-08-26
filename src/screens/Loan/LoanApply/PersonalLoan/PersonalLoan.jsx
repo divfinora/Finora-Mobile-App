@@ -1849,8 +1849,8 @@ const PersonalLoan = ({
           <View
             style={{
               paddingHorizontal:
-                theme.spacing?.xxl ||
-                20,
+                theme.spacing?.xxl 
+                 
             }}
           >
 

@@ -21,7 +21,7 @@ const VisitorHomeScreenRetry = ({
       style={{
         marginHorizontal: 24,
 
-        marginTop: 16,
+     
       }}
     >
 
