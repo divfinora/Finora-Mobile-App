@@ -1,64 +1,52 @@
-import React from "react";
+import React, {
+  memo,
+  useState,
+} from "react";
 
 import {
   View,
   Text,
   TouchableOpacity,
   Image,
+  Alert,
+  ActivityIndicator,
 } from "react-native";
 
 import {
-  Home,
-  Store,
-  Building2,
-  UserRound,
   FileText,
-  MoreHorizontal,
   Trash2,
-  MoreVertical,
+  Upload,
 } from "lucide-react-native";
 
 import LinearGradient from "react-native-linear-gradient";
 
-import { theme } from "../../../../theme";
+import {
+  theme,
+} from "../../../../theme";
 
+import UploadBottomSheet from
+  "../../../../components/common/Modal/UploadBottomSheet";
 
-// =====================================================
-// UPLOAD CATEGORIES
-// =====================================================
+import DocumentNameModal from
+  "../components/DocumentNameModal";
 
-const UPLOAD_CATEGORIES = [
-  {
-    key: "house",
-    title: "House",
-    icon: Home,
-  },
-  {
-    key: "shop",
-    title: "Shop",
-    icon: Store,
-  },
-  {
-    key: "office",
-    title: "Office",
-    icon: Building2,
-  },
-  {
-    key: "customer",
-    title: "Customer",
-    icon: UserRound,
-  },
-  {
-    key: "document",
-    title: "Document",
-    icon: FileText,
-  },
-  {
-    key: "other",
-    title: "Other",
-    icon: MoreHorizontal,
-  },
-];
+import {
+  launchCamera,
+  launchImageLibrary,
+} from "react-native-image-picker";
+
+import {
+  pick,
+  types,
+  isCancel,
+} from "@react-native-documents/picker";
+
+import {
+  useUploadVisitorPhotoMutation,
+} from "../../../../redux/features/visitor/visitorApi";
+
+import useHandleMutation from
+  "../../../../hooks/useHandleMutation";
 
 
 // =====================================================
@@ -66,6 +54,9 @@ const UPLOAD_CATEGORIES = [
 // =====================================================
 
 const MAX_UPLOADS = 10;
+
+const MAX_FILE_SIZE =
+  10 * 1024 * 1024;
 
 
 // =====================================================
@@ -79,354 +70,1124 @@ const SiteDetails = ({
 }) => {
 
   // ===================================================
-  // UPLOADED PHOTOS
+  // DOCUMENT NAME MODAL
   // ===================================================
 
-  const uploadedPhotos =
-    Array.isArray(data?.uploadedPhotos)
-      ? data.uploadedPhotos
+  const [
+    documentNameVisible,
+    setDocumentNameVisible,
+  ] = useState(false);
+
+
+  // ===================================================
+  // UPLOAD SHEET
+  // ===================================================
+
+  const [
+    uploadSheetVisible,
+    setUploadSheetVisible,
+  ] = useState(false);
+
+
+  // ===================================================
+  // DOCUMENT NAME
+  // ===================================================
+
+  const [
+    documentName,
+    setDocumentName,
+  ] = useState("");
+
+
+  // ===================================================
+  // LOCAL UPLOAD LOADING
+  // ===================================================
+
+  const [
+    uploading,
+    setUploading,
+  ] = useState(false);
+
+
+  // ===================================================
+  // HANDLE MUTATION
+  // ===================================================
+
+  const {
+    handleMutation,
+  } = useHandleMutation();
+
+
+  // ===================================================
+  // UPLOAD PHOTO API
+  // ===================================================
+
+  const [
+    uploadVisitorPhoto,
+  ] = useUploadVisitorPhotoMutation();
+
+
+  // ===================================================
+  // FINAL UPLOAD LOADING
+  // ===================================================
+
+  const isDocumentUploading =
+    uploading;
+
+
+  // ===================================================
+  // DOCUMENTS
+  // ===================================================
+
+  const uploadedDocuments =
+    Array.isArray(
+      data?.uploadedDocuments
+    )
+      ? data.uploadedDocuments
       : [];
 
 
   const uploadedCount =
-    uploadedPhotos.length;
+    uploadedDocuments.length;
 
 
   // ===================================================
-  // UPLOAD PERCENTAGE
+  // PROGRESS
   // ===================================================
 
   const uploadPercentage =
     Math.min(
       Math.round(
-        (uploadedCount / MAX_UPLOADS) * 100
+        (
+          uploadedCount /
+          MAX_UPLOADS
+        ) * 100
       ),
       100
     );
 
 
   // ===================================================
-  // CATEGORY PRESS
+  // OPEN DOCUMENT NAME MODAL
   // ===================================================
 
-  const handleCategoryPress = (
-    category
-  ) => {
+  const handleOpenDocumentModal =
+    () => {
 
-    onChange?.({
-      selectedCategory:
-        category.key,
-    });
+      if (isDocumentUploading) {
+        return;
+      }
 
-    // TODO:
-    // Open upload bottom sheet here.
-  };
+
+      if (
+        uploadedCount >=
+        MAX_UPLOADS
+      ) {
+
+        Alert.alert(
+          "Maximum Documents",
+          "Maximum 10 documents can be uploaded."
+        );
+
+        return;
+      }
+
+
+      setDocumentName("");
+
+      setDocumentNameVisible(true);
+    };
 
 
   // ===================================================
-  // DELETE PHOTO
+  // DOCUMENT NAME SUBMIT
   // ===================================================
 
-  const handleDeletePhoto = (
-    photoId
-  ) => {
+  const handleDocumentNameContinue =
+    (name) => {
 
-    const updatedPhotos =
-      uploadedPhotos.filter(
-        (item, index) =>
-          item?.id !== photoId &&
-          index !== photoId
+      const trimmedName =
+        name?.trim();
+
+
+      if (!trimmedName) {
+        return;
+      }
+
+
+      // -----------------------------------------------
+      // SAVE DOCUMENT NAME
+      // -----------------------------------------------
+
+      setDocumentName(
+        trimmedName
       );
 
-    onChange?.({
-      uploadedPhotos:
-        updatedPhotos,
-    });
-  };
+
+      // -----------------------------------------------
+      // CLOSE NAME MODAL
+      // -----------------------------------------------
+
+      setDocumentNameVisible(
+        false
+      );
+
+
+      // -----------------------------------------------
+      // OPEN FILE PICKER SHEET
+      // -----------------------------------------------
+
+      setTimeout(() => {
+
+        setUploadSheetVisible(
+          true
+        );
+
+      }, 250);
+
+    };
 
 
   // ===================================================
-  // UPLOADED PHOTO ITEM
+  // SAVE DOCUMENT LOCALLY
   // ===================================================
 
-  const renderUploadedItem = (
-    item,
-    index
-  ) => {
+  const saveDocument =
+    (document) => {
 
-    const isFirst =
-      index === 0;
+      const updatedDocuments = [
+
+        document,
+
+        ...uploadedDocuments,
+
+      ].slice(
+        0,
+        MAX_UPLOADS
+      );
 
 
-    const imageUri =
-      item?.uri ||
-      item?.url ||
-      item?.thumbnail;
+      onChange?.({
+
+        uploadedDocuments:
+          updatedDocuments,
+
+      });
+
+    };
 
 
-    return (
+  // ===================================================
+  // VALIDATE FILE
+  // ===================================================
 
-      <View
-        key={
-          item?.id ||
-          item?.publicId ||
-          index
+  const validateFile =
+    (file) => {
+
+      if (!file?.uri) {
+
+        Alert.alert(
+          "File Missing",
+          "Selected file is not available."
+        );
+
+        return false;
+      }
+
+
+      if (
+        file?.size &&
+        file.size >
+        MAX_FILE_SIZE
+      ) {
+
+        Alert.alert(
+          "File Too Large",
+          "Maximum file size is 10 MB."
+        );
+
+        return false;
+      }
+
+
+      return true;
+    };
+
+
+  // ===================================================
+  // HANDLE SELECTED FILE
+  // ===================================================
+
+  const handleSelectedFile =
+    async (file) => {
+
+      // -----------------------------------------------
+      // VALIDATE FILE
+      // -----------------------------------------------
+
+      if (
+        !validateFile(file)
+      ) {
+        return;
+      }
+
+
+      // -----------------------------------------------
+      // LOAN ID
+      // -----------------------------------------------
+
+      if (!job?.loanId) {
+
+        Alert.alert(
+          "Error",
+          "Loan ID is missing."
+        );
+
+        return;
+      }
+
+
+      // -----------------------------------------------
+      // DOCUMENT NAME
+      // -----------------------------------------------
+
+      const trimmedDocumentName =
+        documentName?.trim();
+
+
+      if (!trimmedDocumentName) {
+
+        Alert.alert(
+          "Document Name Required",
+          "Please enter document name first."
+        );
+
+        return;
+      }
+
+
+      try {
+
+        setUploading(true);
+
+
+        // =============================================
+        // FORM DATA
+        // =============================================
+
+        const formData =
+          new FormData();
+
+
+        // =============================================
+        // PHOTO FILE
+        // =============================================
+
+        formData.append(
+          "photo",
+          {
+            uri:
+              file?.uri,
+
+            name:
+              file?.name ||
+              `document_${Date.now()}`,
+
+            type:
+              file?.type ||
+              "application/octet-stream",
+          }
+        );
+
+
+        // =============================================
+        // CATEGORY
+        //
+        // BACKEND REQUIREMENT:
+        //
+        // category = CUSTOMER
+        // category = CUSTOMER_SELFIE
+        // category = HOUSE_FRONT
+        // category = HOUSE_INSIDE
+        // category = SHOP
+        // category = OFFICE
+        // category = DOCUMENT
+        // category = WITNESS
+        // category = OTHER
+        //
+        // FOR USER DOCUMENT:
+        //
+        // category = DOCUMENT NAME
+        // =============================================
+
+        formData.append(
+          "category",
+          trimmedDocumentName
+        );
+
+
+        // =============================================
+        // CONSOLE PAYLOAD
+        // =============================================
+
+        console.log(
+          "DOCUMENT UPLOAD PAYLOAD",
+          {
+            endpoint:
+              `/applyloan/${job?.loanId}/upload-photo`,
+
+            loanId:
+              job?.loanId,
+
+            photo: {
+              name:
+                file?.name,
+
+              type:
+                file?.type,
+
+              size:
+                file?.size,
+
+              uri:
+                file?.uri,
+            },
+
+            category:
+              trimmedDocumentName,
+          }
+        );
+
+
+        // =============================================
+        // API CALL
+        // =============================================
+
+        const response =
+          await handleMutation({
+
+            apiFunc:
+              uploadVisitorPhoto,
+
+            params: {
+
+              loanId:
+                job?.loanId,
+
+              formData,
+
+            },
+
+            showSuccess:
+              true,
+
+            customSuccessMsg:
+              "Document uploaded successfully",
+
+            onSuccess:
+              (apiResponse) => {
+
+                console.log(
+                  "DOCUMENT UPLOAD RESPONSE:",
+                  apiResponse
+                );
+
+              },
+
+          });
+
+
+        // =============================================
+        // FAILED
+        // =============================================
+
+        if (!response) {
+          return;
         }
-        style={{
-          minHeight:
-            isFirst
-              ? 118
-              : 82,
 
-          backgroundColor:
-            theme.colors.white,
 
-          borderRadius:
-            theme.radius.lg,
+        // =============================================
+        // SERVER RESPONSE
+        //
+        // Expected:
+        //
+        // {
+        //   success: true,
+        //   message: "...",
+        //   data: {
+        //     category,
+        //     url,
+        //     publicId,
+        //     uploadedBy,
+        //     uploadedAt
+        //   }
+        // }
+        // =============================================
 
-          padding:
-            theme.spacing.md,
+        const serverData =
+          response?.data ||
+          response;
 
-          marginBottom:
-            theme.spacing.md,
 
-          flexDirection:
-            "row",
+        // =============================================
+        // MAP RECENT DOCUMENT
+        // =============================================
 
-          alignItems:
-            "center",
-        }}
-      >
+        const uploadedDocument = {
 
-        {/* =================================================
-            IMAGE
-        ================================================= */}
+          id:
+            serverData?.publicId ||
+            `${Date.now()}`,
+
+          name:
+            trimmedDocumentName,
+
+          title:
+            trimmedDocumentName,
+
+          category:
+            serverData?.category ||
+            trimmedDocumentName,
+
+          fileName:
+            file?.name ||
+            "document",
+
+          uri:
+            file?.uri,
+
+          url:
+            serverData?.url ||
+            file?.uri,
+
+          publicId:
+            serverData?.publicId ||
+            null,
+
+          uploadedBy:
+            serverData?.uploadedBy ||
+            null,
+
+          type:
+            file?.type ||
+            "application/octet-stream",
+
+          size:
+            file?.size ||
+            0,
+
+          uploaded:
+            true,
+
+          uploadedAt:
+            serverData?.uploadedAt ||
+            new Date().toISOString(),
+
+        };
+
+
+        // =============================================
+        // ADD TO RECENTLY UPLOADED
+        // =============================================
+
+        saveDocument(
+          uploadedDocument
+        );
+
+
+        // =============================================
+        // CLOSE FILE SHEET
+        // =============================================
+
+        setUploadSheetVisible(
+          false
+        );
+
+
+        // =============================================
+        // RESET
+        // =============================================
+
+        setDocumentName("");
+
+
+      } catch (error) {
+
+        console.log(
+          "DOCUMENT UPLOAD ERROR:",
+          error
+        );
+
+      } finally {
+
+        setUploading(false);
+
+      }
+
+    };
+
+
+  // ===================================================
+  // CAMERA
+  // ===================================================
+
+  const handleCamera =
+    async () => {
+
+      try {
+
+        const result =
+          await launchCamera({
+
+            mediaType:
+              "photo",
+
+            cameraType:
+              "back",
+
+            quality:
+              0.85,
+
+            includeBase64:
+              false,
+
+          });
+
+
+        if (
+          result?.didCancel
+        ) {
+          return;
+        }
+
+
+        if (
+          result?.errorCode
+        ) {
+
+          Alert.alert(
+            "Camera Error",
+            result?.errorMessage ||
+            "Unable to open camera."
+          );
+
+          return;
+        }
+
+
+        const asset =
+          result?.assets?.[0];
+
+
+        if (!asset?.uri) {
+          return;
+        }
+
+
+        await handleSelectedFile({
+
+          uri:
+            asset.uri,
+
+          name:
+            asset.fileName ||
+            `document_${Date.now()}.jpg`,
+
+          type:
+            asset.type ||
+            "image/jpeg",
+
+          size:
+            asset.fileSize ||
+            0,
+
+        });
+
+      } catch (error) {
+
+        console.log(
+          "CAMERA ERROR:",
+          error
+        );
+
+
+        Alert.alert(
+          "Error",
+          "Unable to capture image."
+        );
+
+      }
+
+    };
+
+
+  // ===================================================
+  // GALLERY
+  // ===================================================
+
+  const handleGallery =
+    async () => {
+
+      try {
+
+        const result =
+          await launchImageLibrary({
+
+            mediaType:
+              "photo",
+
+            selectionLimit:
+              1,
+
+            quality:
+              0.85,
+
+            includeBase64:
+              false,
+
+          });
+
+
+        if (
+          result?.didCancel
+        ) {
+          return;
+        }
+
+
+        if (
+          result?.errorCode
+        ) {
+
+          Alert.alert(
+            "Gallery Error",
+            result?.errorMessage ||
+            "Unable to open gallery."
+          );
+
+          return;
+        }
+
+
+        const asset =
+          result?.assets?.[0];
+
+
+        if (!asset?.uri) {
+          return;
+        }
+
+
+        await handleSelectedFile({
+
+          uri:
+            asset.uri,
+
+          name:
+            asset.fileName ||
+            `document_${Date.now()}.jpg`,
+
+          type:
+            asset.type ||
+            "image/jpeg",
+
+          size:
+            asset.fileSize ||
+            0,
+
+        });
+
+      } catch (error) {
+
+        console.log(
+          "GALLERY ERROR:",
+          error
+        );
+
+
+        Alert.alert(
+          "Error",
+          "Unable to select image."
+        );
+
+      }
+
+    };
+
+
+  // ===================================================
+  // DOCUMENT / PDF
+  // ===================================================
+
+  const handleDocument =
+    async () => {
+
+      try {
+
+        const [
+          result,
+        ] =
+          await pick({
+
+            type: [
+
+              types.images,
+
+              types.pdf,
+
+            ],
+
+            allowMultiSelection:
+              false,
+
+          });
+
+
+        if (!result) {
+          return;
+        }
+
+
+        await handleSelectedFile({
+
+          uri:
+            result.uri,
+
+          name:
+            result.name ||
+            `document_${Date.now()}`,
+
+          type:
+            result.type ||
+            "application/octet-stream",
+
+          size:
+            result.size ||
+            0,
+
+        });
+
+      } catch (error) {
+
+        if (
+          isCancel(error)
+        ) {
+          return;
+        }
+
+
+        console.log(
+          "DOCUMENT PICK ERROR:",
+          error
+        );
+
+
+        Alert.alert(
+          "Error",
+          "Unable to select document."
+        );
+
+      }
+
+    };
+
+
+  // ===================================================
+  // DELETE DOCUMENT
+  // ===================================================
+
+  const handleDeleteDocument =
+    (
+      documentId,
+      index
+    ) => {
+
+      const updatedDocuments =
+        uploadedDocuments.filter(
+
+          (
+            item,
+            itemIndex
+          ) => {
+
+            if (documentId) {
+
+              return (
+                item?.id !==
+                documentId
+              );
+
+            }
+
+
+            return (
+              itemIndex !==
+              index
+            );
+
+          }
+
+        );
+
+
+      onChange?.({
+
+        uploadedDocuments:
+          updatedDocuments,
+
+      });
+
+    };
+
+
+  // ===================================================
+  // RECENT DOCUMENT
+  // ===================================================
+
+  const renderUploadedItem =
+    (
+      item,
+      index
+    ) => {
+
+      const isImage =
+        item?.type
+          ?.toLowerCase()
+          ?.startsWith(
+            "image/"
+          );
+
+
+      const imageUri =
+        item?.url ||
+        item?.uri;
+
+
+      return (
 
         <View
+          key={
+            item?.id ||
+            index
+          }
+
           style={{
-            width:
-              isFirst
-                ? 84
-                : 52,
 
-            height:
-              isFirst
-                ? 84
-                : 52,
-
-            borderRadius:
-              theme.radius.md,
-
-            overflow:
-              "hidden",
+            minHeight:
+              88,
 
             backgroundColor:
-              theme.colors.gray100,
-          }}
-        >
+              theme.colors.white,
 
-          {imageUri ? (
+            borderRadius:
+              16,
 
-            <Image
-              source={{
-                uri: imageUri,
-              }}
-              style={{
-                width: "100%",
-                height: "100%",
-              }}
-              resizeMode="cover"
-            />
-
-          ) : (
-
-            <View
-              style={{
-                flex: 1,
-
-                alignItems:
-                  "center",
-
-                justifyContent:
-                  "center",
-              }}
-            >
-
-              <FileText
-                size={22}
-                color={
-                  theme.colors.gray500
-                }
-              />
-
-            </View>
-
-          )}
-
-        </View>
-
-
-        {/* =================================================
-            DETAILS
-        ================================================= */}
-
-        <View
-          style={{
-            flex: 1,
-
-            marginLeft:
+            padding:
               theme.spacing.md,
+
+            marginBottom:
+              theme.spacing.sm,
+
+            flexDirection:
+              "row",
+
+            alignItems:
+              "center",
+
+            borderWidth:
+              1,
+
+            borderColor:
+              "#EEEEEE",
+
           }}
         >
 
-          <Text
-            numberOfLines={1}
+          {/* =========================================
+              PREVIEW
+          ========================================= */}
+
+          <View
             style={{
-              color:
-                theme.colors.black,
 
-              fontSize:
-                theme.typography.b1,
+              width: 54,
 
-              fontFamily:
-                theme.fonts.medium,
-            }}
-          >
-            {
-              item?.title ||
-              item?.name ||
-              "Uploaded Document"
-            }
-          </Text>
+              height: 54,
 
+              borderRadius: 13,
 
-          {isFirst && (
+              overflow:
+                "hidden",
 
-            <>
-
-              <Text
-                style={{
-                  marginTop: 4,
-
-                  color:
-                    theme.colors.gray500,
-
-                  fontSize:
-                    theme.typography.b3,
-
-                  fontFamily:
-                    theme.fonts.regular,
-                }}
-              >
-                {
-                  item?.subtitle ||
-                  "Uploaded today, 10:42 AM"
-                }
-              </Text>
-
-
-              <View
-                style={{
-                  flexDirection:
-                    "row",
-
-                  alignItems:
-                    "center",
-
-                  marginTop: 5,
-                }}
-              >
-
-                <View
-                  style={{
-                    width: 14,
-
-                    height: 14,
-
-                    borderRadius: 7,
-
-                    backgroundColor:
-                      theme.colors.success,
-
-                    alignItems:
-                      "center",
-
-                    justifyContent:
-                      "center",
-                  }}
-                >
-
-                  <Text
-                    style={{
-                      color:
-                        theme.colors.white,
-
-                      fontSize: 9,
-
-                      fontFamily:
-                        theme.fonts.bold,
-                    }}
-                  >
-                    ✓
-                  </Text>
-
-                </View>
-
-
-                <Text
-                  style={{
-                    marginLeft: 4,
-
-                    color:
-                      theme.colors.success,
-
-                    fontSize:
-                      theme.typography.b3,
-
-                    fontFamily:
-                      theme.fonts.medium,
-                  }}
-                >
-                  Verified Location
-                </Text>
-
-              </View>
-
-            </>
-
-          )}
-
-        </View>
-
-
-        {/* =================================================
-            ACTION
-        ================================================= */}
-
-        {isFirst ? (
-
-          <TouchableOpacity
-            activeOpacity={0.8}
-            onPress={() =>
-              handleDeletePhoto(
-                item?.id ?? index
-              )
-            }
-            style={{
-              width: 40,
-
-              height: 40,
+              backgroundColor:
+                "#FFF4EA",
 
               alignItems:
                 "center",
 
               justifyContent:
                 "center",
+
+            }}
+          >
+
+            {isImage &&
+            imageUri ? (
+
+              <Image
+                source={{
+                  uri:
+                    imageUri,
+                }}
+
+                style={{
+                  width:
+                    "100%",
+
+                  height:
+                    "100%",
+                }}
+
+                resizeMode="cover"
+              />
+
+            ) : (
+
+              <FileText
+                size={25}
+                color={
+                  theme.colors.primary500
+                }
+              />
+
+            )}
+
+          </View>
+
+
+          {/* =========================================
+              DETAILS
+          ========================================= */}
+
+          <View
+            style={{
+
+              flex: 1,
+
+              marginLeft:
+                theme.spacing.md,
+
+            }}
+          >
+
+            <Text
+              numberOfLines={1}
+
+              style={{
+
+                color:
+                  theme.colors.black,
+
+                fontSize:
+                  theme.typography.b1,
+
+                fontFamily:
+                  theme.fonts.semiBold,
+
+              }}
+            >
+              {
+                item?.category ||
+                item?.title ||
+                item?.name ||
+                "Uploaded Document"
+              }
+            </Text>
+
+
+            <Text
+              style={{
+
+                color:
+                  theme.colors.gray500,
+
+                fontSize:
+                  12,
+
+                fontFamily:
+                  theme.fonts.semiBold,
+
+                 
+
+              }}
+            >
+              Uploaded just now
+            </Text>
+
+
+            <Text
+              style={{
+
+                color:
+                  theme.colors.success,
+
+                fontSize:
+                  11,
+
+                fontFamily:
+                  theme.fonts.medium,
+
+                marginTop: 2,
+
+              }}
+            >
+              ✓ Uploaded
+            </Text>
+
+          </View>
+
+
+          {/* =========================================
+              DELETE
+          ========================================= */}
+
+          <TouchableOpacity
+            activeOpacity={0.8}
+
+            disabled={
+              isDocumentUploading
+            }
+
+            onPress={() =>
+              handleDeleteDocument(
+                item?.id,
+                index
+              )
+            }
+
+            style={{
+
+              width: 38,
+
+              height: 38,
+
+              borderRadius: 12,
+
+              backgroundColor:
+                "#FFF5F5",
+
+              alignItems:
+                "center",
+
+              justifyContent:
+                "center",
+
             }}
           >
 
             <Trash2
-              size={20}
+              size={18}
+
               color={
                 theme.colors.error
               }
@@ -434,39 +1195,11 @@ const SiteDetails = ({
 
           </TouchableOpacity>
 
-        ) : (
+        </View>
 
-          <TouchableOpacity
-            activeOpacity={0.8}
-            style={{
-              width: 36,
+      );
 
-              height: 36,
-
-              alignItems:
-                "center",
-
-              justifyContent:
-                "center",
-            }}
-          >
-
-            <MoreVertical
-              size={20}
-              color={
-                theme.colors.gray700
-              }
-            />
-
-          </TouchableOpacity>
-
-        )}
-
-      </View>
-
-    );
-
-  };
+    };
 
 
   // ===================================================
@@ -482,11 +1215,12 @@ const SiteDetails = ({
     >
 
       {/* =================================================
-          UPLOAD PROGRESS CARD
+          UPLOAD PROGRESS
       ================================================= */}
 
       <View
         style={{
+
           backgroundColor:
             theme.colors.white,
 
@@ -500,22 +1234,21 @@ const SiteDetails = ({
             theme.spacing.lg,
 
           ...theme.shadows.card,
+
         }}
       >
 
         <View
           style={{
+
             flexDirection:
               "row",
 
             alignItems:
               "center",
+
           }}
         >
-
-          {/* =================================================
-              PROGRESS
-          ================================================= */}
 
           <View
             style={{
@@ -525,38 +1258,25 @@ const SiteDetails = ({
 
             <Text
               style={{
+
                 color:
                   theme.colors.black,
 
                 fontSize:
-                  theme.typography.b1,
+                  theme.typography.b2,
 
                 fontFamily:
                   theme.fonts.medium,
+
               }}
             >
-              Upload
-            </Text>
-
-
-            <Text
-              style={{
-                color:
-                  theme.colors.black,
-
-                fontSize:
-                  theme.typography.b1,
-
-                fontFamily:
-                  theme.fonts.medium,
-              }}
-            >
-              Progress
+              Upload Progress
             </Text>
 
 
             <View
               style={{
+
                 height: 8,
 
                 borderRadius: 999,
@@ -569,27 +1289,37 @@ const SiteDetails = ({
 
                 marginTop:
                   theme.spacing.sm,
+
               }}
             >
 
               <LinearGradient
                 colors={[
+
                   theme.colors.primary300,
+
                   theme.colors.primary500,
+
                 ]}
+
                 start={{
                   x: 0,
                   y: 0,
                 }}
+
                 end={{
                   x: 1,
                   y: 0,
                 }}
+
                 style={{
+
                   width:
                     `${uploadPercentage}%`,
 
-                  height: "100%",
+                  height:
+                    "100%",
+
                 }}
               />
 
@@ -598,47 +1328,48 @@ const SiteDetails = ({
           </View>
 
 
-          {/* =================================================
-              COUNT
-          ================================================= */}
+          {/* COUNT */}
 
           <View
             style={{
+
               alignItems:
                 "center",
 
               marginHorizontal:
                 theme.spacing.lg,
+
             }}
           >
 
             <Text
               style={{
+
                 color:
                   theme.colors.black,
 
-                fontSize: 26,
-
-                lineHeight: 32,
+                fontSize: 24,
 
                 fontFamily:
                   theme.fonts.headingBold,
+
               }}
             >
-              {uploadedCount} / {MAX_UPLOADS}
+              {uploadedCount}/{MAX_UPLOADS}
             </Text>
 
 
             <Text
               style={{
+
                 color:
                   theme.colors.gray500,
 
-                fontSize:
-                  theme.typography.b2,
+                fontSize: 11,
 
                 fontFamily:
                   theme.fonts.regular,
+
               }}
             >
               Uploaded
@@ -647,17 +1378,16 @@ const SiteDetails = ({
           </View>
 
 
-          {/* =================================================
-              CIRCLE %
-          ================================================= */}
+          {/* PERCENT */}
 
           <View
             style={{
-              width: 60,
 
-              height: 60,
+              width: 58,
 
-              borderRadius: 30,
+              height: 58,
+
+              borderRadius: 29,
 
               borderWidth: 4,
 
@@ -669,19 +1399,21 @@ const SiteDetails = ({
 
               justifyContent:
                 "center",
+
             }}
           >
 
             <Text
               style={{
+
                 color:
                   theme.colors.black,
 
-                fontSize:
-                  theme.typography.b3,
+                fontSize: 11,
 
                 fontFamily:
                   theme.fonts.bold,
+
               }}
             >
               {uploadPercentage}%
@@ -695,164 +1427,485 @@ const SiteDetails = ({
 
 
       {/* =================================================
-          SELECT CATEGORY
+          DOCUMENT UPLOAD CARD
       ================================================= */}
 
-      <View
+      <TouchableOpacity
+        activeOpacity={0.92}
+
+        onPress={
+          handleOpenDocumentModal
+        }
+
+        disabled={
+          isDocumentUploading ||
+          uploadedCount >=
+            MAX_UPLOADS
+        }
+
         style={{
+
           backgroundColor:
-            theme.colors.gray100,
+            theme.colors.white,
 
           borderRadius:
-            theme.radius.xl,
-
-          padding:
-            theme.spacing.lg,
+            20,
 
           marginBottom:
             theme.spacing.lg,
+
+          borderWidth:
+            1,
+
+          borderColor:
+            isDocumentUploading ||
+            uploadedCount >=
+              MAX_UPLOADS
+              ? theme.colors.gray300
+              : "#EAD9CC",
+
+          overflow:
+            "hidden",
+
+          opacity:
+            isDocumentUploading ||
+            uploadedCount >=
+              MAX_UPLOADS
+              ? 0.65
+              : 1,
+
+          ...theme.shadows.card,
+
         }}
       >
 
-        <Text
-          style={{
-            marginBottom:
-              theme.spacing.lg,
-
-            color:
-              theme.colors.black,
-
-            fontSize:
-              theme.typography.b2,
-
-            fontFamily:
-              theme.fonts.headingBold,
-
-            letterSpacing: 0.4,
-          }}
-        >
-          SELECT CATEGORY TO UPLOAD
-        </Text>
-
+        {/* HEADER */}
 
         <View
           style={{
+
+            paddingHorizontal:
+              theme.spacing.lg,
+
+            paddingTop:
+              theme.spacing.lg,
+
+            paddingBottom:
+              theme.spacing.md,
+
             flexDirection:
               "row",
 
-            flexWrap:
-              "wrap",
+            alignItems:
+              "center",
 
-            justifyContent:
-              "space-between",
           }}
         >
 
-          {UPLOAD_CATEGORIES.map(
-            (category) => {
+          <View
+            style={{
 
-              const Icon =
-                category.icon;
+              width: 46,
 
+              height: 46,
 
-              const selected =
-                data?.selectedCategory ===
-                category.key;
+              borderRadius: 14,
 
+              backgroundColor:
+                "#FFF5EC",
 
-              return (
+              alignItems:
+                "center",
 
-                <TouchableOpacity
-                  key={
-                    category.key
-                  }
-                  activeOpacity={0.8}
-                  onPress={() =>
-                    handleCategoryPress(
-                      category
-                    )
-                  }
-                  style={{
-                    width: "31.5%",
+              justifyContent:
+                "center",
 
-                    height: 100,
+              borderWidth:
+                1,
 
-                    backgroundColor:
-                      theme.colors.white,
+              borderColor:
+                "#FCE2CF",
 
-                    borderRadius:
-                      theme.radius.lg,
+            }}
+          >
 
-                    alignItems:
-                      "center",
+            {isDocumentUploading ? (
 
-                    justifyContent:
-                      "center",
+              <ActivityIndicator
+                size="small"
+                color={
+                  theme.colors.primary500
+                }
+              />
 
-                    marginBottom:
-                      theme.spacing.md,
-                  }}
-                >
+            ) : (
 
-                  <View
-                    style={{
-                      width: 50,
+              <FileText
+                size={22}
 
-                      height: 50,
+                color={
+                  theme.colors.primary500
+                }
 
-                      borderRadius: 25,
+                strokeWidth={2}
+              />
 
-                      backgroundColor:
-                        selected
-                          ? theme.colors.primary300
-                          : theme.colors.primary100,
+            )}
 
-                      alignItems:
-                        "center",
-
-                      justifyContent:
-                        "center",
-
-                      marginBottom:
-                        theme.spacing.sm,
-                    }}
-                  >
-
-                    <Icon
-                      size={22}
-                      color={
-                        theme.colors.primary500
-                      }
-                    />
-
-                  </View>
+          </View>
 
 
-                  <Text
-                    style={{
-                      color:
-                        theme.colors.navy500,
+          <View
+            style={{
 
-                      fontSize:
-                        theme.typography.b2,
+              flex: 1,
 
-                      fontFamily:
-                        theme.fonts.medium,
-                    }}
-                  >
-                    {category.title}
-                  </Text>
+              marginLeft:
+                theme.spacing.md,
 
-                </TouchableOpacity>
+            }}
+          >
 
-              );
+            <Text
+              style={{
 
-            }
+                color:
+                  theme.colors.black,
+
+                fontSize:
+                  theme.typography.b1,
+
+                fontFamily:
+                  theme.fonts.headingBold,
+
+              }}
+            >
+              {isDocumentUploading
+                ? "Uploading Document"
+                : "Upload Document"}
+            </Text>
+
+
+            <Text
+              style={{
+
+                marginTop: 3,
+
+                color:
+                  theme.colors.gray500,
+
+                fontSize:
+                  theme.typography.b3,
+
+                fontFamily:
+                  theme.fonts.regular,
+
+              }}
+            >
+              {isDocumentUploading
+                ? "Please wait while your document is being uploaded"
+                : "Add a document for this loan"}
+            </Text>
+
+          </View>
+
+        </View>
+
+
+        {/* UPLOAD AREA */}
+
+        <View
+          style={{
+
+            marginHorizontal:
+              theme.spacing.lg,
+
+            marginBottom:
+              theme.spacing.lg,
+
+            minHeight:
+              150,
+
+            borderRadius:
+              16,
+
+            borderWidth:
+              1.2,
+
+            borderColor:
+              isDocumentUploading
+                ? "#F3D6BE"
+                : "#E9CDB8",
+
+            borderStyle:
+              "dashed",
+
+            backgroundColor:
+              isDocumentUploading
+                ? "#FFF8F2"
+                : "#FFFCF9",
+
+            alignItems:
+              "center",
+
+            justifyContent:
+              "center",
+
+            padding:
+              theme.spacing.lg,
+
+          }}
+        >
+
+          {/* ICON */}
+
+          <View
+            style={{
+
+              width: 52,
+
+              height: 52,
+
+              borderRadius: 18,
+
+              backgroundColor:
+                "#FFF1E5",
+
+              alignItems:
+                "center",
+
+              justifyContent:
+                "center",
+
+              marginBottom:
+                theme.spacing.sm,
+
+            }}
+          >
+
+            {isDocumentUploading ? (
+
+              <ActivityIndicator
+                size="small"
+                color={
+                  theme.colors.primary500
+                }
+              />
+
+            ) : (
+
+              <Upload
+                size={24}
+
+                color={
+                  theme.colors.primary500
+                }
+
+                strokeWidth={2}
+              />
+
+            )}
+
+          </View>
+
+
+          {/* MAIN TEXT */}
+
+          {isDocumentUploading ? (
+
+            <View
+              style={{
+
+                flexDirection:
+                  "row",
+
+                alignItems:
+                  "center",
+
+                justifyContent:
+                  "center",
+
+              }}
+            >
+
+              <ActivityIndicator
+                size="small"
+                color={
+                  theme.colors.primary500
+                }
+              />
+
+              <Text
+                style={{
+
+                  marginLeft:
+                    theme.spacing.sm,
+
+                  color:
+                    theme.colors.primary500,
+
+                  fontSize:
+                    theme.typography.b2,
+
+                  fontFamily:
+                    theme.fonts.semiBold,
+
+                  textAlign:
+                    "center",
+
+                }}
+              >
+                Uploading document...
+              </Text>
+
+            </View>
+
+          ) : (
+
+            <Text
+              style={{
+
+                color:
+                  theme.colors.black,
+
+                fontSize:
+                  theme.typography.b2,
+
+                fontFamily:
+                  theme.fonts.semiBold,
+
+                textAlign:
+                  "center",
+
+              }}
+            >
+              Tap to upload document
+            </Text>
+
+          )}
+
+
+          <Text
+            style={{
+
+              marginTop: 5,
+
+              color:
+                theme.colors.gray500,
+
+              fontSize:
+                12,
+
+              fontFamily:
+                theme.fonts.regular,
+
+              textAlign:
+                "center",
+
+            }}
+          >
+            {isDocumentUploading
+              ? "Uploading securely to server"
+              : "Camera, Gallery or PDF"}
+          </Text>
+
+
+          {!isDocumentUploading && (
+
+            <Text
+              style={{
+
+                marginTop:
+                  theme.spacing.sm,
+
+                color:
+                  theme.colors.gray400,
+
+                fontSize:
+                  10.5,
+
+                fontFamily:
+                  theme.fonts.regular,
+
+                textAlign:
+                  "center",
+
+              }}
+            >
+              Maximum file size 10 MB
+            </Text>
+
           )}
 
         </View>
 
-      </View>
+
+        {/* FOOTER */}
+
+        <View
+          style={{
+
+            backgroundColor:
+              "#FAF7F4",
+
+            paddingHorizontal:
+              theme.spacing.lg,
+
+            paddingVertical:
+              theme.spacing.sm,
+
+            flexDirection:
+              "row",
+
+            alignItems:
+              "center",
+
+            justifyContent:
+              "space-between",
+
+          }}
+        >
+
+          <Text
+            style={{
+
+              color:
+                theme.colors.gray500,
+
+              fontSize:
+                11,
+
+              fontFamily:
+                theme.fonts.regular,
+
+            }}
+          >
+            {isDocumentUploading
+              ? "Uploading..."
+              : "Documents uploaded"}
+          </Text>
+
+
+          <Text
+            style={{
+
+              color:
+                theme.colors.primary500,
+
+              fontSize:
+                11,
+
+              fontFamily:
+                theme.fonts.semiBold,
+
+            }}
+          >
+            {uploadedCount} / {MAX_UPLOADS}
+          </Text>
+
+        </View>
+
+      </TouchableOpacity>
 
 
       {/* =================================================
@@ -861,8 +1914,9 @@ const SiteDetails = ({
 
       <View
         style={{
+
           backgroundColor:
-            theme.colors.gray100,
+            "#F1F2F1",
 
           borderRadius:
             theme.radius.xl,
@@ -872,15 +1926,16 @@ const SiteDetails = ({
 
           marginBottom:
             theme.spacing.xl,
+borderWidth:
+            0.1,
+             borderColor:
+            "#0E0E0E",
         }}
       >
 
-        {/* =================================================
-            HEADER
-        ================================================= */}
-
         <View
           style={{
+
             flexDirection:
               "row",
 
@@ -892,11 +1947,13 @@ const SiteDetails = ({
 
             marginBottom:
               theme.spacing.lg,
+
           }}
         >
 
           <Text
             style={{
+
               color:
                 theme.colors.black,
 
@@ -904,21 +1961,19 @@ const SiteDetails = ({
                 theme.typography.b2,
 
               fontFamily:
-                theme.fonts.headingBold,
+                theme.fonts.extraBold,
 
-              letterSpacing: 0.4,
             }}
           >
             RECENTLY UPLOADED
           </Text>
 
 
-          <TouchableOpacity
-            activeOpacity={0.8}
-          >
+          {uploadedCount > 0 && (
 
             <Text
               style={{
+
                 color:
                   theme.colors.gray700,
 
@@ -927,23 +1982,20 @@ const SiteDetails = ({
 
                 fontFamily:
                   theme.fonts.medium,
+
               }}
             >
-              View All
+              {uploadedCount} Uploaded
             </Text>
 
-          </TouchableOpacity>
+          )}
 
         </View>
 
 
-        {/* =================================================
-            ITEMS
-        ================================================= */}
+        {uploadedCount > 0 ? (
 
-        {uploadedPhotos.length > 0 ? (
-
-          uploadedPhotos.map(
+          uploadedDocuments.map(
             renderUploadedItem
           )
 
@@ -951,6 +2003,7 @@ const SiteDetails = ({
 
           <View
             style={{
+
               backgroundColor:
                 theme.colors.white,
 
@@ -962,11 +2015,13 @@ const SiteDetails = ({
 
               alignItems:
                 "center",
+
             }}
           >
 
             <FileText
               size={30}
+
               color={
                 theme.colors.gray500
               }
@@ -975,6 +2030,7 @@ const SiteDetails = ({
 
             <Text
               style={{
+
                 marginTop:
                   theme.spacing.sm,
 
@@ -982,13 +2038,14 @@ const SiteDetails = ({
                   theme.colors.gray500,
 
                 fontSize:
-                  theme.typography.b3,
+                  theme.typography.b2,
 
                 fontFamily:
                   theme.fonts.medium,
+
               }}
             >
-              No files uploaded yet
+              No documents uploaded yet
             </Text>
 
           </View>
@@ -997,6 +2054,64 @@ const SiteDetails = ({
 
       </View>
 
+
+      {/* =================================================
+          DOCUMENT NAME MODAL
+      ================================================= */}
+
+      <DocumentNameModal
+
+        visible={
+          documentNameVisible
+        }
+
+        onClose={() => {
+
+          setDocumentNameVisible(
+            false
+          );
+
+          setDocumentName("");
+
+        }}
+
+        onContinue={
+          handleDocumentNameContinue
+        }
+
+      />
+
+
+      {/* =================================================
+          COMMON UPLOAD SHEET
+      ================================================= */}
+
+      <UploadBottomSheet
+
+        sheetVisible={
+          uploadSheetVisible
+        }
+
+        setSheetVisible={
+          setUploadSheetVisible
+        }
+
+        openCamera={
+          handleCamera
+        }
+
+        openGallery={
+          handleGallery
+        }
+
+        openDocument={
+          handleDocument
+        }
+
+        type="photo"
+
+      />
+
     </View>
 
   );
@@ -1004,4 +2119,6 @@ const SiteDetails = ({
 };
 
 
-export default SiteDetails;
+export default memo(
+  SiteDetails
+);

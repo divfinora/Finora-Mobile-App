@@ -180,75 +180,96 @@ const VisitorInvestigationScreen = ({
 
     if (currentStep === 2) {
 
-      const payload = {
-        loanId: job?.loanId,
+  const payload = {
+
+    loanId:
+      job?.loanId,
 
 
+    // ================================
+    // LOCATION
+    // ================================
 
-        location: {
-          latitude:
-            investigationData?.investigation
-              ?.latitude ?? 0,
+    location: {
 
-          longitude:
-            investigationData?.investigation
-              ?.longitude ?? 0,
-        },
+      latitude:
+        investigationData?.investigation
+          ?.latitude ?? 0,
 
-        recommendation:
-          investigationData?.investigation
-            ?.recommendation || "",
+      longitude:
+        investigationData?.investigation
+          ?.longitude ?? 0,
 
-        remarks:
-          investigationData?.investigation
-            ?.remarks || "",
-      };
+    },
 
 
-      console.log(payload, "paylod")
+    // ================================
+    // ADDRESS
+    // ================================
 
-      // ==========================================
-      // PAYLOAD CONSOLE
-      // ==========================================
-
-      console.log(
-        "Investigation API Payload:",
-        JSON.stringify(
-          payload,
-          null,
-          2
-        )
-      );
+    address:
+      investigationData?.investigation
+        ?.address || "",
 
 
-      const response =
-        await handleMutation({
+    // ================================
+    // RECOMMENDATION
+    // ================================
 
-          apiFunc:
-            saveVisitorInvestigation,
+    recommendation:
+      investigationData?.investigation
+        ?.recommendation || "",
 
-          params:
-            payload,
 
-          showSuccess:
-            true,
+    // ================================
+    // REMARKS
+    // ================================
 
-          customSuccessMsg:
-            "Investigation saved successfully",
+    remarks:
+      investigationData?.investigation
+        ?.remarks || "",
 
-          onSuccess: () => {
+  };
 
-            setCurrentStep(
-              previous =>
-                previous + 1
-            );
 
-          },
+  console.log(
+    "Investigation API Payload:",
+    JSON.stringify(
+      payload,
+      null,
+      2
+    )
+  );
 
-        });
 
-      return;
-    }
+  const response =
+    await handleMutation({
+
+      apiFunc:
+        saveVisitorInvestigation,
+
+      params:
+        payload,
+
+      showSuccess:
+        false,
+
+     
+
+      onSuccess: () => {
+
+        setCurrentStep(
+          previous =>
+            previous + 1
+        );
+
+      },
+
+    });
+
+
+  return;
+}
 
     // ==========================================
     // OTHER STEPS

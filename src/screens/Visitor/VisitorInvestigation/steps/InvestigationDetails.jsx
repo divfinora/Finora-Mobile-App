@@ -1,4 +1,5 @@
 import React, {
+  useEffect,
   useState,
 } from "react";
 
@@ -6,6 +7,7 @@ import {
   View,
   Text,
   TouchableOpacity,
+  ActivityIndicator,
 } from "react-native";
 
 import {
@@ -24,6 +26,9 @@ import CommonInput from "../../../../components/common/Input/CommonInput";
 
 import CustomBottomSheet from "../../../../components/common/Modal/CustomBottomSheet";
 
+import useCurrentLocation
+  from "../../../../hooks/useCurrentLocation";
+
 
 // =====================================================
 // OUTCOME OPTIONS
@@ -40,6 +45,7 @@ const OUTCOME_OPTIONS = [
   },
 ];
 
+
 // =====================================================
 // COMPONENT
 // =====================================================
@@ -49,6 +55,47 @@ const InvestigationDetails = ({
   data = {},
   onChange,
 }) => {
+
+  // =====================================================
+  // LOCATION HOOK
+  // =====================================================
+
+  const {
+    location,
+    loading: locationLoading,
+    error: locationError,
+    permissionBlocked,
+    getCurrentLocation,
+    openLocationSettings,
+  } = useCurrentLocation();
+
+
+  // =====================================================
+  // LOCATION STATUS
+  // =====================================================
+
+  const hasValidLocation =
+    typeof location?.latitude === "number" &&
+    typeof location?.longitude === "number";
+
+
+  /*
+   * Address field disabled when:
+   *
+   * 1. Location is loading
+   * 2. Valid latitude + longitude received
+   *
+   * If location fails:
+   * location = null
+   * locationLoading = false
+   *
+   * Therefore address becomes editable.
+   */
+
+  const isAddressDisabled =
+    locationLoading ||
+    hasValidLocation;
+
 
   // =====================================================
   // OUTCOME SHEET
@@ -90,12 +137,46 @@ const InvestigationDetails = ({
   // AUTO DETECT LOCATION
   // =====================================================
 
-  const handleAutoDetectLocation = () => {
+  const handleAutoDetectLocation = async () => {
 
-    // Location API will be added later.
+    const result =
+      await getCurrentLocation();
+
+
+    if (!result) {
+      return;
+    }
+
+
+    console.log(
+      "📍 AUTO DETECT LATITUDE:",
+      result.latitude
+    );
+
+
+    console.log(
+      "📍 AUTO DETECT LONGITUDE:",
+      result.longitude
+    );
+
+
+    console.log(
+      "📍 AUTO DETECT LOCATION:",
+      result
+    );
+
 
     onChange?.({
-      locationMethod: "AUTO",
+
+      latitude:
+        result.latitude,
+
+      longitude:
+        result.longitude,
+
+      locationAccuracy:
+        result.accuracy,
+
     });
 
   };
@@ -105,20 +186,25 @@ const InvestigationDetails = ({
   // SELECT OUTCOME
   // =====================================================
 
- const handleSelectOutcome = (option) => {
+  const handleSelectOutcome = (
+    option
+  ) => {
 
-  updateField(
-    "verificationStatus",
-    option.value
-  );
+    updateField(
+      "verificationStatus",
+      option.value
+    );
 
-  updateField(
-    "verificationStatusLabel",
-    option.label
-  );
 
-  setOutcomeVisible(false);
-};
+    updateField(
+      "verificationStatusLabel",
+      option.label
+    );
+
+
+    setOutcomeVisible(false);
+
+  };
 
 
   // =====================================================
@@ -131,6 +217,85 @@ const InvestigationDetails = ({
         option.value ===
         data?.verificationStatus
     );
+
+
+  // =====================================================
+  // AUTO FETCH LOCATION
+  // WHEN SCREEN LOADS
+  // =====================================================
+
+  useEffect(() => {
+
+    let mounted = true;
+
+
+    const fetchLocation = async () => {
+
+      const result =
+        await getCurrentLocation();
+
+
+      if (
+        !mounted ||
+        !result
+      ) {
+        return;
+      }
+
+
+      console.log(
+        "📍 CURRENT LOCATION:",
+        {
+          latitude:
+            result.latitude,
+
+          longitude:
+            result.longitude,
+
+          accuracy:
+            result.accuracy,
+        }
+      );
+
+
+      console.log(
+        "📍 LATITUDE:",
+        result.latitude
+      );
+
+
+      console.log(
+        "📍 LONGITUDE:",
+        result.longitude
+      );
+
+
+      onChange?.({
+
+        latitude:
+          result.latitude,
+
+        longitude:
+          result.longitude,
+
+        locationAccuracy:
+          result.accuracy,
+
+      });
+
+    };
+
+
+    fetchLocation();
+
+
+    return () => {
+
+      mounted = false;
+
+    };
+
+  }, []);
 
 
   // =====================================================
@@ -206,7 +371,9 @@ const InvestigationDetails = ({
         </View>
 
 
-        {/* DESCRIBE INVESTIGATION */}
+        {/* =================================================
+            DESCRIBE INVESTIGATION
+        ================================================= */}
 
         <CommonInput
           label="Describe Investigation"
@@ -301,20 +468,30 @@ const InvestigationDetails = ({
         </Text>
 
 
-        {/* AUTO DETECT */}
+        {/* =================================================
+            AUTO DETECT LOCATION
+        ================================================= */}
 
         <TouchableOpacity
           activeOpacity={0.85}
+
           onPress={
             handleAutoDetectLocation
           }
+
+          disabled={
+            locationLoading
+          }
+
           style={{
             height: 52,
 
             borderRadius: 14,
 
             backgroundColor:
-              theme.colors.primary500,
+              locationLoading
+                ? "#BDBDBD"
+                : theme.colors.primary500,
 
             flexDirection:
               "row",
@@ -330,35 +507,121 @@ const InvestigationDetails = ({
           }}
         >
 
-          <MapPin
-            size={20}
-            color={
-              theme.colors.white
-            }
-          />
+          {locationLoading ? (
 
-          <Text
-            style={{
-              marginLeft:
-                theme.spacing.sm,
+            <ActivityIndicator
+              size="small"
+              color={
+                theme.colors.white
+              }
+            />
 
-              color:
-                theme.colors.white,
+          ) : (
 
-              fontSize:
-                theme.typography.b2,
+            <>
 
-              fontFamily:
-                theme.fonts.semiBold,
-            }}
-          >
-            Auto Detect Location
-          </Text>
+              <MapPin
+                size={20}
+                color={
+                  theme.colors.white
+                }
+              />
+
+              <Text
+                style={{
+                  marginLeft:
+                    theme.spacing.sm,
+
+                  color:
+                    theme.colors.white,
+
+                  fontSize:
+                    theme.typography.b2,
+
+                  fontFamily:
+                    theme.fonts.semiBold,
+                }}
+              >
+                Auto Detect Location
+              </Text>
+
+            </>
+
+          )}
 
         </TouchableOpacity>
 
 
-        {/* OR */}
+        {/* =================================================
+            LOCATION ERROR
+        ================================================= */}
+
+        {!!locationError && !locationLoading && (
+
+          <View
+            style={{
+              marginTop: -10,
+
+              marginBottom:
+                theme.spacing.md,
+            }}
+          >
+
+            <Text
+              style={{
+                color:
+                  theme.colors.error,
+
+                fontSize: 12,
+
+                fontFamily:
+                  theme.fonts.medium,
+
+                lineHeight: 18,
+              }}
+            >
+              {locationError}
+            </Text>
+
+
+            {permissionBlocked && (
+
+              <TouchableOpacity
+                activeOpacity={0.8}
+                onPress={
+                  openLocationSettings
+                }
+                style={{
+                  marginTop: 5,
+                }}
+              >
+
+                <Text
+                  style={{
+                    color:
+                      theme.colors.primary500,
+
+                    fontSize: 12,
+
+                    fontFamily:
+                      theme.fonts.semiBold,
+                  }}
+                >
+                  Open Settings
+                </Text>
+
+              </TouchableOpacity>
+
+            )}
+
+          </View>
+
+        )}
+
+
+        {/* =================================================
+            OR
+        ================================================= */}
 
         <View
           style={{
@@ -416,45 +679,69 @@ const InvestigationDetails = ({
         </View>
 
 
-        {/* ADDRESS */}
+        {/* =================================================
+            ADDRESS
+        ================================================= */}
 
-        <CommonInput
-          label="Enter Address"
+       
+<CommonInput
+  label={
+    locationLoading
+      ? "Fetching Location"
+      : hasValidLocation
+        ? "Address"
+        : "Enter Address"
+  }
 
-          placeholder="123 Business Avenue, Suite 400"
+  placeholder={
+    locationLoading
+      ? "Fetching current location..."
+      : hasValidLocation
+        ? "Location will be detected"
+        : "123 Business Avenue, Suite 400"
+  }
 
-          value={
-            data?.address ||
-            ""
-          }
+  value={data?.address || ""}
 
-          onChangeText={(value) =>
-            updateField(
-              "address",
-              value
-            )
-          }
+  onChangeText={(value) =>
+    updateField("address", value)
+  }
 
-          leftIcon={
-            <Home
-              size={20}
-              color={
-                theme.colors.gray500
-              }
-            />
-          }
+  editable={!isAddressDisabled}
 
-          inputContainerStyle={{
-            ...inputBorder,
-          }}
+  leftIcon={
+    <Home
+      size={20}
+      color={
+        isAddressDisabled
+          ? theme.colors.gray400
+          : theme.colors.gray500
+      }
+    />
+  }
 
-          containerStyle={{
-            marginBottom: 0,
-          }}
-        />
+  inputContainerStyle={{
+    ...inputBorder,
 
+    backgroundColor:
+      isAddressDisabled
+        ? "#EEEEF0"
+        : theme.colors.gray100,
 
-        {/* LOCATION PREVIEW */}
+    opacity:
+      isAddressDisabled
+        ? 0.7
+        : 1,
+  }}
+
+  containerStyle={{
+    marginBottom: 0,
+  }}
+/>
+
+        {/* =================================================
+            LOCATION PREVIEW
+        ================================================= */}
 
         <View
           style={{
@@ -487,39 +774,124 @@ const InvestigationDetails = ({
             }
           />
 
-          <Text
-            style={{
-              marginTop:
-                theme.spacing.sm,
 
-              color:
-                theme.colors.gray500,
+          {/* =================================================
+              LOADING
+          ================================================= */}
 
-              fontSize:
-                theme.typography.b3,
+          {locationLoading ? (
 
-              fontFamily:
-                theme.fonts.medium,
-            }}
-          >
-            Location Preview
-          </Text>
+            <Text
+              style={{
+                marginTop:
+                  theme.spacing.sm,
 
-          <Text
-            style={{
-              marginTop: 2,
+                color:
+                  theme.colors.gray500,
 
-              color:
-                theme.colors.gray500,
+                fontSize:
+                  theme.typography.b3,
 
-              fontSize: 11,
+                fontFamily:
+                  theme.fonts.medium,
+              }}
+            >
+              Fetching current location...
+            </Text>
 
-              fontFamily:
-                theme.fonts.regular,
-            }}
-          >
-            Live GPS will appear here
-          </Text>
+          ) : hasValidLocation ? (
+
+            /* =================================================
+               LOCATION FOUND
+            ================================================= */
+
+            <>
+
+              <Text
+                style={{
+                  marginTop:
+                    theme.spacing.sm,
+
+                  color:
+                    theme.colors.black,
+
+                  fontSize:
+                    theme.typography.b3,
+
+                  fontFamily:
+                    theme.fonts.semiBold,
+                }}
+              >
+                Location detected
+              </Text>
+
+
+              <Text
+                style={{
+                  marginTop: 4,
+
+                  color:
+                    theme.colors.gray500,
+
+                  fontSize: 11,
+
+                  fontFamily:
+                    theme.fonts.regular,
+                }}
+              >
+                {location.latitude?.toFixed(6)}
+                {", "}
+                {location.longitude?.toFixed(6)}
+              </Text>
+
+            </>
+
+          ) : (
+
+            /* =================================================
+               NO LOCATION
+            ================================================= */
+
+            <>
+
+              <Text
+                style={{
+                  marginTop:
+                    theme.spacing.sm,
+
+                  color:
+                    theme.colors.gray500,
+
+                  fontSize:
+                    theme.typography.b3,
+
+                  fontFamily:
+                    theme.fonts.medium,
+                }}
+              >
+                Location Preview
+              </Text>
+
+
+              <Text
+                style={{
+                  marginTop: 2,
+
+                  color:
+                    theme.colors.gray500,
+
+                  fontSize: 11,
+
+                  fontFamily:
+                    theme.fonts.regular,
+                }}
+              >
+                Live GPS will appear here
+              </Text>
+
+            </>
+
+          )}
 
         </View>
 
@@ -681,9 +1053,11 @@ const InvestigationDetails = ({
 
         <TouchableOpacity
           activeOpacity={0.8}
+
           onPress={() =>
             setOutcomeVisible(true)
           }
+
           style={{
             height: 56,
 
@@ -728,6 +1102,7 @@ const InvestigationDetails = ({
             }
           </Text>
 
+
           <ChevronDown
             size={20}
             color={
@@ -745,6 +1120,7 @@ const InvestigationDetails = ({
       ================================================= */}
 
       <CustomBottomSheet
+
         visible={
           outcomeVisible
         }
@@ -764,6 +1140,7 @@ const InvestigationDetails = ({
             const isSelected =
               data?.verificationStatus ===
               option.value;
+
 
             return (
 
@@ -868,6 +1245,3 @@ const InvestigationDetails = ({
 
 
 export default InvestigationDetails;
-
-
-

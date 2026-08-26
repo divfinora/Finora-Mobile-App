@@ -58,7 +58,7 @@ const InvestigationBottomBar = ({
     }
 
     if (currentStep === 3) {
-      return "Continue to Verification";
+      return "Witness Verification";
     }
 
     return "Next";
