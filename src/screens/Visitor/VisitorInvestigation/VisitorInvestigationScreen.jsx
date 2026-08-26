@@ -45,7 +45,8 @@ import WitnessDetails from "./steps/WitnessDetails";
 import ReviewInformation from "./steps/ReviewInformation";
 
 import SubmitVerification from "./steps/submitVerification.jsx";
-
+import useHandleMutation from "../../../hooks/useHandleMutation.js";
+import { useSaveVisitorInvestigationMutation } from "../../../redux/features/visitor/visitorApi.js";
 
 // =====================================================
 // CONSTANTS
@@ -153,19 +154,112 @@ const VisitorInvestigationScreen = ({
   };
 
 
+  //  Api Call  ---- start
+  const [
+    saveVisitorInvestigation,
+    {
+      isLoading: isSavingInvestigation,
+    },
+  ] = useSaveVisitorInvestigationMutation();
+  const {
+    handleMutation,
+  } = useHandleMutation();
+
+  //  Api Call  ---- end
+
+
   // =====================================================
   // NEXT STEP
   // =====================================================
 
-  const handleNext = () => {
+  const handleNext = async () => {
+
+    // ==========================================
+    // STEP 2 - SAVE INVESTIGATION
+    // ==========================================
+
+    if (currentStep === 2) {
+
+      const payload = {
+        loanId: job?.loanId,
+
+
+
+        location: {
+          latitude:
+            investigationData?.investigation
+              ?.latitude ?? 0,
+
+          longitude:
+            investigationData?.investigation
+              ?.longitude ?? 0,
+        },
+
+        recommendation:
+          investigationData?.investigation
+            ?.recommendation || "",
+
+        remarks:
+          investigationData?.investigation
+            ?.remarks || "",
+      };
+
+
+      console.log(payload, "paylod")
+
+      // ==========================================
+      // PAYLOAD CONSOLE
+      // ==========================================
+
+      console.log(
+        "Investigation API Payload:",
+        JSON.stringify(
+          payload,
+          null,
+          2
+        )
+      );
+
+
+      const response =
+        await handleMutation({
+
+          apiFunc:
+            saveVisitorInvestigation,
+
+          params:
+            payload,
+
+          showSuccess:
+            true,
+
+          customSuccessMsg:
+            "Investigation saved successfully",
+
+          onSuccess: () => {
+
+            setCurrentStep(
+              previous =>
+                previous + 1
+            );
+
+          },
+
+        });
+
+      return;
+    }
+
+    // ==========================================
+    // OTHER STEPS
+    // ==========================================
 
     if (
       currentStep < TOTAL_STEPS
     ) {
 
       setCurrentStep(
-        (previous) =>
-          previous + 1
+        previous => previous + 1
       );
 
     }
@@ -225,7 +319,7 @@ const VisitorInvestigationScreen = ({
         return (
           <VerificationDetails
             onRefetchReady={setRefetchVerification}
-      
+
             job={job}
             data={
               investigationData.verification
@@ -355,31 +449,31 @@ const VisitorInvestigationScreen = ({
   const [refreshing, setRefreshing] =
     useState(false);
 
-const [refetchVerification, setRefetchVerification] =
-  useState(null);
+  const [refetchVerification, setRefetchVerification] =
+    useState(null);
 
 
- 
-const handleRefresh = async () => {
-  if (
-    typeof refetchVerification !== "function"
-  ) {
-    return;
-  }
 
-  setRefreshing(true);
+  const handleRefresh = async () => {
+    if (
+      typeof refetchVerification !== "function"
+    ) {
+      return;
+    }
 
-  try {
-    await refetchVerification();
-  } catch (error) {
-    console.log(
-      "Verification refresh error:",
-      error
-    );
-  } finally {
-    setRefreshing(false);
-  }
-};
+    setRefreshing(true);
+
+    try {
+      await refetchVerification();
+    } catch (error) {
+      console.log(
+        "Verification refresh error:",
+        error
+      );
+    } finally {
+      setRefreshing(false);
+    }
+  };
 
   const [
     verificationRefreshKey,
@@ -567,7 +661,7 @@ const handleRefresh = async () => {
             onNext={
               handleNext
             }
-
+            loading={isSavingInvestigation}
           />
 
         </View>

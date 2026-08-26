@@ -6,8 +6,6 @@ import {
   View,
   Text,
   TouchableOpacity,
-  Modal,
-  Pressable,
 } from "react-native";
 
 import {
@@ -18,9 +16,13 @@ import {
   Check,
 } from "lucide-react-native";
 
-import { theme } from "../../../../theme";
+import {
+  theme,
+} from "../../../../theme";
 
 import CommonInput from "../../../../components/common/Input/CommonInput";
+
+import CustomBottomSheet from "../../../../components/common/Modal/CustomBottomSheet";
 
 
 // =====================================================
@@ -29,23 +31,14 @@ import CommonInput from "../../../../components/common/Input/CommonInput";
 
 const OUTCOME_OPTIONS = [
   {
-    label: "Verified",
-    value: "VERIFIED",
+    label: "In Progress",
+    value: "IN_PROGRESS",
   },
   {
-    label: "Not Verified",
-    value: "NOT_VERIFIED",
-  },
-  {
-    label: "Partially Verified",
-    value: "PARTIALLY_VERIFIED",
-  },
-  {
-    label: "Unable to Verify",
-    value: "UNABLE_TO_VERIFY",
+    label: "Submitted",
+    value: "SUBMITTED",
   },
 ];
-
 
 // =====================================================
 // COMPONENT
@@ -57,10 +50,24 @@ const InvestigationDetails = ({
   onChange,
 }) => {
 
+  // =====================================================
+  // OUTCOME SHEET
+  // =====================================================
+
   const [
     outcomeVisible,
     setOutcomeVisible,
   ] = useState(false);
+
+
+  // =====================================================
+  // INPUT BORDER
+  // =====================================================
+
+  const inputBorder = {
+    borderWidth: 0.6,
+    borderColor: "#C6C6CD",
+  };
 
 
   // =====================================================
@@ -98,27 +105,24 @@ const InvestigationDetails = ({
   // SELECT OUTCOME
   // =====================================================
 
-  const handleSelectOutcome = (
-    option
-  ) => {
+ const handleSelectOutcome = (option) => {
 
-    updateField(
-      "verificationStatus",
-      option.value
-    );
+  updateField(
+    "verificationStatus",
+    option.value
+  );
 
-    updateField(
-      "verificationStatusLabel",
-      option.label
-    );
+  updateField(
+    "verificationStatusLabel",
+    option.label
+  );
 
-    setOutcomeVisible(false);
-
-  };
+  setOutcomeVisible(false);
+};
 
 
   // =====================================================
-  // SELECTED OUTCOME LABEL
+  // SELECTED OUTCOME
   // =====================================================
 
   const selectedOutcome =
@@ -193,9 +197,7 @@ const InvestigationDetails = ({
                 theme.typography.b2,
 
               fontFamily:
-                theme.fonts.headingBold,
-
-              letterSpacing: 0.4,
+                theme.fonts.bold,
             }}
           >
             INVESTIGATION DETAILS
@@ -238,6 +240,8 @@ const InvestigationDetails = ({
               "flex-start",
 
             paddingTop: 16,
+
+            ...inputBorder,
           }}
 
           inputStyle={{
@@ -290,9 +294,7 @@ const InvestigationDetails = ({
               theme.typography.b2,
 
             fontFamily:
-              theme.fonts.headingBold,
-
-            letterSpacing: 0.4,
+              theme.fonts.extraBold,
           }}
         >
           PROPERTY LOCATION
@@ -442,6 +444,10 @@ const InvestigationDetails = ({
             />
           }
 
+          inputContainerStyle={{
+            ...inputBorder,
+          }}
+
           containerStyle={{
             marginBottom: 0,
           }}
@@ -469,6 +475,8 @@ const InvestigationDetails = ({
 
             justifyContent:
               "center",
+
+            ...inputBorder,
           }}
         >
 
@@ -543,7 +551,7 @@ const InvestigationDetails = ({
         <Text
           style={{
             marginBottom:
-              theme.spacing.lg,
+              theme.spacing.md,
 
             color:
               theme.colors.black,
@@ -552,9 +560,7 @@ const InvestigationDetails = ({
               theme.typography.b2,
 
             fontFamily:
-              theme.fonts.headingBold,
-
-            letterSpacing: 0.4,
+              theme.fonts.extraBold,
           }}
         >
           REMARKS
@@ -591,6 +597,8 @@ const InvestigationDetails = ({
               "flex-start",
 
             paddingTop: 14,
+
+            ...inputBorder,
           }}
 
           inputStyle={{
@@ -641,9 +649,7 @@ const InvestigationDetails = ({
               theme.typography.b2,
 
             fontFamily:
-              theme.fonts.headingBold,
-
-            letterSpacing: 0.4,
+              theme.fonts.extraBold,
           }}
         >
           RECOMMENDATION
@@ -659,7 +665,7 @@ const InvestigationDetails = ({
               theme.colors.gray700,
 
             fontSize:
-              theme.typography.b3,
+              theme.typography.b4,
 
             fontFamily:
               theme.fonts.medium,
@@ -697,6 +703,8 @@ const InvestigationDetails = ({
 
             justifyContent:
               "space-between",
+
+            ...inputBorder,
           }}
         >
 
@@ -720,7 +728,6 @@ const InvestigationDetails = ({
             }
           </Text>
 
-
           <ChevronDown
             size={20}
             color={
@@ -734,207 +741,124 @@ const InvestigationDetails = ({
 
 
       {/* =================================================
-          OUTCOME MODAL
+          COMMON BOTTOM SHEET
       ================================================= */}
 
-      <Modal
+      <CustomBottomSheet
         visible={
           outcomeVisible
         }
-        transparent
-        animationType="fade"
-        onRequestClose={() =>
+
+        onClose={() =>
           setOutcomeVisible(false)
         }
+
+        sheetheading="Select Outcome"
+
+        heightPercent={0.45}
       >
 
-        {/* BACKDROP */}
+        {OUTCOME_OPTIONS.map(
+          (option) => {
 
-        <Pressable
-          onPress={() =>
-            setOutcomeVisible(false)
+            const isSelected =
+              data?.verificationStatus ===
+              option.value;
+
+            return (
+
+              <TouchableOpacity
+                key={
+                  option.value
+                }
+
+                activeOpacity={0.8}
+
+                onPress={() =>
+                  handleSelectOutcome(
+                    option
+                  )
+                }
+
+                style={{
+                  minHeight: 56,
+
+                  borderRadius: 14,
+
+                  backgroundColor:
+                    isSelected
+                      ? "#FFF3EA"
+                      : theme.colors.gray100,
+
+                  borderWidth:
+                    isSelected
+                      ? 1
+                      : 0,
+
+                  borderColor:
+                    isSelected
+                      ? theme.colors.primary500
+                      : "transparent",
+
+                  paddingHorizontal:
+                    theme.spacing.lg,
+
+                  flexDirection:
+                    "row",
+
+                  alignItems:
+                    "center",
+
+                  justifyContent:
+                    "space-between",
+
+                  marginBottom:
+                    theme.spacing.sm,
+                }}
+              >
+
+                <Text
+                  style={{
+                    color:
+                      isSelected
+                        ? theme.colors.primary500
+                        : theme.colors.black,
+
+                    fontSize:
+                      theme.typography.b1,
+
+                    fontFamily:
+                      isSelected
+                        ? theme.fonts.semiBold
+                        : theme.fonts.regular,
+                  }}
+                >
+                  {option.label}
+                </Text>
+
+
+                {isSelected && (
+
+                  <Check
+                    size={20}
+
+                    color={
+                      theme.colors.primary500
+                    }
+
+                    strokeWidth={2.5}
+                  />
+
+                )}
+
+              </TouchableOpacity>
+
+            );
+
           }
-          style={{
-            flex: 1,
+        )}
 
-            backgroundColor:
-              "rgba(0,0,0,0.35)",
-
-            justifyContent:
-              "flex-end",
-          }}
-        >
-
-          {/* =================================================
-              BOTTOM SHEET
-          ================================================= */}
-
-          <Pressable
-            onPress={() => {}}
-            style={{
-              backgroundColor:
-                theme.colors.white,
-
-              borderTopLeftRadius:
-                24,
-
-              borderTopRightRadius:
-                24,
-
-              padding:
-                theme.spacing.lg,
-
-              paddingBottom:
-                theme.spacing.xl,
-            }}
-          >
-
-            {/* HANDLE */}
-
-            <View
-              style={{
-                width: 42,
-
-                height: 4,
-
-                borderRadius: 10,
-
-                backgroundColor:
-                  theme.colors.gray300,
-
-                alignSelf:
-                  "center",
-
-                marginBottom:
-                  theme.spacing.lg,
-              }}
-            />
-
-
-            {/* TITLE */}
-
-            <Text
-              style={{
-                color:
-                  theme.colors.black,
-
-                fontSize:
-                  theme.typography.h4,
-
-                fontFamily:
-                  theme.fonts.headingBold,
-
-                marginBottom:
-                  theme.spacing.lg,
-              }}
-            >
-              Select Outcome
-            </Text>
-
-
-            {/* OPTIONS */}
-
-            {OUTCOME_OPTIONS.map(
-              (option) => {
-
-                const isSelected =
-                  data?.verificationStatus ===
-                  option.value;
-
-
-                return (
-
-                  <TouchableOpacity
-                    key={
-                      option.value
-                    }
-                    activeOpacity={0.8}
-                    onPress={() =>
-                      handleSelectOutcome(
-                        option
-                      )
-                    }
-                    style={{
-                      minHeight: 56,
-
-                      borderRadius: 14,
-
-                      backgroundColor:
-                        isSelected
-                          ? "#FFF3EA"
-                          : theme.colors.gray100,
-
-                      borderWidth:
-                        isSelected
-                          ? 1
-                          : 0,
-
-                      borderColor:
-                        isSelected
-                          ? theme.colors.primary500
-                          : "transparent",
-
-                      paddingHorizontal:
-                        theme.spacing.lg,
-
-                      flexDirection:
-                        "row",
-
-                      alignItems:
-                        "center",
-
-                      justifyContent:
-                        "space-between",
-
-                      marginBottom:
-                        theme.spacing.sm,
-                    }}
-                  >
-
-                    <Text
-                      style={{
-                        color:
-                          isSelected
-                            ? theme.colors.primary500
-                            : theme.colors.black,
-
-                        fontSize:
-                          theme.typography.b1,
-
-                        fontFamily:
-                          isSelected
-                            ? theme.fonts.semiBold
-                            : theme.fonts.regular,
-                      }}
-                    >
-                      {option.label}
-                    </Text>
-
-
-                    {isSelected && (
-
-                      <Check
-                        size={20}
-                        color={
-                          theme.colors.primary500
-                        }
-                        strokeWidth={2.5}
-                      />
-
-                    )}
-
-                  </TouchableOpacity>
-
-                );
-
-              }
-            )}
-
-          </Pressable>
-
-        </Pressable>
-
-      </Modal>
+      </CustomBottomSheet>
 
     </View>
 
@@ -944,3 +868,6 @@ const InvestigationDetails = ({
 
 
 export default InvestigationDetails;
+
+
+

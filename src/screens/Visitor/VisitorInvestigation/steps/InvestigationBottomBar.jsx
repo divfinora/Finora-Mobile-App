@@ -21,10 +21,6 @@ import {
 import CommonButton from "../../../../components/common/Button/CommonButton";
 
 
-// =====================================================
-// COMPONENT
-// =====================================================
-
 const InvestigationBottomBar = ({
   currentStep = 1,
   totalSteps = 6,
@@ -43,21 +39,25 @@ const InvestigationBottomBar = ({
   const isLastStep =
     currentStep === totalSteps;
 
-  const isSiteDetailsStep =
-    currentStep === 3;
+  const isInvestigationStep =
+    currentStep === 2;
 
 
   // =====================================================
   // BUTTON TITLE
   // =====================================================
 
-  const getNextButtonTitle = () => {
+  const getButtonTitle = () => {
 
     if (isLastStep) {
       return "Submit Verification";
     }
 
-    if (isSiteDetailsStep) {
+    if (isInvestigationStep) {
+      return "Save & Continue";
+    }
+
+    if (currentStep === 3) {
       return "Continue to Verification";
     }
 
@@ -69,9 +69,14 @@ const InvestigationBottomBar = ({
   // BUTTON ICON
   // =====================================================
 
-  const getNextButtonIcon = () => {
+  const getButtonIcon = () => {
+
+    if (loading) {
+      return null;
+    }
 
     if (isLastStep) {
+
       return (
         <Check
           size={18}
@@ -79,6 +84,7 @@ const InvestigationBottomBar = ({
           strokeWidth={2.3}
         />
       );
+
     }
 
     return (
@@ -88,48 +94,57 @@ const InvestigationBottomBar = ({
         strokeWidth={2.2}
       />
     );
+
   };
 
 
-  // =====================================================
-  // RENDER
-  // =====================================================
-
   return (
+
     <View
       style={{
-        backgroundColor: theme.colors.white,
+        backgroundColor:
+          theme.colors.white,
 
         borderTopWidth: 1,
-        borderTopColor: "#EEEEEE",
 
-        paddingHorizontal: theme.spacing.lg,
+        borderTopColor:
+          "#EEEEEE",
 
-        paddingTop: theme.spacing.md,
+        paddingHorizontal:
+          theme.spacing.lg,
 
-        paddingBottom: Math.max(
-          insets.bottom,
-          theme.spacing.md
-        ),
+        paddingTop:
+          theme.spacing.md,
 
-        flexDirection: "row",
+        paddingBottom:
+          Math.max(
+            insets.bottom,
+            theme.spacing.md
+          ),
 
-        alignItems: "center",
+        flexDirection:
+          "row",
 
-        gap: theme.spacing.md,
+        alignItems:
+          "center",
+
+        gap:
+          theme.spacing.md,
       }}
     >
 
       {/* =================================================
-          BACK BUTTON
+          BACK
       ================================================= */}
 
       {!isFirstStep && (
+
         <View
           style={{
             flex: 1,
           }}
         >
+
           <CommonButton
             title="Back"
 
@@ -137,9 +152,9 @@ const InvestigationBottomBar = ({
 
             onPress={onBack}
 
-            loading={false}
-
             disabled={loading}
+
+            loading={false}
 
             leftIcon={
               <ChevronLeft
@@ -154,18 +169,21 @@ const InvestigationBottomBar = ({
             containerStyle={{
               height: 50,
 
-              borderColor: "#FFD0B8",
+              borderColor:
+                "#FFD0B8",
 
               backgroundColor:
                 theme.colors.white,
             }}
           />
+
         </View>
+
       )}
 
 
       {/* =================================================
-          NEXT / SUBMIT BUTTON
+          SAVE / NEXT / SUBMIT
       ================================================= */}
 
       <View
@@ -176,8 +194,11 @@ const InvestigationBottomBar = ({
               : 1.5,
         }}
       >
+
         <CommonButton
-          title={getNextButtonTitle()}
+          title={
+            getButtonTitle()
+          }
 
           onPress={onNext}
 
@@ -186,19 +207,20 @@ const InvestigationBottomBar = ({
           disabled={loading}
 
           rightIcon={
-            !loading
-              ? getNextButtonIcon()
-              : null
+            getButtonIcon()
           }
 
           containerStyle={{
             height: 50,
           }}
         />
+
       </View>
 
     </View>
+
   );
+
 };
 
 
