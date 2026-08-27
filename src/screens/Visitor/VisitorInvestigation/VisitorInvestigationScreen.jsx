@@ -46,7 +46,11 @@ import ReviewInformation from "./steps/ReviewInformation";
 
 import SubmitVerification from "./steps/submitVerification.jsx";
 import useHandleMutation from "../../../hooks/useHandleMutation.js";
-import { useSaveVisitorInvestigationMutation } from "../../../redux/features/visitor/visitorApi.js";
+import { useSaveVisitorInvestigationMutation   ,
+
+   useSaveVisitorWitnessMutation,
+} from "../../../redux/features/visitor/visitorApi.js";
+import showToast from "../../../utils/toast.js";
 
 // =====================================================
 // CONSTANTS
@@ -161,10 +165,21 @@ const VisitorInvestigationScreen = ({
       isLoading: isSavingInvestigation,
     },
   ] = useSaveVisitorInvestigationMutation();
+
+
   const {
     handleMutation,
   } = useHandleMutation();
 
+
+  const [
+  saveVisitorWitness,
+  {
+    isLoading:
+      isSavingWitness,
+  },
+] =
+  useSaveVisitorWitnessMutation();
   //  Api Call  ---- end
 
 
@@ -172,77 +187,67 @@ const VisitorInvestigationScreen = ({
   // NEXT STEP
   // =====================================================
 
-  const handleNext = async () => {
+const handleNext = async () => {
 
-    // ==========================================
-    // STEP 2 - SAVE INVESTIGATION
-    // ==========================================
+  // =====================================================
+  // STEP 2 - SAVE INVESTIGATION
+  // =====================================================
 
-    if (currentStep === 2) {
+  if (currentStep === 2) {
 
-  const payload = {
-
-    loanId:
-      job?.loanId,
+    const investigation =
+      investigationData?.investigation || {};
 
 
-    // ================================
-    // LOCATION
-    // ================================
+    const latitude =
+      investigation?.latitude;
 
-    location: {
+    const longitude =
+      investigation?.longitude;
 
-      latitude:
-        investigationData?.investigation
-          ?.latitude ?? 0,
+    const address =
+      investigation?.address?.trim();
 
-      longitude:
-        investigationData?.investigation
-          ?.longitude ?? 0,
+    const recommendation =
+      investigation?.recommendation?.trim();
 
-    },
-
-
-    // ================================
-    // ADDRESS
-    // ================================
-
-    address:
-      investigationData?.investigation
-        ?.address || "",
+    const remarks =
+      investigation?.remarks?.trim();
 
 
-    // ================================
-    // RECOMMENDATION
-    // ================================
+  
+    const payload = {
 
-    recommendation:
-      investigationData?.investigation
-        ?.recommendation || "",
+      loanId:
+        job?.loanId,
 
+      location: {
 
-    // ================================
-    // REMARKS
-    // ================================
+        latitude,
 
-    remarks:
-      investigationData?.investigation
-        ?.remarks || "",
+        longitude,
 
-  };
+      },
 
+      address,
 
-  console.log(
-    "Investigation API Payload:",
-    JSON.stringify(
-      payload,
-      null,
-      2
-    )
-  );
+      recommendation,
+
+      remarks,
+
+    };
 
 
-  const response =
+    console.log(
+      "Investigation API Payload:",
+      JSON.stringify(
+        payload,
+        null,
+        2
+      )
+    );
+
+
     await handleMutation({
 
       apiFunc:
@@ -253,8 +258,6 @@ const VisitorInvestigationScreen = ({
 
       showSuccess:
         false,
-
-     
 
       onSuccess: () => {
 
@@ -268,24 +271,327 @@ const VisitorInvestigationScreen = ({
     });
 
 
-  return;
-}
+    return;
+  }
 
-    // ==========================================
-    // OTHER STEPS
-    // ==========================================
 
-    if (
-      currentStep < TOTAL_STEPS
-    ) {
+ // =====================================================
+// STEP 4 - SAVE WITNESS
+// =====================================================
+
+if (currentStep === 4) {
+
+  const witness =
+    investigationData?.witness || {};
+
+
+  // ===================================================
+  // GET VALUES
+  // ===================================================
+
+  const fullName =
+    witness?.witnessName?.trim();
+
+  const mobile =
+    witness?.mobileNumber?.trim();
+
+  const relation =
+    witness?.relation?.trim();
+
+  const idType =
+    witness?.idType?.trim();
+
+  const idNumber =
+    witness?.idNumber?.trim();
+
+  const agreed =
+    witness?.witnessConfirmed === true;
+
+
+  // ===================================================
+  // REQUIRED VALIDATION
+  // ===================================================
+
+  if (!fullName) {
+
+    showToast.error(
+      "Please enter witness name."
+    );
+
+    return;
+  }
+
+
+  if (!mobile) {
+
+    showToast.error(
+      "Please enter mobile number."
+    );
+
+    return;
+  }
+
+
+  // Backend rule: ^[6-9]\d{9}$
+  if (!/^[6-9]\d{9}$/.test(mobile)) {
+
+    showToast.error(
+      "Please enter a valid 10-digit mobile number."
+    );
+
+    return;
+  }
+
+
+  if (!relation) {
+
+    showToast.error(
+      "Please select relation to applicant."
+    );
+
+    return;
+  }
+
+
+  if (!idType) {
+
+    showToast.error(
+      "Please select ID type."
+    );
+
+    return;
+  }
+
+
+  if (!idNumber) {
+
+    showToast.error(
+      "Please enter ID number."
+    );
+
+    return;
+  }
+
+
+  if (!agreed) {
+
+    showToast.error(
+      "Please confirm witness information."
+    );
+
+    return;
+  }
+
+
+  // ===================================================
+  // FORM DATA
+  // ===================================================
+
+  const formData =
+    new FormData();
+
+
+  // ===================================================
+  // REQUIRED TEXT FIELDS
+  // ===================================================
+
+  formData.append(
+    "fullName",
+    fullName
+  );
+
+  formData.append(
+    "mobile",
+    mobile
+  );
+
+  formData.append(
+    "relation",
+    relation
+  );
+
+  formData.append(
+    "idType",
+    idType
+  );
+
+  formData.append(
+    "idNumber",
+    idNumber
+  );
+
+  formData.append(
+    "agreed",
+    "true"
+  );
+
+
+  // ===================================================
+  // OPTIONAL FILES
+  // ===================================================
+
+  const signature =
+    witness?.signature;
+
+  const selfie =
+    witness?.selfie;
+
+  const idDocument =
+    witness?.idDocument;
+
+
+  // ---------------------------------------------------
+  // SIGNATURE
+  // ---------------------------------------------------
+
+  if (signature?.uri) {
+
+    formData.append(
+      "signature",
+      {
+        uri:
+          signature.uri,
+
+        name:
+          signature.name ||
+          "signature.jpg",
+
+        type:
+          signature.type ||
+          "image/jpeg",
+      }
+    );
+
+  }
+
+
+  // ---------------------------------------------------
+  // SELFIE
+  // ---------------------------------------------------
+
+  if (selfie?.uri) {
+
+    formData.append(
+      "selfie",
+      {
+        uri:
+          selfie.uri,
+
+        name:
+          selfie.name ||
+          "witness-selfie.jpg",
+
+        type:
+          selfie.type ||
+          "image/jpeg",
+      }
+    );
+
+  }
+
+
+  // ---------------------------------------------------
+  // ID DOCUMENT
+  // ---------------------------------------------------
+
+  if (idDocument?.uri) {
+
+    formData.append(
+      "idDocument",
+      {
+        uri:
+          idDocument.uri,
+
+        name:
+          idDocument.name ||
+          "witness-id.jpg",
+
+        type:
+          idDocument.type ||
+          "image/jpeg",
+      }
+    );
+
+  }
+
+
+  // ===================================================
+  // CONSOLE TEXT FIELDS
+  // ===================================================
+
+  console.log(
+    "Witness API FormData:",
+    {
+      fullName,
+      mobile,
+      relation,
+      idType,
+      idNumber,
+      agreed,
+      signature:
+        signature?.name || null,
+      selfie:
+        selfie?.name || null,
+      idDocument:
+        idDocument?.name || null,
+    }
+  );
+
+
+  // ===================================================
+  // API CALL
+  // ===================================================
+
+  await handleMutation({
+
+    apiFunc:
+      saveVisitorWitness,
+
+    params: {
+
+      loanId:
+        job?.loanId,
+
+      formData,
+
+    },
+
+    showSuccess:
+      false,
+
+    onSuccess: () => {
 
       setCurrentStep(
-        previous => previous + 1
+        previous =>
+          previous + 1
       );
 
-    }
+    },
 
-  };
+  });
+
+
+  return;
+}
+  
+
+
+  // =====================================================
+  // OTHER STEPS
+  // =====================================================
+
+  if (
+    currentStep < TOTAL_STEPS
+  ) {
+
+    setCurrentStep(
+      previous =>
+        previous + 1
+    );
+
+  }
+
+};
 
 
   // =====================================================
@@ -500,6 +806,10 @@ const VisitorInvestigationScreen = ({
     verificationRefreshKey,
     setVerificationRefreshKey,
   ] = useState(0);
+
+
+
+
   return (
 
     <SafeAreaView
@@ -682,7 +992,10 @@ const VisitorInvestigationScreen = ({
             onNext={
               handleNext
             }
-            loading={isSavingInvestigation}
+        loading={
+  isSavingInvestigation ||
+  isSavingWitness
+}
           />
 
         </View>

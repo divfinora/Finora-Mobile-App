@@ -1,72 +1,102 @@
 import React, {
+  memo,
   useState,
 } from "react";
 
 import {
   View,
   Text,
-  Image,
   TouchableOpacity,
+  ActivityIndicator,
 } from "react-native";
 
 import {
-  UserRound,
-  Phone,
-  UsersRound,
-  BadgeCheck,
-  CreditCard,
-  ChevronDown,
-  Check,
+  Camera,
+  FileText,
+  PenLine,
+  ShieldCheck,
+  Upload,
 } from "lucide-react-native";
 
-import { theme } from "../../../../theme";
+import {
+  theme,
+} from "../../../../theme";
 
 import CommonInput from "../../../../components/common/Input/CommonInput";
 
+import UploadBottomSheet from
+  "../../../../components/common/Modal/UploadBottomSheet";
 
-// =====================================================
-// OPTIONS
-// =====================================================
+import IDDetailsModal from
+  "../components/IDDetailsModal";
 
-const RELATION_OPTIONS = [
-  "Father",
-  "Mother",
-  "Brother",
-  "Sister",
-  "Spouse",
-  "Friend",
-  "Neighbour",
-  "Other",
-];
-
-const ID_TYPE_OPTIONS = [
-  "Aadhaar Card",
-  "PAN Card",
-  "Driving License",
-  "Voter ID",
-  "Passport",
-];
-
-
-// =====================================================
-// COMPONENT
-// =====================================================
 
 const WitnessDetails = ({
-  job,
   data = {},
   onChange,
+  uploading = false,
 }) => {
 
-  const [
-    relationOpen,
-    setRelationOpen,
-  ] = useState(false);
+  // =====================================================
+  // UPLOAD SHEET
+  // =====================================================
 
   const [
-    idTypeOpen,
-    setIdTypeOpen,
+    sheetVisible,
+    setSheetVisible,
   ] = useState(false);
+
+
+  // =====================================================
+  // ID DETAILS MODAL
+  // =====================================================
+
+  const [
+    idModalVisible,
+    setIdModalVisible,
+  ] = useState(false);
+
+
+  // =====================================================
+  // CURRENT UPLOAD TYPE
+  // =====================================================
+
+  const [
+    uploadType,
+    setUploadType,
+  ] = useState("");
+
+
+  // =====================================================
+  // VALUES
+  // =====================================================
+
+  const witnessName =
+    data?.witnessName || "";
+
+  const mobileNumber =
+    data?.mobileNumber || "";
+
+  const relation =
+    data?.relation || "";
+
+  const idType =
+    data?.idType || "";
+
+  const idNumber =
+    data?.idNumber || "";
+
+  const selfie =
+    data?.selfie || null;
+
+  const signature =
+    data?.signature || null;
+
+  const idDocument =
+    data?.idDocument || null;
+
+  const witnessConfirmed =
+    data?.witnessConfirmed === true;
 
 
   // =====================================================
@@ -79,744 +109,959 @@ const WitnessDetails = ({
   ) => {
 
     onChange?.({
-      [field]: value,
+
+      ...data,
+
+      [field]:
+        value,
+
     });
 
   };
 
 
   // =====================================================
-  // RELATION
+  // OPEN UPLOAD SHEET
   // =====================================================
 
-  const handleRelationSelect = (
-    value
+  const openUploadSheet = (
+    type
   ) => {
 
-    updateField(
-      "relation",
-      value
+    setUploadType(
+      type
     );
 
-    setRelationOpen(false);
+    setSheetVisible(
+      true
+    );
 
   };
 
 
   // =====================================================
-  // ID TYPE
+  // OPEN ID DETAILS
   // =====================================================
 
-  const handleIdTypeSelect = (
-    value
+  const handleOpenIDDocument = () => {
+
+    setIdModalVisible(
+      true
+    );
+
+  };
+
+
+  // =====================================================
+  // ID DETAILS CONTINUE
+  // =====================================================
+
+  const handleIDDetailsContinue = (
+    values
   ) => {
 
-    updateField(
-      "idType",
-      value
+    const nextData = {
+
+      ...data,
+
+      idType:
+        values?.idType || "",
+
+      idNumber:
+        values?.idNumber || "",
+
+    };
+
+
+    onChange?.(
+      nextData
     );
 
-    setIdTypeOpen(false);
+
+    setIdModalVisible(
+      false
+    );
+
+
+    // Open common upload sheet
+    setTimeout(() => {
+
+      setUploadType(
+        "idDocument"
+      );
+
+      setSheetVisible(
+        true
+      );
+
+    }, 200);
 
   };
 
 
   // =====================================================
-  // CONFIRMATION
+  // CAMERA
   // =====================================================
 
-  const handleConfirmation = () => {
+  const openCamera = () => {
 
-    updateField(
-      "witnessConfirmed",
-      !data?.witnessConfirmed
+    setSheetVisible(
+      false
+    );
+
+    console.log(
+      "Open camera for:",
+      uploadType
+    );
+
+    // ---------------------------------------------------
+    // IMPORTANT:
+    // Parent component se actual camera picker
+    // callback pass kar sakte ho.
+    // ---------------------------------------------------
+
+  };
+
+
+  // =====================================================
+  // GALLERY
+  // =====================================================
+
+  const openGallery = () => {
+
+    setSheetVisible(
+      false
+    );
+
+    console.log(
+      "Open gallery for:",
+      uploadType
     );
 
   };
 
 
-  return (
+  // =====================================================
+  // DOCUMENT
+  // =====================================================
 
-    <View
-      style={{
-        width: "100%",
-      }}
-    >
+  const openDocument = () => {
 
-      {/* =================================================
-          WITNESS BANNER
-      ================================================= */}
+    setSheetVisible(
+      false
+    );
 
-      <View
-        style={{
-          height: 215,
+    console.log(
+      "Open document picker for:",
+      uploadType
+    );
 
-          borderRadius: 14,
+  };
 
-          overflow: "hidden",
 
-          marginBottom:
-            theme.spacing.lg,
+  // =====================================================
+  // FILE SELECTED FROM PICKER
+  // =====================================================
 
-          backgroundColor:
-            "#D9D9D9",
-        }}
-      >
+  /*
+   * IMPORTANT:
+   *
+   * Tumhare common UploadBottomSheet ke andar
+   * openCamera/openGallery/openDocument callback
+   * picker open karte hain.
+   *
+   * Actual picker ke result ke baad parent se
+   * ye function call karna:
+   *
+   * handleSelectedFile(file)
+   *
+   */
 
-        <Image
-          source={{
-            uri:
-              "https://images.unsplash.com/photo-1551836022-d5d88e9218df?auto=format&fit=crop&w=900&q=80",
-          }}
-          resizeMode="cover"
-          style={{
-            width: "100%",
-            height: "100%",
-          }}
-        />
+  const handleSelectedFile = (
+    file
+  ) => {
 
-        {/* Overlay */}
+    if (!file) {
+      return;
+    }
 
-        <View
-          style={{
-            position: "absolute",
 
-            left: 0,
-            right: 0,
-            bottom: 0,
+    if (
+      uploadType === "selfie"
+    ) {
 
-            paddingHorizontal: 16,
-            paddingVertical: 14,
+      updateField(
+        "selfie",
+        file
+      );
 
-            backgroundColor:
-              "rgba(0,0,0,0.25)",
-          }}
-        >
+    }
 
-          <Text
-            style={{
-              color:
-                theme.colors.white,
 
-              fontSize:
-                theme.typography.b2,
+    if (
+      uploadType === "signature"
+    ) {
 
-              fontFamily:
-                theme.fonts.medium,
-            }}
-          >
-            Verify witness identity carefully
-          </Text>
+      updateField(
+        "signature",
+        file
+      );
 
-        </View>
+    }
 
-      </View>
 
+    if (
+      uploadType === "idDocument"
+    ) {
 
-      {/* =================================================
-          WITNESS NAME
-      ================================================= */}
+      updateField(
+        "idDocument",
+        file
+      );
 
-      <CommonInput
-        label="Witness Name"
-        placeholder="Enter full legal name"
-        value={
-          data?.witnessName || ""
-        }
-        onChangeText={(value) =>
-          updateField(
-            "witnessName",
-            value
-          )
-        }
-        autoCapitalize="words"
-        leftIcon={
-          <UserRound
-            size={19}
-            color="#555A61"
-          />
-        }
-        inputContainerStyle={{
-          backgroundColor:
-            theme.colors.white,
+    }
 
-          borderWidth: 1,
 
-          borderColor:
-            "#C8CBD1",
+    setSheetVisible(
+      false
+    );
 
-          borderRadius: 14,
-        }}
-      />
+  };
 
 
-      {/* =================================================
-          MOBILE NUMBER
-      ================================================= */}
+  // =====================================================
+  // UPLOAD CARD
+  // =====================================================
 
-      <CommonInput
-        label="Mobile Number"
-        placeholder="10-digit phone number"
-        value={
-          data?.mobileNumber || ""
-        }
-        onChangeText={(value) =>
-          updateField(
-            "mobileNumber",
-            value
-          )
-        }
-        keyboardType="phone-pad"
-        maxLength={10}
-        leftIcon={
-          <Phone
-            size={19}
-            color="#555A61"
-          />
-        }
-        inputContainerStyle={{
-          backgroundColor:
-            theme.colors.white,
+  const renderUploadCard = ({
+    title,
+    subtitle,
+    icon,
+    file,
+    type,
+    required = true,
+    onPress,
+  }) => {
 
-          borderWidth: 1,
-
-          borderColor:
-            "#C8CBD1",
-
-          borderRadius: 14,
-        }}
-      />
-
-
-      {/* =================================================
-          RELATION TO APPLICANT
-      ================================================= */}
-
-      <View
-        style={{
-          marginBottom:
-            theme.spacing.xl,
-        }}
-      >
-
-        <Text
-          style={{
-            marginBottom:
-              theme.spacing.sm,
-
-            color:
-              "#607796",
-
-            fontSize:
-              theme.typography.b2,
-
-            fontFamily:
-              theme.fonts.medium,
-          }}
-        >
-          Relation to Applicant
-        </Text>
-
-
-        <TouchableOpacity
-          activeOpacity={0.8}
-          onPress={() => {
-
-            setRelationOpen(
-              (previous) =>
-                !previous
-            );
-
-            setIdTypeOpen(false);
-
-          }}
-          style={{
-            height: 62,
-
-            borderRadius: 14,
-
-            borderWidth: 1,
-
-            borderColor:
-              "#C8CBD1",
-
-            backgroundColor:
-              theme.colors.white,
-
-            paddingHorizontal: 16,
-
-            flexDirection: "row",
-
-            alignItems: "center",
-
-            justifyContent:
-              "space-between",
-          }}
-        >
-
-          <View
-            style={{
-              flexDirection: "row",
-
-              alignItems: "center",
-
-              flex: 1,
-            }}
-          >
-
-            <UsersRound
-              size={19}
-              color="#555A61"
-            />
-
-            <Text
-              style={{
-                marginLeft: 12,
-
-                color:
-                  data?.relation
-                    ? theme.colors.black
-                    : "#9A9CA2",
-
-                fontSize: 16,
-
-                fontFamily:
-                  theme.fonts.regular,
-              }}
-            >
-              {data?.relation ||
-                "Select relation"}
-            </Text>
-
-          </View>
-
-
-          <ChevronDown
-            size={20}
-            color="#62666D"
-          />
-
-        </TouchableOpacity>
-
-
-        {/* Dropdown */}
-
-        {relationOpen && (
-
-          <View
-            style={{
-              marginTop: 6,
-
-              backgroundColor:
-                theme.colors.white,
-
-              borderRadius: 12,
-
-              borderWidth: 1,
-
-              borderColor:
-                "#E1E2E5",
-
-              overflow: "hidden",
-
-              elevation: 3,
-            }}
-          >
-
-            {RELATION_OPTIONS.map(
-              (option) => (
-
-                <TouchableOpacity
-                  key={option}
-                  activeOpacity={0.8}
-                  onPress={() =>
-                    handleRelationSelect(
-                      option
-                    )
-                  }
-                  style={{
-                    minHeight: 48,
-
-                    paddingHorizontal: 16,
-
-                    flexDirection: "row",
-
-                    alignItems: "center",
-
-                    justifyContent:
-                      "space-between",
-                  }}
-                >
-
-                  <Text
-                    style={{
-                      color:
-                        theme.colors.black,
-
-                      fontSize: 15,
-
-                      fontFamily:
-                        theme.fonts.regular,
-                    }}
-                  >
-                    {option}
-                  </Text>
-
-
-                  {data?.relation ===
-                    option && (
-
-                    <Check
-                      size={18}
-                      color={
-                        theme.colors.primary500
-                      }
-                    />
-
-                  )}
-
-                </TouchableOpacity>
-
-              )
-            )}
-
-          </View>
-
-        )}
-
-      </View>
-
-
-      {/* =================================================
-          ID TYPE
-      ================================================= */}
-
-      <View
-        style={{
-          marginBottom:
-            theme.spacing.xl,
-        }}
-      >
-
-        <Text
-          style={{
-            marginBottom:
-              theme.spacing.sm,
-
-            color:
-              "#607796",
-
-            fontSize:
-              theme.typography.b2,
-
-            fontFamily:
-              theme.fonts.medium,
-          }}
-        >
-          ID Type
-        </Text>
-
-
-        <TouchableOpacity
-          activeOpacity={0.8}
-          onPress={() => {
-
-            setIdTypeOpen(
-              (previous) =>
-                !previous
-            );
-
-            setRelationOpen(false);
-
-          }}
-          style={{
-            height: 62,
-
-            borderRadius: 14,
-
-            borderWidth: 1,
-
-            borderColor:
-              "#C8CBD1",
-
-            backgroundColor:
-              theme.colors.white,
-
-            paddingHorizontal: 16,
-
-            flexDirection: "row",
-
-            alignItems: "center",
-
-            justifyContent:
-              "space-between",
-          }}
-        >
-
-          <View
-            style={{
-              flexDirection: "row",
-
-              alignItems: "center",
-
-              flex: 1,
-            }}
-          >
-
-            <BadgeCheck
-              size={19}
-              color="#555A61"
-            />
-
-            <Text
-              style={{
-                marginLeft: 12,
-
-                color:
-                  data?.idType
-                    ? theme.colors.black
-                    : "#9A9CA2",
-
-                fontSize: 16,
-
-                fontFamily:
-                  theme.fonts.regular,
-              }}
-            >
-              {data?.idType ||
-                "Select ID"}
-            </Text>
-
-          </View>
-
-
-          <ChevronDown
-            size={20}
-            color="#62666D"
-          />
-
-        </TouchableOpacity>
-
-
-        {/* Dropdown */}
-
-        {idTypeOpen && (
-
-          <View
-            style={{
-              marginTop: 6,
-
-              backgroundColor:
-                theme.colors.white,
-
-              borderRadius: 12,
-
-              borderWidth: 1,
-
-              borderColor:
-                "#E1E2E5",
-
-              overflow: "hidden",
-
-              elevation: 3,
-            }}
-          >
-
-            {ID_TYPE_OPTIONS.map(
-              (option) => (
-
-                <TouchableOpacity
-                  key={option}
-                  activeOpacity={0.8}
-                  onPress={() =>
-                    handleIdTypeSelect(
-                      option
-                    )
-                  }
-                  style={{
-                    minHeight: 48,
-
-                    paddingHorizontal: 16,
-
-                    flexDirection: "row",
-
-                    alignItems: "center",
-
-                    justifyContent:
-                      "space-between",
-                  }}
-                >
-
-                  <Text
-                    style={{
-                      color:
-                        theme.colors.black,
-
-                      fontSize: 15,
-
-                      fontFamily:
-                        theme.fonts.regular,
-                    }}
-                  >
-                    {option}
-                  </Text>
-
-
-                  {data?.idType ===
-                    option && (
-
-                    <Check
-                      size={18}
-                      color={
-                        theme.colors.primary500
-                      }
-                    />
-
-                  )}
-
-                </TouchableOpacity>
-
-              )
-            )}
-
-          </View>
-
-        )}
-
-      </View>
-
-
-      {/* =================================================
-          ID NUMBER
-      ================================================= */}
-
-      <CommonInput
-        label="ID Number"
-        placeholder="Enter ID details"
-        value={
-          data?.idNumber || ""
-        }
-        onChangeText={(value) =>
-          updateField(
-            "idNumber",
-            value
-          )
-        }
-        autoCapitalize="characters"
-        leftIcon={
-          <CreditCard
-            size={19}
-            color="#555A61"
-          />
-        }
-        inputContainerStyle={{
-          backgroundColor:
-            theme.colors.white,
-
-          borderWidth: 1,
-
-          borderColor:
-            "#C8CBD1",
-
-          borderRadius: 14,
-        }}
-      />
-
-
-      {/* =================================================
-          WITNESS CONFIRMATION
-      ================================================= */}
+    return (
 
       <TouchableOpacity
-        activeOpacity={0.85}
+        activeOpacity={0.86}
+
         onPress={
-          handleConfirmation
+          onPress ||
+          (() =>
+            openUploadSheet(
+              type
+            ))
         }
+
+        disabled={
+          uploading
+        }
+
         style={{
+          minHeight: 88,
+
+          borderRadius: 16,
+
+          borderWidth: 1,
+
+          borderColor:
+            file
+              ? "#CBE7D2"
+              : "#E9DDD5",
+
           backgroundColor:
-            "#F0F1F2",
+            file
+              ? "#F8FCF9"
+              : "#FFFCFA",
 
-          borderRadius: 14,
+          padding:
+            theme.spacing.md,
 
-          padding: 16,
+          flexDirection:
+            "row",
 
-          flexDirection: "row",
-
-          alignItems: "flex-start",
+          alignItems:
+            "center",
 
           marginBottom:
-            theme.spacing.lg,
+            theme.spacing.md,
+
+          opacity:
+            uploading
+              ? 0.6
+              : 1,
         }}
       >
 
-        {/* Checkbox */}
+        {/* =================================================
+            ICON
+        ================================================= */}
 
         <View
           style={{
-            width: 26,
+            width: 46,
 
-            height: 26,
+            height: 46,
 
-            borderRadius: 4,
-
-            borderWidth: 1,
-
-            borderColor:
-              data?.witnessConfirmed
-                ? theme.colors.primary500
-                : "#C8CBD1",
+            borderRadius: 14,
 
             backgroundColor:
-              data?.witnessConfirmed
-                ? theme.colors.primary500
-                : theme.colors.white,
+              file
+                ? "#E8F7EC"
+                : "#FFF3E8",
 
-            alignItems: "center",
+            alignItems:
+              "center",
 
-            justifyContent: "center",
-
-            marginRight: 14,
+            justifyContent:
+              "center",
           }}
         >
 
-          {data?.witnessConfirmed && (
+          {file ? (
 
-            <Check
-              size={17}
-              color={
-                theme.colors.white
-              }
-              strokeWidth={3}
+            <ShieldCheck
+              size={21}
+              color="#2E8B57"
+              strokeWidth={2.1}
             />
+
+          ) : (
+
+            icon
 
           )}
 
         </View>
 
 
-        {/* Confirmation Text */}
+        {/* =================================================
+            CONTENT
+        ================================================= */}
+
+        <View
+          style={{
+            flex: 1,
+
+            marginLeft:
+              theme.spacing.md,
+          }}
+        >
+
+          <View
+            style={{
+              flexDirection:
+                "row",
+
+              alignItems:
+                "center",
+            }}
+          >
+
+            <Text
+              style={{
+                color:
+                  theme.colors.black,
+
+                fontSize:
+                  theme.typography.b2,
+
+                fontFamily:
+                  theme.fonts.semiBold,
+              }}
+            >
+              {title}
+            </Text>
+
+
+            {required && (
+
+              <Text
+                style={{
+                  color:
+                    theme.colors.primary500,
+
+                  fontSize: 14,
+
+                  marginLeft: 3,
+                }}
+              >
+                *
+              </Text>
+
+            )}
+
+          </View>
+
+
+          <Text
+            numberOfLines={1}
+            style={{
+              marginTop: 4,
+
+              color:
+                file
+                  ? "#2E8B57"
+                  : theme.colors.gray500,
+
+              fontSize: 11.5,
+
+              fontFamily:
+                theme.fonts.regular,
+            }}
+          >
+            {file
+              ? file?.name ||
+              "Document selected"
+              : subtitle}
+          </Text>
+
+        </View>
+
+
+        {/* =================================================
+            ACTION
+        ================================================= */}
+
+        {uploading ? (
+
+          <ActivityIndicator
+            size="small"
+            color={
+              theme.colors.primary500
+            }
+          />
+
+        ) : (
+
+          <Upload
+            size={18}
+            color={
+              file
+                ? "#2E8B57"
+                : theme.colors.primary500
+            }
+
+            strokeWidth={2.2}
+          />
+
+        )}
+
+      </TouchableOpacity>
+
+    );
+
+  };
+
+
+  // =====================================================
+  // RENDER
+  // =====================================================
+
+  return (
+
+    <View>
+
+      {/* =================================================
+          WITNESS DETAILS
+      ================================================= */}
+
+      <View
+        style={{
+          backgroundColor:
+            theme.colors.white,
+
+          borderRadius: 20,
+
+          padding:
+            theme.spacing.lg,
+
+          marginBottom:
+            theme.spacing.lg,
+
+          borderWidth: 1,
+
+          borderColor:
+            "#F0E5DD",
+
+          ...theme.shadows.card,
+        }}
+      >
+
+        <Text
+          style={{
+            color:
+              theme.colors.black,
+
+            fontSize:
+              theme.typography.b1,
+
+            fontFamily:
+              theme.fonts.headingBold,
+
+            marginBottom:
+              theme.spacing.lg,
+          }}
+        >
+          Witness Details
+        </Text>
+
+
+        {/* =================================================
+            FULL NAME
+        ================================================= */}
+
+        <CommonInput
+
+          label="Full Name"
+          required
+          placeholder="Enter witness full name"
+
+          value={
+            witnessName
+          }
+
+          onChangeText={
+            value =>
+              updateField(
+                "witnessName",
+                value
+              )
+          }
+
+          editable={
+            !uploading
+          }
+
+          containerStyle={{
+            marginBottom:
+              theme.spacing.md,
+          }}
+          inputContainerStyle={{
+            ...theme.input.inputBorder
+          }}
+        />
+
+
+        {/* =================================================
+            MOBILE
+        ================================================= */}
+
+        <CommonInput
+          label="Mobile Number"
+          required
+          placeholder="Enter 10-digit mobile number"
+
+          value={
+            mobileNumber
+          }
+
+          onChangeText={
+            value =>
+              updateField(
+                "mobileNumber",
+                value.replace(
+                  /\D/g,
+                  ""
+                )
+              )
+          }
+
+          keyboardType="phone-pad"
+
+          maxLength={10}
+
+          editable={
+            !uploading
+          }
+
+          containerStyle={{
+            marginBottom:
+              theme.spacing.md,
+          }}
+            inputContainerStyle={{
+            ...theme.input.inputBorder
+          }}
+        />
+
+
+        {/* =================================================
+            RELATION
+        ================================================= */}
+
+        <CommonInput
+          label="Relation to Applicant"
+          required
+          placeholder="Enter relation"
+
+          value={
+            relation
+          }
+
+          onChangeText={
+            value =>
+              updateField(
+                "relation",
+                value
+              )
+          }
+
+          editable={
+            !uploading
+          }
+
+          containerStyle={{
+            marginBottom:
+              theme.spacing.lg,
+          }}
+            inputContainerStyle={{
+            ...theme.input.inputBorder
+          }}
+        />
+
+      </View>
+
+
+      {/* =================================================
+          VERIFICATION DOCUMENTS
+      ================================================= */}
+
+      <View
+        style={{
+          backgroundColor:
+            theme.colors.white,
+
+          borderRadius: 20,
+
+          padding:
+            theme.spacing.lg,
+
+          marginBottom:
+            theme.spacing.lg,
+
+          borderWidth: 1,
+
+          borderColor:
+            "#F0E5DD",
+
+          ...theme.shadows.card,
+        }}
+      >
+
+        <Text
+          style={{
+            color:
+              theme.colors.black,
+
+            fontSize:
+              theme.typography.b1,
+
+            fontFamily:
+              theme.fonts.headingBold,
+
+            marginBottom: 4,
+          }}
+        >
+          Witness Verification
+        </Text>
+
+
+        <Text
+          style={{
+            color:
+              theme.colors.gray500,
+
+            fontSize: 12,
+
+            fontFamily:
+              theme.fonts.regular,
+
+            lineHeight: 18,
+
+            marginBottom:
+              theme.spacing.lg,
+          }}
+        >
+          Upload witness selfie, signature and one
+          identity document.
+        </Text>
+
+
+        {/* =================================================
+            SELFIE
+        ================================================= */}
+
+        {renderUploadCard({
+
+          title:
+            "Witness Selfie",
+
+          subtitle:
+            "Capture witness selfie",
+
+          icon: (
+            <Camera
+              size={21}
+              color={
+                theme.colors.primary500
+              }
+              strokeWidth={2}
+            />
+          ),
+
+          file:
+            selfie,
+
+          type:
+            "selfie",
+
+          required:
+            true,
+
+        })}
+
+
+        {/* =================================================
+            SIGNATURE
+        ================================================= */}
+
+        {renderUploadCard({
+
+          title:
+            "Witness Signature",
+
+          subtitle:
+            "Upload witness signature",
+
+          icon: (
+            <PenLine
+              size={21}
+              color={
+                theme.colors.primary500
+              }
+              strokeWidth={2}
+            />
+          ),
+
+          file:
+            signature,
+
+          type:
+            "signature",
+
+          required:
+            true,
+
+        })}
+
+
+        {/* =================================================
+            ID DOCUMENT
+        ================================================= */}
+
+        {renderUploadCard({
+
+          title:
+            "Identity Document",
+
+          subtitle:
+            idType
+              ? `${idType} • Tap to upload`
+              : "Select ID type and upload document",
+
+          icon: (
+            <FileText
+              size={21}
+              color={
+                theme.colors.primary500
+              }
+              strokeWidth={2}
+            />
+          ),
+
+          file:
+            idDocument,
+
+          type:
+            "idDocument",
+
+          required:
+            true,
+
+          onPress:
+            handleOpenIDDocument,
+
+        })}
+
+      </View>
+
+
+      {/* =================================================
+          CONFIRMATION
+      ================================================= */}
+
+      <TouchableOpacity
+        activeOpacity={0.85}
+
+        onPress={() =>
+          updateField(
+            "witnessConfirmed",
+            !witnessConfirmed
+          )
+        }
+
+        disabled={
+          uploading
+        }
+
+        style={{
+          flexDirection:
+            "row",
+
+          alignItems:
+            "flex-start",
+
+          marginBottom:
+            theme.spacing.lg,
+        }}
+      >
+
+        <View
+          style={{
+            width: 22,
+
+            height: 22,
+
+            borderRadius: 6,
+
+            borderWidth: 1.5,
+
+            borderColor:
+              witnessConfirmed
+                ? theme.colors.primary500
+                : theme.colors.gray300,
+
+            backgroundColor:
+              witnessConfirmed
+                ? theme.colors.primary500
+                : theme.colors.white,
+
+            alignItems:
+              "center",
+
+            justifyContent:
+              "center",
+
+            marginRight:
+              theme.spacing.sm,
+          }}
+        >
+
+          {witnessConfirmed && (
+
+            <Text
+              style={{
+                color:
+                  theme.colors.white,
+
+                fontSize: 14,
+
+                fontFamily:
+                  theme.fonts.semiBold,
+              }}
+            >
+              ✓
+            </Text>
+
+          )}
+
+        </View>
+
 
         <Text
           style={{
             flex: 1,
 
             color:
-              theme.colors.black,
+              theme.colors.gray700,
 
-            fontSize: 16,
+            fontSize: 12,
 
-            lineHeight: 23,
+            lineHeight: 18,
 
             fontFamily:
               theme.fonts.regular,
           }}
         >
-          Witness confirms above information is
-          true and correct and agrees to be
-          contacted for verification purposes.
+          I confirm that the witness details and
+          documents provided above are correct.
         </Text>
 
       </TouchableOpacity>
+
+
+      {/* =================================================
+          ID DETAILS MODAL
+      ================================================= */}
+
+      <IDDetailsModal
+        visible={
+          idModalVisible
+        }
+
+        initialValues={{
+          idType,
+          idNumber,
+        }}
+
+        onClose={() =>
+          setIdModalVisible(
+            false
+          )
+        }
+
+        onContinue={
+          handleIDDetailsContinue
+        }
+      />
+
+
+      {/* =================================================
+          COMMON UPLOAD BOTTOM SHEET
+      ================================================= */}
+
+      <UploadBottomSheet
+
+        sheetVisible={
+          sheetVisible
+        }
+
+        setSheetVisible={
+          setSheetVisible
+        }
+
+        openCamera={
+          openCamera
+        }
+
+        openGallery={
+          openGallery
+        }
+
+        openDocument={
+          openDocument
+        }
+
+        type={
+          uploadType === "idDocument"
+            ? "document"
+            : "photo"
+        }
+
+      />
 
     </View>
 
@@ -825,4 +1070,6 @@ const WitnessDetails = ({
 };
 
 
-export default WitnessDetails;
+export default memo(
+  WitnessDetails
+);

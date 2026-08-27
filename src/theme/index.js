@@ -469,6 +469,12 @@ const input = {
     borderColor: colors.error,
     backgroundColor: colors.white,
   },
+
+  inputBorder: {
+    borderWidth: 0.3,
+    borderColor: "#48484a58",
+  },
+
 };
 
 /* =======================================================
