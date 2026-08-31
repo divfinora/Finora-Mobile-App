@@ -279,6 +279,10 @@ const handleNext = async () => {
 // STEP 4 - SAVE WITNESS
 // =====================================================
 
+ // =====================================================
+// STEP 4 - SAVE WITNESS
+// =====================================================
+
 if (currentStep === 4) {
 
   const witness =
@@ -286,7 +290,7 @@ if (currentStep === 4) {
 
 
   // ===================================================
-  // GET VALUES
+  // GET BASIC VALUES
   // ===================================================
 
   const fullName =
@@ -297,12 +301,6 @@ if (currentStep === 4) {
 
   const relation =
     witness?.relation?.trim();
-
-  const idType =
-    witness?.idType?.trim();
-
-  const idNumber =
-    witness?.idNumber?.trim();
 
   const agreed =
     witness?.witnessConfirmed === true;
@@ -333,7 +331,11 @@ if (currentStep === 4) {
 
 
   // Backend rule: ^[6-9]\d{9}$
-  if (!/^[6-9]\d{9}$/.test(mobile)) {
+  if (
+    !/^[6-9]\d{9}$/.test(
+      mobile
+    )
+  ) {
 
     showToast.error(
       "Please enter a valid 10-digit mobile number."
@@ -353,26 +355,6 @@ if (currentStep === 4) {
   }
 
 
-  if (!idType) {
-
-    showToast.error(
-      "Please select ID type."
-    );
-
-    return;
-  }
-
-
-  if (!idNumber) {
-
-    showToast.error(
-      "Please enter ID number."
-    );
-
-    return;
-  }
-
-
   if (!agreed) {
 
     showToast.error(
@@ -384,157 +366,201 @@ if (currentStep === 4) {
 
 
   // ===================================================
-  // FORM DATA
+  // GET UPLOADED FILES
   // ===================================================
 
-  const formData =
-    new FormData();
+  const signatures =
+    Array.isArray(
+      witness?.signatures
+    )
+      ? witness.signatures
+      : [];
 
 
-  // ===================================================
-  // REQUIRED TEXT FIELDS
-  // ===================================================
+  const photos =
+    Array.isArray(
+      witness?.photos
+    )
+      ? witness.photos
+      : [];
 
-  formData.append(
-    "fullName",
-    fullName
-  );
 
-  formData.append(
-    "mobile",
-    mobile
-  );
-
-  formData.append(
-    "relation",
-    relation
-  );
-
-  formData.append(
-    "idType",
-    idType
-  );
-
-  formData.append(
-    "idNumber",
-    idNumber
-  );
-
-  formData.append(
-    "agreed",
-    "true"
-  );
+  const documents =
+    Array.isArray(
+      witness?.documents
+    )
+      ? witness.documents
+      : [];
 
 
   // ===================================================
-  // OPTIONAL FILES
+  // OPTIONAL FILE VALIDATION
   // ===================================================
 
-  const signature =
-    witness?.signature;
+  if (
+    signatures.length > 2
+  ) {
 
-  const selfie =
-    witness?.selfie;
-
-  const idDocument =
-    witness?.idDocument;
-
-
-  // ---------------------------------------------------
-  // SIGNATURE
-  // ---------------------------------------------------
-
-  if (signature?.uri) {
-
-    formData.append(
-      "signature",
-      {
-        uri:
-          signature.uri,
-
-        name:
-          signature.name ||
-          "signature.jpg",
-
-        type:
-          signature.type ||
-          "image/jpeg",
-      }
+    showToast.error(
+      "Maximum 2 signatures are allowed."
     );
 
+    return;
   }
 
 
-  // ---------------------------------------------------
-  // SELFIE
-  // ---------------------------------------------------
+  if (
+    photos.length > 2
+  ) {
 
-  if (selfie?.uri) {
-
-    formData.append(
-      "selfie",
-      {
-        uri:
-          selfie.uri,
-
-        name:
-          selfie.name ||
-          "witness-selfie.jpg",
-
-        type:
-          selfie.type ||
-          "image/jpeg",
-      }
+    showToast.error(
+      "Maximum 2 witness photos are allowed."
     );
 
+    return;
   }
 
 
-  // ---------------------------------------------------
-  // ID DOCUMENT
-  // ---------------------------------------------------
+  if (
+    documents.length > 10
+  ) {
 
-  if (idDocument?.uri) {
-
-    formData.append(
-      "idDocument",
-      {
-        uri:
-          idDocument.uri,
-
-        name:
-          idDocument.name ||
-          "witness-id.jpg",
-
-        type:
-          idDocument.type ||
-          "image/jpeg",
-      }
+    showToast.error(
+      "Maximum 10 documents are allowed."
     );
 
+    return;
   }
 
 
   // ===================================================
-  // CONSOLE TEXT FIELDS
+  // CREATE FINAL JSON PAYLOAD
+  // ===================================================
+
+  const payload = {
+
+    // =================================================
+    // WITNESS DETAILS
+    // =================================================
+
+    fullName,
+
+    mobile,
+
+    relation,
+
+    agreed,
+
+
+    // =================================================
+    // SIGNATURES
+    // =================================================
+
+    signatures:
+      signatures.map(
+        (item) => ({
+
+          name:
+            item?.name ||
+            item?.fileName ||
+            "signature.jpg",
+
+          imageUrl:
+            item?.imageUrl ||
+            item?.url ||
+            item?.uri ||
+            "",
+
+          publicId:
+            item?.publicId ||
+            "",
+
+        })
+      ),
+
+
+    // =================================================
+    // WITNESS PHOTOS
+    // =================================================
+
+    photos:
+      photos.map(
+        (item) => ({
+
+          name:
+            item?.name ||
+            item?.fileName ||
+            "witness-photo.jpg",
+
+          imageUrl:
+            item?.imageUrl ||
+            item?.url ||
+            item?.uri ||
+            "",
+
+          publicId:
+            item?.publicId ||
+            "",
+
+        })
+      ),
+
+
+    // =================================================
+    // IDENTITY DOCUMENTS
+    // =================================================
+
+    documents:
+      documents.map(
+        (item) => ({
+
+          docTypeName:
+            item?.docTypeName ||
+            "Identity Document",
+
+          docTypeId:
+            item?.docTypeId ||
+            "OTHER",
+
+          docUrl:
+            item?.docUrl ||
+            item?.imageUrl ||
+            item?.url ||
+            item?.uri ||
+            "",
+
+          publicId:
+            item?.publicId ||
+            "",
+
+        })
+      ),
+
+  };
+
+
+  // ===================================================
+  // CONSOLE FINAL PAYLOAD
   // ===================================================
 
   console.log(
-    "Witness API FormData:",
-    {
-      fullName,
-      mobile,
-      relation,
-      idType,
-      idNumber,
-      agreed,
-      signature:
-        signature?.name || null,
-      selfie:
-        selfie?.name || null,
-      idDocument:
-        idDocument?.name || null,
-    }
+    "========================================"
+  );
+
+  console.log(
+    "SAVE WITNESS API PAYLOAD:"
+  );
+
+  console.log(
+    JSON.stringify(
+      payload,
+      null,
+      2
+    )
+  );
+
+  console.log(
+    "========================================"
   );
 
 
@@ -548,13 +574,10 @@ if (currentStep === 4) {
       saveVisitorWitness,
 
     params: {
+    loanId: job?.loanId,
+    body: payload,
+  },
 
-      loanId:
-        job?.loanId,
-
-      formData,
-
-    },
 
     showSuccess:
       false,
@@ -562,7 +585,7 @@ if (currentStep === 4) {
     onSuccess: () => {
 
       setCurrentStep(
-        previous =>
+        (previous) =>
           previous + 1
       );
 

@@ -1,5 +1,6 @@
 import React, {
   memo,
+  useMemo,
   useState,
 } from "react";
 
@@ -8,6 +9,8 @@ import {
   Text,
   TouchableOpacity,
   ActivityIndicator,
+  Image,
+  Alert,
 } from "react-native";
 
 import {
@@ -16,13 +19,21 @@ import {
   PenLine,
   ShieldCheck,
   Upload,
+  X,
+  Plus,
 } from "lucide-react-native";
+
+import {
+  launchCamera,
+  launchImageLibrary,
+} from "react-native-image-picker";
 
 import {
   theme,
 } from "../../../../theme";
 
-import CommonInput from "../../../../components/common/Input/CommonInput";
+import CommonInput from
+  "../../../../components/common/Input/CommonInput";
 
 import UploadBottomSheet from
   "../../../../components/common/Modal/UploadBottomSheet";
@@ -30,12 +41,55 @@ import UploadBottomSheet from
 import IDDetailsModal from
   "../components/IDDetailsModal";
 
+import {
+  useUploadWitnessDocumentsMutation,
+} from "../../../../redux/features/visitor/visitorApi";
+
+
+// =====================================================
+// CONSTANTS
+// =====================================================
+
+const MAX_FILE_SIZE =
+  5 * 1024 * 1024;
+
+const MAX_PHOTOS = 1;
+
+const MAX_SIGNATURES = 1;
+
+const MAX_DOCUMENTS = 10;
+
+const ALLOWED_TYPES = [
+  "image/jpeg",
+  "image/jpg",
+  "image/png",
+  "image/webp",
+];
+
+
+// =====================================================
+// COMPONENT
+// =====================================================
 
 const WitnessDetails = ({
   data = {},
   onChange,
   uploading = false,
 }) => {
+
+  // =====================================================
+  // API
+  // =====================================================
+
+  const [
+    uploadWitnessDocuments,
+    {
+      isLoading:
+        isUploadingFile,
+    },
+  ] =
+    useUploadWitnessDocumentsMutation();
+
 
   // =====================================================
   // UPLOAD SHEET
@@ -68,6 +122,16 @@ const WitnessDetails = ({
 
 
   // =====================================================
+  // CURRENT UPLOAD LOADING TYPE
+  // =====================================================
+
+  const [
+    uploadingType,
+    setUploadingType,
+  ] = useState(null);
+
+
+  // =====================================================
   // VALUES
   // =====================================================
 
@@ -86,17 +150,54 @@ const WitnessDetails = ({
   const idNumber =
     data?.idNumber || "";
 
-  const selfie =
-    data?.selfie || null;
-
-  const signature =
-    data?.signature || null;
-
-  const idDocument =
-    data?.idDocument || null;
-
   const witnessConfirmed =
     data?.witnessConfirmed === true;
+
+
+  // =====================================================
+  // NORMALIZE ARRAYS
+  // =====================================================
+
+  const photos = useMemo(
+    () =>
+      Array.isArray(data?.photos)
+        ? data.photos
+        : data?.selfie
+          ? [data.selfie]
+          : [],
+    [
+      data?.photos,
+      data?.selfie,
+    ]
+  );
+
+
+  const signatures = useMemo(
+    () =>
+      Array.isArray(data?.signatures)
+        ? data.signatures
+        : data?.signature
+          ? [data.signature]
+          : [],
+    [
+      data?.signatures,
+      data?.signature,
+    ]
+  );
+
+
+  const documents = useMemo(
+    () =>
+      Array.isArray(data?.documents)
+        ? data.documents
+        : data?.idDocument
+          ? [data.idDocument]
+          : [],
+    [
+      data?.documents,
+      data?.idDocument,
+    ]
+  );
 
 
   // =====================================================
@@ -109,14 +210,11 @@ const WitnessDetails = ({
   ) => {
 
     onChange?.({
-
       ...data,
 
       [field]:
         value,
-
     });
-
   };
 
 
@@ -128,6 +226,52 @@ const WitnessDetails = ({
     type
   ) => {
 
+    // -----------------------------------------------
+    // LIMIT CHECK
+    // -----------------------------------------------
+
+    if (
+      type === "photo" &&
+      photos.length >= MAX_PHOTOS
+    ) {
+
+      Alert.alert(
+        "Limit Reached",
+        "Maximum 1 witness photos are allowed."
+      );
+
+      return;
+    }
+
+
+    if (
+      type === "signature" &&
+      signatures.length >= MAX_SIGNATURES
+    ) {
+
+      Alert.alert(
+        "Limit Reached",
+        "Maximum 1 witness signatures are allowed."
+      );
+
+      return;
+    }
+
+
+    if (
+      type === "document" &&
+      documents.length >= MAX_DOCUMENTS
+    ) {
+
+      Alert.alert(
+        "Limit Reached",
+        "Maximum 10 witness documents are allowed."
+      );
+
+      return;
+    }
+
+
     setUploadType(
       type
     );
@@ -135,7 +279,6 @@ const WitnessDetails = ({
     setSheetVisible(
       true
     );
-
   };
 
 
@@ -148,7 +291,6 @@ const WitnessDetails = ({
     setIdModalVisible(
       true
     );
-
   };
 
 
@@ -183,19 +325,567 @@ const WitnessDetails = ({
     );
 
 
-    // Open common upload sheet
+    // -----------------------------------------------
+    // OPEN DOCUMENT UPLOAD
+    // -----------------------------------------------
+
     setTimeout(() => {
 
-      setUploadType(
-        "idDocument"
-      );
-
-      setSheetVisible(
-        true
+      openUploadSheet(
+        "document"
       );
 
     }, 200);
+  };
 
+
+  // =====================================================
+  // VALIDATE FILE
+  // =====================================================
+
+  const validateFile = (
+    file
+  ) => {
+
+    // -----------------------------------------------
+    // URI
+    // -----------------------------------------------
+
+    if (!file?.uri) {
+
+      Alert.alert(
+        "File Missing",
+        "Selected file is not available."
+      );
+
+      return false;
+    }
+
+
+    // -----------------------------------------------
+    // SIZE
+    // -----------------------------------------------
+
+    const fileSize =
+      file?.fileSize ||
+      file?.size ||
+      0;
+
+
+    if (
+      fileSize > MAX_FILE_SIZE
+    ) {
+
+      Alert.alert(
+        "File Too Large",
+        "Maximum file size is 5 MB."
+      );
+
+      return false;
+    }
+
+
+    // -----------------------------------------------
+    // TYPE
+    // -----------------------------------------------
+
+    const mimeType =
+      (
+        file?.type ||
+        "image/jpeg"
+      ).toLowerCase();
+
+
+    if (
+      !ALLOWED_TYPES.includes(
+        mimeType
+      )
+    ) {
+
+      Alert.alert(
+        "Invalid File",
+        "Only JPG, JPEG, PNG and WEBP files are allowed."
+      );
+
+      return false;
+    }
+
+
+    return true;
+  };
+
+
+  // =====================================================
+  // CREATE UPLOAD FORM DATA
+  // =====================================================
+
+  const createUploadFormData = (
+    file
+  ) => {
+
+    const formData =
+      new FormData();
+
+
+    formData.append(
+      "file",
+      {
+        uri:
+          file?.uri,
+
+        name:
+          file?.fileName ||
+          file?.name ||
+          `witness_${Date.now()}.jpg`,
+
+        type:
+          file?.type ||
+          "image/jpeg",
+      }
+    );
+
+
+    formData.append(
+      "folder",
+      `visitor-verification/witness`
+    );
+
+
+    return formData;
+  };
+
+
+  // =====================================================
+  // UPLOAD FILE TO BACKEND
+  // =====================================================
+
+  const uploadFileToServer = async ({
+    file,
+    type,
+  }) => {
+
+    // -----------------------------------------------
+    // VALIDATION
+    // -----------------------------------------------
+
+    if (
+      !validateFile(file)
+    ) {
+      return null;
+    }
+
+
+    // -----------------------------------------------
+    // LIMITS
+    // -----------------------------------------------
+
+    if (
+      type === "photo" &&
+      photos.length >= MAX_PHOTOS
+    ) {
+
+      Alert.alert(
+        "Limit Reached",
+        "Maximum 2 witness photos are allowed."
+      );
+
+      return null;
+    }
+
+
+    if (
+      type === "signature" &&
+      signatures.length >= MAX_SIGNATURES
+    ) {
+
+      Alert.alert(
+        "Limit Reached",
+        "Maximum 2 witness signatures are allowed."
+      );
+
+      return null;
+    }
+
+
+    if (
+      type === "document" &&
+      documents.length >= MAX_DOCUMENTS
+    ) {
+
+      Alert.alert(
+        "Limit Reached",
+        "Maximum 10 witness documents are allowed."
+      );
+
+      return null;
+    }
+
+
+    try {
+
+      setUploadingType(
+        type
+      );
+
+
+      // -----------------------------------------------
+      // FORM DATA
+      // -----------------------------------------------
+
+      const formData =
+        createUploadFormData(
+          file
+        );
+
+
+      console.log(
+        "================================================="
+      );
+
+      console.log(
+        "WITNESS FILE UPLOAD"
+      );
+
+      console.log(
+        "TYPE:",
+        type
+      );
+
+      console.log(
+        "FILE:",
+        {
+          name:
+            file?.fileName ||
+            file?.name,
+
+          type:
+            file?.type,
+
+          size:
+            file?.fileSize ||
+            file?.size,
+
+          uri:
+            file?.uri,
+        }
+      );
+
+      console.log(
+        "================================================="
+      );
+
+
+      // -----------------------------------------------
+      // API
+      // -----------------------------------------------
+
+      const response =
+        await uploadWitnessDocuments({
+          formData,
+        }).unwrap();
+
+
+      console.log(
+        "WITNESS UPLOAD RESPONSE:",
+        response
+      );
+
+
+      // -----------------------------------------------
+      // SERVER DATA
+      // -----------------------------------------------
+
+      const serverData =
+        response?.data ||
+        response ||
+        {};
+
+
+      const serverUrl =
+        serverData?.url ||
+        serverData?.secure_url ||
+        serverData?.imageUrl ||
+        serverData?.photoUrl ||
+        null;
+
+
+      const publicId =
+        serverData?.publicId ||
+        serverData?.public_id ||
+        null;
+
+
+      // -----------------------------------------------
+      // URL REQUIRED
+      // -----------------------------------------------
+
+      if (!serverUrl) {
+
+        throw new Error(
+          "Server did not return uploaded file URL."
+        );
+      }
+
+
+      // -----------------------------------------------
+      // NORMALIZED FILE
+      // -----------------------------------------------
+
+      const uploadedFile = {
+
+        id:
+          publicId ||
+          `${Date.now()}`,
+
+        name:
+          serverData?.name ||
+          file?.fileName ||
+          file?.name ||
+          "Uploaded File",
+
+        fileName:
+          file?.fileName ||
+          file?.name ||
+          "uploaded-file",
+
+        uri:
+          serverUrl,
+
+        url:
+          serverUrl,
+
+        imageUrl:
+          serverUrl,
+
+        publicId:
+          publicId,
+
+        type:
+          file?.type ||
+          "image/jpeg",
+
+        size:
+          file?.fileSize ||
+          file?.size ||
+          0,
+
+        uploaded:
+          true,
+
+        uploadedAt:
+          serverData?.uploadedAt ||
+          new Date().toISOString(),
+
+        fileType:
+          type,
+
+      };
+
+
+      // =================================================
+      // SAVE PHOTO
+      // =================================================
+
+      if (
+        type === "photo"
+      ) {
+
+        const updatedPhotos = [
+
+          ...photos,
+
+          uploadedFile,
+
+        ].slice(
+          0,
+          MAX_PHOTOS
+        );
+
+
+        updateField(
+          "photos",
+          updatedPhotos
+        );
+
+
+        console.log(
+          "UPDATED WITNESS PHOTOS:",
+          updatedPhotos
+        );
+      }
+
+
+      // =================================================
+      // SAVE SIGNATURE
+      // =================================================
+
+      if (
+        type === "signature"
+      ) {
+
+        const updatedSignatures = [
+
+          ...signatures,
+
+          uploadedFile,
+
+        ].slice(
+          0,
+          MAX_SIGNATURES
+        );
+
+
+        updateField(
+          "signatures",
+          updatedSignatures
+        );
+
+
+        console.log(
+          "UPDATED WITNESS SIGNATURES:",
+          updatedSignatures
+        );
+      }
+
+
+      // =================================================
+      // SAVE DOCUMENT
+      // =================================================
+
+      if (
+        type === "document"
+      ) {
+
+        const documentObject = {
+
+          id:
+            publicId ||
+            `${Date.now()}`,
+
+          name:
+            serverData?.name ||
+            file?.fileName ||
+            file?.name ||
+            "Witness Document",
+
+          fileName:
+            file?.fileName ||
+            file?.name ||
+            "witness-document",
+
+          uri:
+            serverUrl,
+
+          url:
+            serverUrl,
+
+          imageUrl:
+            serverUrl,
+
+          publicId:
+            publicId,
+
+          type:
+            file?.type ||
+            "image/jpeg",
+
+          size:
+            file?.fileSize ||
+            file?.size ||
+            0,
+
+          uploaded:
+            true,
+
+          uploadedAt:
+            serverData?.uploadedAt ||
+            new Date().toISOString(),
+
+          fileType:
+            "document",
+
+          docTypeName:
+            idType ||
+            "Identity Document",
+
+          docTypeId:
+            idType ||
+            "OTHER",
+
+          docNumber:
+            idNumber ||
+            "",
+
+          docUrl:
+            serverUrl,
+
+        };
+
+
+        const updatedDocuments = [
+
+          ...documents,
+
+          documentObject,
+
+        ].slice(
+          0,
+          MAX_DOCUMENTS
+        );
+
+
+        updateField(
+          "documents",
+          updatedDocuments
+        );
+
+
+        console.log(
+          "UPDATED WITNESS DOCUMENTS:",
+          updatedDocuments
+        );
+      }
+
+
+      // -----------------------------------------------
+      // CLOSE SHEET
+      // -----------------------------------------------
+
+      setSheetVisible(
+        false
+      );
+
+      setUploadType(
+        ""
+      );
+
+
+      return uploadedFile;
+
+    } catch (error) {
+
+      console.log(
+        "WITNESS FILE UPLOAD ERROR:",
+        error
+      );
+
+
+      Alert.alert(
+        "Upload Failed",
+        error?.data?.message ||
+        error?.message ||
+        "Unable to upload file. Please try again."
+      );
+
+
+      return null;
+
+    } finally {
+
+      setUploadingType(
+        null
+      );
+    }
   };
 
 
@@ -203,23 +893,154 @@ const WitnessDetails = ({
   // CAMERA
   // =====================================================
 
-  const openCamera = () => {
+  const openCamera = async () => {
 
-    setSheetVisible(
-      false
-    );
+    try {
 
-    console.log(
-      "Open camera for:",
-      uploadType
-    );
+      setSheetVisible(
+        false
+      );
 
-    // ---------------------------------------------------
-    // IMPORTANT:
-    // Parent component se actual camera picker
-    // callback pass kar sakte ho.
-    // ---------------------------------------------------
 
+      // -----------------------------------------------
+      // LIMIT CHECK
+      // -----------------------------------------------
+
+      if (
+        uploadType === "photo" &&
+        photos.length >= MAX_PHOTOS
+      ) {
+
+        Alert.alert(
+          "Limit Reached",
+          "Maximum 2 witness photos are allowed."
+        );
+
+        return;
+      }
+
+
+      if (
+        uploadType === "signature" &&
+        signatures.length >= MAX_SIGNATURES
+      ) {
+
+        Alert.alert(
+          "Limit Reached",
+          "Maximum 2 witness signatures are allowed."
+        );
+
+        return;
+      }
+
+
+      // -----------------------------------------------
+      // CAMERA
+      // -----------------------------------------------
+
+      const result =
+        await launchCamera({
+
+          mediaType:
+            "photo",
+
+          cameraType:
+            uploadType === "photo"
+              ? "front"
+              : "back",
+
+          quality:
+            0.85,
+
+          saveToPhotos:
+            false,
+
+        });
+
+
+      // -----------------------------------------------
+      // CANCEL
+      // -----------------------------------------------
+
+      if (
+        result?.didCancel
+      ) {
+        return;
+      }
+
+
+      // -----------------------------------------------
+      // ERROR
+      // -----------------------------------------------
+
+      if (
+        result?.errorCode
+      ) {
+
+        Alert.alert(
+          "Camera Error",
+          result?.errorMessage ||
+          "Unable to open camera."
+        );
+
+        return;
+      }
+
+
+      // -----------------------------------------------
+      // FILE
+      // -----------------------------------------------
+
+      const asset =
+        result?.assets?.[0];
+
+
+      if (!asset?.uri) {
+        return;
+      }
+
+
+      const file = {
+
+        uri:
+          asset?.uri,
+
+        name:
+          asset?.fileName ||
+          `witness_${Date.now()}.jpg`,
+
+        fileName:
+          asset?.fileName ||
+          `witness_${Date.now()}.jpg`,
+
+        type:
+          asset?.type ||
+          "image/jpeg",
+
+        fileSize:
+          asset?.fileSize ||
+          0,
+
+      };
+
+
+      await uploadFileToServer({
+
+        file,
+
+        type:
+          uploadType,
+
+      });
+
+    } catch (error) {
+
+      console.log(
+        "Witness Camera Error:",
+        error
+      );
+
+    }
   };
 
 
@@ -227,105 +1048,547 @@ const WitnessDetails = ({
   // GALLERY
   // =====================================================
 
-  const openGallery = () => {
+  const openGallery = async () => {
+
+    try {
+
+      setSheetVisible(
+        false
+      );
+
+
+      // -----------------------------------------------
+      // LIMIT CHECK
+      // -----------------------------------------------
+
+      if (
+        uploadType === "photo" &&
+        photos.length >= MAX_PHOTOS
+      ) {
+
+        Alert.alert(
+          "Limit Reached",
+          "Maximum 2 witness photos are allowed."
+        );
+
+        return;
+      }
+
+
+      if (
+        uploadType === "signature" &&
+        signatures.length >= MAX_SIGNATURES
+      ) {
+
+        Alert.alert(
+          "Limit Reached",
+          "Maximum 2 witness signatures are allowed."
+        );
+
+        return;
+      }
+
+
+      if (
+        uploadType === "document" &&
+        documents.length >= MAX_DOCUMENTS
+      ) {
+
+        Alert.alert(
+          "Limit Reached",
+          "Maximum 10 witness documents are allowed."
+        );
+
+        return;
+      }
+
+
+      // -----------------------------------------------
+      // GALLERY
+      // -----------------------------------------------
+
+      const result =
+        await launchImageLibrary({
+
+          mediaType:
+            "photo",
+
+          selectionLimit:
+            1,
+
+          quality:
+            0.85,
+
+        });
+
+
+      // -----------------------------------------------
+      // CANCEL
+      // -----------------------------------------------
+
+      if (
+        result?.didCancel
+      ) {
+        return;
+      }
+
+
+      // -----------------------------------------------
+      // ERROR
+      // -----------------------------------------------
+
+      if (
+        result?.errorCode
+      ) {
+
+        Alert.alert(
+          "Gallery Error",
+          result?.errorMessage ||
+          "Unable to open gallery."
+        );
+
+        return;
+      }
+
+
+      // -----------------------------------------------
+      // FILE
+      // -----------------------------------------------
+
+      const asset =
+        result?.assets?.[0];
+
+
+      if (!asset?.uri) {
+        return;
+      }
+
+
+      const file = {
+
+        uri:
+          asset?.uri,
+
+        name:
+          asset?.fileName ||
+          `witness_${Date.now()}.jpg`,
+
+        fileName:
+          asset?.fileName ||
+          `witness_${Date.now()}.jpg`,
+
+        type:
+          asset?.type ||
+          "image/jpeg",
+
+        fileSize:
+          asset?.fileSize ||
+          0,
+
+      };
+
+
+      await uploadFileToServer({
+
+        file,
+
+        type:
+          uploadType,
+
+      });
+
+    } catch (error) {
+
+      console.log(
+        "Witness Gallery Error:",
+        error
+      );
+
+    }
+  };
+
+
+  // =====================================================
+  // DOCUMENT PICKER
+  // =====================================================
+  //
+  // Backend currently accepts:
+  // JPG / JPEG / PNG / WEBP
+  //
+  // So document upload is handled through
+  // image gallery/camera as an identity-document image.
+  //
+  // =====================================================
+
+  const openDocument = async () => {
 
     setSheetVisible(
       false
     );
 
-    console.log(
-      "Open gallery for:",
-      uploadType
-    );
 
-  };
+    // -----------------------------------------------
+    // DOCUMENT LIMIT
+    // -----------------------------------------------
 
+    if (
+      documents.length >= MAX_DOCUMENTS
+    ) {
 
-  // =====================================================
-  // DOCUMENT
-  // =====================================================
+      Alert.alert(
+        "Limit Reached",
+        "Maximum 10 witness documents are allowed."
+      );
 
-  const openDocument = () => {
-
-    setSheetVisible(
-      false
-    );
-
-    console.log(
-      "Open document picker for:",
-      uploadType
-    );
-
-  };
+      return;
+    }
 
 
-  // =====================================================
-  // FILE SELECTED FROM PICKER
-  // =====================================================
+    // -----------------------------------------------
+    // USE GALLERY
+    // -----------------------------------------------
 
-  /*
-   * IMPORTANT:
-   *
-   * Tumhare common UploadBottomSheet ke andar
-   * openCamera/openGallery/openDocument callback
-   * picker open karte hain.
-   *
-   * Actual picker ke result ke baad parent se
-   * ye function call karna:
-   *
-   * handleSelectedFile(file)
-   *
-   */
+    const result =
+      await launchImageLibrary({
 
-  const handleSelectedFile = (
-    file
-  ) => {
+        mediaType:
+          "photo",
 
-    if (!file) {
+        selectionLimit:
+          1,
+
+        quality:
+          0.85,
+
+      });
+
+
+    if (
+      result?.didCancel
+    ) {
       return;
     }
 
 
     if (
-      uploadType === "selfie"
+      result?.errorCode
     ) {
 
-      updateField(
-        "selfie",
-        file
+      Alert.alert(
+        "Document Error",
+        result?.errorMessage ||
+        "Unable to select document."
       );
 
+      return;
     }
 
 
-    if (
-      uploadType === "signature"
-    ) {
+    const asset =
+      result?.assets?.[0];
 
-      updateField(
-        "signature",
-        file
-      );
 
+    if (!asset?.uri) {
+      return;
     }
 
 
-    if (
-      uploadType === "idDocument"
-    ) {
+    const file = {
 
-      updateField(
-        "idDocument",
-        file
+      uri:
+        asset?.uri,
+
+      name:
+        asset?.fileName ||
+        `witness-document-${Date.now()}.jpg`,
+
+      fileName:
+        asset?.fileName ||
+        `witness-document-${Date.now()}.jpg`,
+
+      type:
+        asset?.type ||
+        "image/jpeg",
+
+      fileSize:
+        asset?.fileSize ||
+        0,
+
+    };
+
+
+    await uploadFileToServer({
+
+      file,
+
+      type:
+        "document",
+
+    });
+  };
+
+
+  // =====================================================
+  // REMOVE PHOTO
+  // =====================================================
+
+  const removePhoto = (
+    index
+  ) => {
+
+    const updatedPhotos =
+      photos.filter(
+        (_, itemIndex) =>
+          itemIndex !== index
       );
 
-    }
 
-
-    setSheetVisible(
-      false
+    updateField(
+      "photos",
+      updatedPhotos
     );
+  };
 
+
+  // =====================================================
+  // REMOVE SIGNATURE
+  // =====================================================
+
+  const removeSignature = (
+    index
+  ) => {
+
+    const updatedSignatures =
+      signatures.filter(
+        (_, itemIndex) =>
+          itemIndex !== index
+      );
+
+
+    updateField(
+      "signatures",
+      updatedSignatures
+    );
+  };
+
+
+  // =====================================================
+  // REMOVE DOCUMENT
+  // =====================================================
+
+  const removeDocument = (
+    index
+  ) => {
+
+    const updatedDocuments =
+      documents.filter(
+        (_, itemIndex) =>
+          itemIndex !== index
+      );
+
+
+    updateField(
+      "documents",
+      updatedDocuments
+    );
+  };
+
+
+  // =====================================================
+  // PREVIEW ITEM
+  // =====================================================
+
+  const renderPreviewItem = ({
+    item,
+    index,
+    onRemove,
+    label,
+  }) => {
+
+    const imageUri =
+      item?.url ||
+      item?.imageUrl ||
+      item?.uri;
+
+
+    return (
+
+      <View
+        key={
+          item?.publicId ||
+          item?.id ||
+          `${label}-${index}`
+        }
+        style={{
+          width: 82,
+          marginRight: 10,
+          marginBottom: 10,
+        }}
+      >
+
+        {/* ==========================================
+            IMAGE
+        ========================================== */}
+
+        <View
+          style={{
+            width: 82,
+            height: 82,
+            borderRadius: 14,
+            overflow: "hidden",
+            backgroundColor:
+              "#F7F3EF",
+            borderWidth: 1,
+            borderColor:
+              "#E9DDD5",
+          }}
+        >
+
+          {imageUri ? (
+
+            <Image
+              source={{
+                uri:
+                  imageUri,
+              }}
+              style={{
+                width: "100%",
+                height: "100%",
+              }}
+              resizeMode="cover"
+            />
+
+          ) : (
+
+            <View
+              style={{
+                flex: 1,
+                alignItems: "center",
+                justifyContent: "center",
+              }}
+            >
+
+              <FileText
+                size={25}
+                color={
+                  theme.colors.primary500
+                }
+              />
+
+            </View>
+
+          )}
+
+
+          {/* ========================================
+              REMOVE
+          ======================================== */}
+
+          <TouchableOpacity
+            activeOpacity={0.8}
+            onPress={() =>
+              onRemove(index)
+            }
+            style={{
+              position: "absolute",
+              top: 5,
+              right: 5,
+              width: 24,
+              height: 24,
+              borderRadius: 12,
+              backgroundColor:
+                "rgba(0,0,0,0.65)",
+              alignItems: "center",
+              justifyContent: "center",
+            }}
+          >
+
+            <X
+              size={14}
+              color="#FFFFFF"
+              strokeWidth={2.5}
+            />
+
+          </TouchableOpacity>
+
+        </View>
+
+
+        {/* ==========================================
+            NAME
+        ========================================== */}
+
+        <Text
+          numberOfLines={1}
+          style={{
+            marginTop: 5,
+            fontSize: 10.5,
+            color:
+              theme.colors.gray700,
+            fontFamily:
+              theme.fonts.regular,
+          }}
+        >
+          {item?.name ||
+            item?.fileName ||
+            `${label} ${index + 1}`}
+        </Text>
+
+      </View>
+    );
+  };
+
+
+  // =====================================================
+  // PREVIEW LIST
+  // =====================================================
+
+  const renderPreviewList = ({
+    items,
+    onRemove,
+    label,
+  }) => {
+
+    if (
+      !items?.length
+    ) {
+      return null;
+    }
+
+
+    return (
+
+      <View
+        style={{
+          flexDirection:
+            "row",
+          flexWrap:
+            "wrap",
+          marginBottom:
+            theme.spacing.sm,
+        }}
+      >
+
+        {items.map(
+          (
+            item,
+            index
+          ) =>
+            renderPreviewItem({
+
+              item,
+
+              index,
+
+              onRemove,
+
+              label,
+
+            })
+        )}
+
+      </View>
+    );
   };
 
 
@@ -337,223 +1600,265 @@ const WitnessDetails = ({
     title,
     subtitle,
     icon,
-    file,
+    files = [],
     type,
     required = true,
     onPress,
   }) => {
 
+    const hasFiles =
+      files?.length > 0;
+
+    const isCurrentUploading =
+      uploadingType === type;
+
+
     return (
 
-      <TouchableOpacity
-        activeOpacity={0.86}
-
-        onPress={
-          onPress ||
-          (() =>
-            openUploadSheet(
-              type
-            ))
-        }
-
-        disabled={
-          uploading
-        }
-
+      <View
         style={{
-          minHeight: 88,
-
-          borderRadius: 16,
-
-          borderWidth: 1,
-
-          borderColor:
-            file
-              ? "#CBE7D2"
-              : "#E9DDD5",
-
-          backgroundColor:
-            file
-              ? "#F8FCF9"
-              : "#FFFCFA",
-
-          padding:
-            theme.spacing.md,
-
-          flexDirection:
-            "row",
-
-          alignItems:
-            "center",
-
           marginBottom:
             theme.spacing.md,
-
-          opacity:
-            uploading
-              ? 0.6
-              : 1,
         }}
       >
 
-        {/* =================================================
-            ICON
-        ================================================= */}
+        {/* ==========================================
+            CARD
+        ========================================== */}
 
-        <View
+        <TouchableOpacity
+          activeOpacity={0.86}
+
+          onPress={
+            onPress ||
+            (() =>
+              openUploadSheet(
+                type
+              ))
+          }
+
+          disabled={
+            uploading ||
+            isUploadingFile
+          }
+
           style={{
-            width: 46,
+            minHeight: 88,
 
-            height: 46,
+            borderRadius: 16,
 
-            borderRadius: 14,
+            borderWidth: 1,
+
+            borderColor:
+              hasFiles
+                ? "#CBE7D2"
+                : "#E9DDD5",
 
             backgroundColor:
-              file
-                ? "#E8F7EC"
-                : "#FFF3E8",
+              hasFiles
+                ? "#F8FCF9"
+                : "#FFFCFA",
+
+            padding:
+              theme.spacing.md,
+
+            flexDirection:
+              "row",
 
             alignItems:
               "center",
 
-            justifyContent:
-              "center",
+            opacity:
+              uploading ||
+              isUploadingFile
+                ? 0.65
+                : 1,
           }}
         >
 
-          {file ? (
-
-            <ShieldCheck
-              size={21}
-              color="#2E8B57"
-              strokeWidth={2.1}
-            />
-
-          ) : (
-
-            icon
-
-          )}
-
-        </View>
-
-
-        {/* =================================================
-            CONTENT
-        ================================================= */}
-
-        <View
-          style={{
-            flex: 1,
-
-            marginLeft:
-              theme.spacing.md,
-          }}
-        >
+          {/* ========================================
+              ICON
+          ======================================== */}
 
           <View
             style={{
-              flexDirection:
-                "row",
+              width: 46,
+
+              height: 46,
+
+              borderRadius: 14,
+
+              backgroundColor:
+                hasFiles
+                  ? "#E8F7EC"
+                  : "#FFF3E8",
 
               alignItems:
                 "center",
+
+              justifyContent:
+                "center",
+
+              overflow:
+                "hidden",
             }}
           >
 
-            <Text
-              style={{
-                color:
-                  theme.colors.black,
+            {hasFiles &&
+            files?.[0]?.url ? (
 
-                fontSize:
-                  theme.typography.b2,
-
-                fontFamily:
-                  theme.fonts.semiBold,
-              }}
-            >
-              {title}
-            </Text>
-
-
-            {required && (
-
-              <Text
-                style={{
-                  color:
-                    theme.colors.primary500,
-
-                  fontSize: 14,
-
-                  marginLeft: 3,
+              <Image
+                source={{
+                  uri:
+                    files[0].url,
                 }}
-              >
-                *
-              </Text>
+                style={{
+                  width: 46,
+                  height: 46,
+                  borderRadius: 14,
+                }}
+                resizeMode="cover"
+              />
+
+            ) : hasFiles ? (
+
+              <ShieldCheck
+                size={21}
+                color="#2E8B57"
+                strokeWidth={2.1}
+              />
+
+            ) : (
+
+              icon
 
             )}
 
           </View>
 
 
-          <Text
-            numberOfLines={1}
+          {/* ========================================
+              CONTENT
+          ======================================== */}
+
+          <View
             style={{
-              marginTop: 4,
+              flex: 1,
 
-              color:
-                file
-                  ? "#2E8B57"
-                  : theme.colors.gray500,
-
-              fontSize: 11.5,
-
-              fontFamily:
-                theme.fonts.regular,
+              marginLeft:
+                theme.spacing.md,
             }}
           >
-            {file
-              ? file?.name ||
-              "Document selected"
-              : subtitle}
-          </Text>
 
-        </View>
+            <View
+              style={{
+                flexDirection:
+                  "row",
+
+                alignItems:
+                  "center",
+              }}
+            >
+
+              <Text
+                style={{
+                  color:
+                    theme.colors.black,
+
+                  fontSize:
+                    theme.typography.b2,
+
+                  fontFamily:
+                    theme.fonts.semiBold,
+                }}
+              >
+                {title}
+              </Text>
 
 
-        {/* =================================================
-            ACTION
-        ================================================= */}
+              {required && (
 
-        {uploading ? (
+                <Text
+                  style={{
+                    color:
+                      theme.colors.primary500,
 
-          <ActivityIndicator
-            size="small"
-            color={
-              theme.colors.primary500
-            }
-          />
+                    fontSize: 14,
 
-        ) : (
+                    marginLeft: 3,
+                  }}
+                >
+                  *
+                </Text>
 
-          <Upload
-            size={18}
-            color={
-              file
-                ? "#2E8B57"
-                : theme.colors.primary500
-            }
+              )}
 
-            strokeWidth={2.2}
-          />
+            </View>
 
-        )}
 
-      </TouchableOpacity>
+            <Text
+              numberOfLines={1}
+              style={{
+                marginTop: 4,
 
+                color:
+                  hasFiles
+                    ? "#2E8B57"
+                    : theme.colors.gray500,
+
+                fontSize: 11.5,
+
+                fontFamily:
+                  theme.fonts.regular,
+              }}
+            >
+
+              {hasFiles
+
+                ? `${files.length} file${
+                    files.length > 1
+                      ? "s"
+                      : ""
+                  } uploaded`
+
+                : subtitle}
+
+            </Text>
+
+          </View>
+
+
+          {/* ========================================
+              ACTION
+          ======================================== */}
+
+          {isCurrentUploading ? (
+
+            <ActivityIndicator
+              size="small"
+              color={
+                theme.colors.primary500
+              }
+            />
+
+          ) : (
+
+            <Upload
+              size={18}
+              color={
+                hasFiles
+                  ? "#2E8B57"
+                  : theme.colors.primary500
+              }
+              strokeWidth={2.2}
+            />
+
+          )}
+
+        </TouchableOpacity>
+
+      </View>
     );
-
   };
 
 
@@ -617,7 +1922,9 @@ const WitnessDetails = ({
         <CommonInput
 
           label="Full Name"
+
           required
+
           placeholder="Enter witness full name"
 
           value={
@@ -633,16 +1940,19 @@ const WitnessDetails = ({
           }
 
           editable={
-            !uploading
+            !uploading &&
+            !isUploadingFile
           }
 
           containerStyle={{
             marginBottom:
               theme.spacing.md,
           }}
+
           inputContainerStyle={{
             ...theme.input.inputBorder
           }}
+
         />
 
 
@@ -651,8 +1961,11 @@ const WitnessDetails = ({
         ================================================= */}
 
         <CommonInput
+
           label="Mobile Number"
+
           required
+
           placeholder="Enter 10-digit mobile number"
 
           value={
@@ -675,16 +1988,19 @@ const WitnessDetails = ({
           maxLength={10}
 
           editable={
-            !uploading
+            !uploading &&
+            !isUploadingFile
           }
 
           containerStyle={{
             marginBottom:
               theme.spacing.md,
           }}
-            inputContainerStyle={{
+
+          inputContainerStyle={{
             ...theme.input.inputBorder
           }}
+
         />
 
 
@@ -693,8 +2009,11 @@ const WitnessDetails = ({
         ================================================= */}
 
         <CommonInput
+
           label="Relation to Applicant"
+
           required
+
           placeholder="Enter relation"
 
           value={
@@ -710,16 +2029,19 @@ const WitnessDetails = ({
           }
 
           editable={
-            !uploading
+            !uploading &&
+            !isUploadingFile
           }
 
           containerStyle={{
             marginBottom:
               theme.spacing.lg,
           }}
-            inputContainerStyle={{
+
+          inputContainerStyle={{
             ...theme.input.inputBorder
           }}
+
         />
 
       </View>
@@ -785,13 +2107,12 @@ const WitnessDetails = ({
               theme.spacing.lg,
           }}
         >
-          Upload witness selfie, signature and one
-          identity document.
+          Upload witness selfie, signatures and identity documents.
         </Text>
 
 
         {/* =================================================
-            SELFIE
+            WITNESS PHOTOS
         ================================================= */}
 
         {renderUploadCard({
@@ -800,7 +2121,7 @@ const WitnessDetails = ({
             "Witness Selfie",
 
           subtitle:
-            "Capture witness selfie",
+            `${photos.length}/${MAX_PHOTOS} photos uploaded`,
 
           icon: (
             <Camera
@@ -812,16 +2133,95 @@ const WitnessDetails = ({
             />
           ),
 
-          file:
-            selfie,
+          files:
+            photos,
 
           type:
-            "selfie",
+            "photo",
 
           required:
             true,
 
         })}
+
+
+        {/* =================================================
+            PHOTO PREVIEW
+        ================================================= */}
+
+        {renderPreviewList({
+
+          items:
+            photos,
+
+          onRemove:
+            removePhoto,
+
+          label:
+            "Witness Photo",
+
+        })}
+
+
+        {/* =================================================
+            ADD PHOTO
+        ================================================= */}
+
+        {photos.length <
+          MAX_PHOTOS && (
+
+          <TouchableOpacity
+            activeOpacity={0.8}
+            onPress={() =>
+              openUploadSheet(
+                "photo"
+              )
+            }
+            disabled={
+              uploading ||
+              isUploadingFile
+            }
+            style={{
+              flexDirection:
+                "row",
+
+              alignItems:
+                "center",
+
+              alignSelf:
+                "flex-start",
+
+              marginBottom:
+                theme.spacing.md,
+            }}
+          >
+
+            <Plus
+              size={17}
+              color={
+                theme.colors.primary500
+              }
+            />
+
+            <Text
+              style={{
+                marginLeft: 5,
+
+                color:
+                  theme.colors.primary500,
+
+                fontSize: 12,
+
+                fontFamily:
+                  theme.fonts.semiBold,
+              }}
+            >
+              Add Witness Photo
+            </Text>
+
+          </TouchableOpacity>
+
+        )}
 
 
         {/* =================================================
@@ -834,7 +2234,7 @@ const WitnessDetails = ({
             "Witness Signature",
 
           subtitle:
-            "Upload witness signature",
+            `${signatures.length}/${MAX_SIGNATURES} signatures uploaded`,
 
           icon: (
             <PenLine
@@ -846,8 +2246,8 @@ const WitnessDetails = ({
             />
           ),
 
-          file:
-            signature,
+          files:
+            signatures,
 
           type:
             "signature",
@@ -856,6 +2256,85 @@ const WitnessDetails = ({
             true,
 
         })}
+
+
+        {/* =================================================
+            SIGNATURE PREVIEW
+        ================================================= */}
+
+        {renderPreviewList({
+
+          items:
+            signatures,
+
+          onRemove:
+            removeSignature,
+
+          label:
+            "Signature",
+
+        })}
+
+
+        {/* =================================================
+            ADD SIGNATURE
+        ================================================= */}
+
+        {signatures.length <
+          MAX_SIGNATURES && (
+
+          <TouchableOpacity
+            activeOpacity={0.8}
+            onPress={() =>
+              openUploadSheet(
+                "signature"
+              )
+            }
+            disabled={
+              uploading ||
+              isUploadingFile
+            }
+            style={{
+              flexDirection:
+                "row",
+
+              alignItems:
+                "center",
+
+              alignSelf:
+                "flex-start",
+
+              marginBottom:
+                theme.spacing.md,
+            }}
+          >
+
+            <Plus
+              size={17}
+              color={
+                theme.colors.primary500
+              }
+            />
+
+            <Text
+              style={{
+                marginLeft: 5,
+
+                color:
+                  theme.colors.primary500,
+
+                fontSize: 12,
+
+                fontFamily:
+                  theme.fonts.semiBold,
+              }}
+            >
+              Add Signature
+            </Text>
+
+          </TouchableOpacity>
+
+        )}
 
 
         {/* =================================================
@@ -869,7 +2348,7 @@ const WitnessDetails = ({
 
           subtitle:
             idType
-              ? `${idType} • Tap to upload`
+              ? `${documents.length}/${MAX_DOCUMENTS} uploaded`
               : "Select ID type and upload document",
 
           icon: (
@@ -882,11 +2361,11 @@ const WitnessDetails = ({
             />
           ),
 
-          file:
-            idDocument,
+          // files:
+          //   documents,
 
           type:
-            "idDocument",
+            "document",
 
           required:
             true,
@@ -895,6 +2374,82 @@ const WitnessDetails = ({
             handleOpenIDDocument,
 
         })}
+
+
+        {/* =================================================
+            DOCUMENT PREVIEW
+        ================================================= */}
+
+        {renderPreviewList({
+
+          items:
+            documents,
+
+          onRemove:
+            removeDocument,
+
+          label:
+            "Document",
+
+        })}
+
+
+        {/* =================================================
+            ADD DOCUMENT
+        ================================================= */}
+
+        {documents.length <
+          MAX_DOCUMENTS && (
+
+          <TouchableOpacity
+            activeOpacity={0.8}
+            onPress={
+              handleOpenIDDocument
+            }
+            disabled={
+              uploading ||
+              isUploadingFile
+            }
+            style={{
+              flexDirection:
+                "row",
+
+              alignItems:
+                "center",
+
+              alignSelf:
+                "flex-start",
+
+              marginTop: 2,
+            }}
+          >
+
+            <Plus
+              size={17}
+              color={
+                theme.colors.primary500
+              }
+            />
+
+            <Text
+              style={{
+                marginLeft: 5,
+
+                color:
+                  theme.colors.primary500,
+
+                fontSize: 12,
+
+                fontFamily:
+                  theme.fonts.semiBold,
+              }}
+            >
+              Add Identity Document
+            </Text>
+
+          </TouchableOpacity>
+
+        )}
 
       </View>
 
@@ -914,7 +2469,8 @@ const WitnessDetails = ({
         }
 
         disabled={
-          uploading
+          uploading ||
+          isUploadingFile
         }
 
         style={{
@@ -1008,13 +2564,17 @@ const WitnessDetails = ({
       ================================================= */}
 
       <IDDetailsModal
+
         visible={
           idModalVisible
         }
 
         initialValues={{
-          idType,
-          idNumber,
+
+          idType:"",
+
+          idNumber:"",
+
         }}
 
         onClose={() =>
@@ -1026,11 +2586,12 @@ const WitnessDetails = ({
         onContinue={
           handleIDDetailsContinue
         }
+
       />
 
 
       {/* =================================================
-          COMMON UPLOAD BOTTOM SHEET
+          UPLOAD BOTTOM SHEET
       ================================================= */}
 
       <UploadBottomSheet
@@ -1056,7 +2617,7 @@ const WitnessDetails = ({
         }
 
         type={
-          uploadType === "idDocument"
+          uploadType === "document"
             ? "document"
             : "photo"
         }
@@ -1064,11 +2625,13 @@ const WitnessDetails = ({
       />
 
     </View>
-
   );
-
 };
 
+
+// =====================================================
+// EXPORT
+// =====================================================
 
 export default memo(
   WitnessDetails

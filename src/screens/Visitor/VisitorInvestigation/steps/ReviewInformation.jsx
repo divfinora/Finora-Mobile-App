@@ -1,4 +1,6 @@
-import React from "react";
+import React, {
+  memo,
+} from "react";
 
 import {
   View,
@@ -15,7 +17,17 @@ import {
   MessageSquare,
 } from "lucide-react-native";
 
-import { theme } from "../../../../theme";
+import {
+  theme,
+} from "../../../../theme";
+
+import {
+  useGetVisitorReviewQuery,
+} from "../../../../redux/features/visitor/visitorApi.js";
+
+import ShimmerPlaceholder from "../../../../components/common/Loader/ShimmerPlaceholder.jsx";
+
+import InlineRetry from "../../../../components/common/Loader/ShimmerPlaceholder.jsx";
 
 
 // =====================================================
@@ -28,6 +40,7 @@ const ReviewCard = ({
   status,
   children,
   onEdit,
+  loading = false,
 }) => {
 
   const isCompleted =
@@ -144,62 +157,76 @@ const ReviewCard = ({
 
                 alignItems: "center",
 
-                marginTop: 3,
+                marginTop: 5,
               }}
             >
 
-              {isCompleted ? (
+              {loading ? (
 
-                <CheckCircle2
-                  size={14}
-                  color="#2E8B3C"
-                  fill="#2E8B3C"
+                <ShimmerPlaceholder
+                  width={115}
+                  height={14}
+                  borderRadius={7}
                 />
 
               ) : (
 
-                <View
-                  style={{
-                    width: 8,
+                <>
+                  {isCompleted ? (
 
-                    height: 8,
+                    <CheckCircle2
+                      size={14}
+                      color="#2E8B3C"
+                      fill="#2E8B3C"
+                    />
 
-                    borderRadius: 4,
+                  ) : (
 
-                    backgroundColor:
-                      "#F59E0B",
+                    <View
+                      style={{
+                        width: 8,
 
-                    marginLeft: 3,
+                        height: 8,
 
-                    marginRight: 3,
-                  }}
-                />
+                        borderRadius: 4,
+
+                        backgroundColor:
+                          "#F59E0B",
+
+                        marginLeft: 3,
+
+                        marginRight: 3,
+                      }}
+                    />
+
+                  )}
+
+
+                  <Text
+                    style={{
+                      marginLeft: 5,
+
+                      fontSize: 13,
+
+                      color:
+                        isCompleted
+                          ? "#287C34"
+                          : "#D97706",
+
+                      fontFamily:
+                        theme.fonts.medium,
+                    }}
+                  >
+                    {status?.text ||
+                      (
+                        isCompleted
+                          ? "Completed"
+                          : "Pending"
+                      )}
+                  </Text>
+                </>
 
               )}
-
-
-              <Text
-                style={{
-                  marginLeft: 5,
-
-                  fontSize: 13,
-
-                  color:
-                    isCompleted
-                      ? "#287C34"
-                      : "#D97706",
-
-                  fontFamily:
-                    theme.fonts.medium,
-                }}
-              >
-                {status?.text ||
-                  (
-                    isCompleted
-                      ? "Completed"
-                      : "Pending"
-                  )}
-              </Text>
 
             </View>
 
@@ -212,28 +239,40 @@ const ReviewCard = ({
             EDIT
         ================================================= */}
 
-        {!!onEdit && (
+        {loading ? (
 
-          <TouchableOpacity
-            activeOpacity={0.8}
-            onPress={onEdit}
-          >
+          <ShimmerPlaceholder
+            width={35}
+            height={15}
+            borderRadius={7}
+          />
 
-            <Text
-              style={{
-                fontSize: 14,
+        ) : (
 
-                color:
-                  "#FF641F",
+          !!onEdit && (
 
-                fontFamily:
-                  theme.fonts.semiBold,
-              }}
+            <TouchableOpacity
+              activeOpacity={0.8}
+              onPress={onEdit}
             >
-              Edit
-            </Text>
 
-          </TouchableOpacity>
+              <Text
+                style={{
+                  fontSize: 14,
+
+                  color:
+                    "#FF641F",
+
+                  fontFamily:
+                    theme.fonts.semiBold,
+                }}
+              >
+                Edit
+              </Text>
+
+            </TouchableOpacity>
+
+          )
 
         )}
 
@@ -251,9 +290,7 @@ const ReviewCard = ({
             marginTop: 14,
           }}
         >
-
           {children}
-
         </View>
 
       )}
@@ -275,30 +312,213 @@ const ReviewInformation = ({
   onEditStep,
 }) => {
 
+
   // =====================================================
-  // DATA
+  // REVIEW API
+  // =====================================================
+
+  const loanId =
+    job?.loanId;
+
+
+  const {
+    data: reviewResponse,
+    isLoading,
+    isFetching,
+    isError,
+    refetch,
+  } =
+    useGetVisitorReviewQuery(
+      loanId,
+      {
+        skip: !loanId,
+      }
+    );
+
+
+  // =====================================================
+  // LOADING
+  // =====================================================
+
+  const loading =
+    isLoading || isFetching;
+
+
+  // =====================================================
+  // ERROR
+  // =====================================================
+
+  if (
+    isError &&
+    !reviewResponse
+  ) {
+
+    return (
+
+      <View
+        style={{
+          width: "100%",
+
+          marginTop:
+            theme.spacing.md,
+        }}
+      >
+
+        <InlineRetry
+          title="Unable to load review"
+          description="Something went wrong while loading review information. Please try again."
+          buttonText="Retry"
+          loading={loading}
+          onRetry={refetch}
+        />
+
+      </View>
+
+    );
+
+  }
+
+
+  // =====================================================
+  // API DATA
+  // =====================================================
+
+  const reviewData =
+    reviewResponse?.data ||
+    null;
+
+
+  // =====================================================
+  // CARDS
+  // =====================================================
+
+  const verificationCard =
+    reviewData?.cards?.verification ||
+    null;
+
+
+  const investigationCard =
+    reviewData?.cards?.investigation ||
+    null;
+
+
+  const photosCard =
+    reviewData?.cards?.photos ||
+    null;
+
+
+  const witnessCard =
+    reviewData?.cards?.witness ||
+    null;
+
+
+  const remarksCard =
+    reviewData?.cards?.remarks ||
+    null;
+
+
+  // =====================================================
+  // FALLBACK DATA
   // =====================================================
 
   const verification =
     data?.verification || {};
 
+
   const investigation =
     data?.investigation || {};
 
+
   const site =
     data?.site || {};
+
 
   const witness =
     data?.witness || {};
 
 
   // =====================================================
+  // VERIFICATION STATUS
+  // =====================================================
+
+  const verificationCompleted =
+    reviewCardCompleted(
+      verificationCard,
+      verification
+    );
+
+
+  // =====================================================
+  // INVESTIGATION STATUS
+  // =====================================================
+
+  const investigationCompleted =
+    reviewCardCompleted(
+      investigationCard,
+      investigation
+    );
+
+
+  // =====================================================
   // PHOTOS
   // =====================================================
 
-  const photos =
+  const verificationPhotos =
+    reviewData?.photoSummary?.verification?.photos ||
+    photosCard?.verification ||
     site?.photos ||
     site?.uploadedPhotos ||
+    [];
+
+
+  const totalPhotos =
+    reviewData?.photoSummary?.total ??
+    photosCard?.count ??
+    verificationPhotos.length;
+
+
+  const photosCompleted =
+    reviewData?.summary?.photosCompleted ??
+    photosCard?.completed ??
+    verificationPhotos.length > 0;
+
+
+  // =====================================================
+  // WITNESS
+  // =====================================================
+
+  const witnessData =
+    witnessCard?.data ||
+    reviewData?.editableData?.witness ||
+    witness ||
+    {};
+
+
+  const witnessCompleted =
+    reviewData?.summary?.witnessCompleted ??
+    witnessCard?.completed ??
+    Boolean(
+      witnessData?.agreed ||
+      witnessData?.witnessConfirmed
+    );
+
+
+  // =====================================================
+  // WITNESS COUNTS
+  // =====================================================
+
+  const witnessPhotos =
+    witnessData?.photos ||
+    [];
+
+
+  const witnessSignatures =
+    witnessData?.signatures ||
+    [];
+
+
+  const witnessDocuments =
+    witnessData?.documents ||
     [];
 
 
@@ -307,59 +527,51 @@ const ReviewInformation = ({
   // =====================================================
 
   const remarks =
+    remarksCard?.value ||
+    reviewData?.editableData?.remarks ||
     investigation?.remarks ||
     investigation?.description ||
     site?.remarks ||
     "";
 
 
+  const remarksCompleted =
+    remarksCard?.completed ??
+    Boolean(remarks);
+
+
   // =====================================================
-  // STATUS
+  // STATUS TEXT
   // =====================================================
 
-  const verificationCompleted =
-    Boolean(
-      verification?.status ===
-        "COMPLETED" ||
-
-      verification?.status ===
-        "completed" ||
-
-      Object.keys(
-        verification
-      ).length > 0
-    );
+  const verificationStatusText =
+    verificationCard?.completed
+      ? "Completed"
+      : "Pending";
 
 
-  const investigationCompleted =
-    Boolean(
-      investigation?.status ===
-        "COMPLETED" ||
-
-      investigation?.status ===
-        "completed" ||
-
-      investigation?.description ||
-
-      investigation?.remarks
-    );
+  const investigationStatusText =
+    investigationCard?.completed
+      ? "Completed"
+      : "Pending";
 
 
-  const photosCompleted =
-    Array.isArray(photos) &&
-    photos.length > 0;
+  const photosStatusText =
+    photosCompleted
+      ? `${totalPhotos} Photos Uploaded`
+      : "No Photos Uploaded";
 
 
-  const witnessCompleted =
-    Boolean(
-      witness?.status ===
-        "COMPLETED" ||
+  const witnessStatusText =
+    witnessCompleted
+      ? "Witness Saved"
+      : "Witness Not Confirmed";
 
-      witness?.status ===
-        "completed" ||
 
-      witness?.witnessConfirmed
-    );
+  const remarksStatusText =
+    remarks
+      ? "Added"
+      : "Pending";
 
 
   // =====================================================
@@ -431,14 +643,14 @@ const ReviewInformation = ({
       <ReviewCard
         title="Verification"
 
+        loading={loading}
+
         status={{
           completed:
             verificationCompleted,
 
           text:
-            verificationCompleted
-              ? "Completed"
-              : "Pending",
+            verificationStatusText,
         }}
 
         icon={
@@ -461,14 +673,14 @@ const ReviewInformation = ({
       <ReviewCard
         title="Investigation"
 
+        loading={loading}
+
         status={{
           completed:
             investigationCompleted,
 
           text:
-            investigationCompleted
-              ? "Completed"
-              : "Pending",
+            investigationStatusText,
         }}
 
         icon={
@@ -491,14 +703,14 @@ const ReviewInformation = ({
       <ReviewCard
         title="Photos ( Site info. )"
 
+        loading={loading}
+
         status={{
           completed:
             photosCompleted,
 
           text:
-            photosCompleted
-              ? `${photos.length} Photos Uploaded`
-              : "No Photos Uploaded",
+            photosStatusText,
         }}
 
         icon={
@@ -513,71 +725,108 @@ const ReviewInformation = ({
         }
       >
 
-        {photosCompleted && (
+        {/* =================================================
+            PHOTO PREVIEW
+        ================================================= */}
+
+        {loading ? (
 
           <View
             style={{
-              flexDirection:
-                "row",
+              flexDirection: "row",
             }}
           >
 
-            {photos
-              .slice(0, 4)
-              .map(
-                (
-                  photo,
-                  index
-                ) => {
+            {[1, 2, 3, 4].map(
+              (item) => (
 
-                  const uri =
-                    typeof photo ===
-                    "string"
-                      ? photo
-                      : photo?.url ||
-                        photo?.uri;
+                <ShimmerPlaceholder
+                  key={item}
+                  width={72}
+                  height={72}
+                  borderRadius={7}
+                  style={{
+                    marginRight:
+                      item < 4
+                        ? 7
+                        : 0,
+                  }}
+                />
 
-
-                  if (!uri) {
-                    return null;
-                  }
-
-
-                  return (
-
-                    <Image
-                      key={
-                        photo?.id ||
-                        photo?.publicId ||
-                        index
-                      }
-
-                      source={{
-                        uri,
-                      }}
-
-                      resizeMode="cover"
-
-                      style={{
-                        width: 72,
-
-                        height: 72,
-
-                        borderRadius: 7,
-
-                        marginRight:
-                          index < 3
-                            ? 7
-                            : 0,
-                      }}
-                    />
-
-                  );
-
-                }
-              )}
+              )
+            )}
 
           </View>
+
+        ) : (
+
+          photosCompleted && (
+
+            <View
+              style={{
+                flexDirection:
+                  "row",
+              }}
+            >
+
+              {verificationPhotos
+                .slice(0, 4)
+                .map(
+                  (
+                    photo,
+                    index
+                  ) => {
+
+                    const uri =
+                      typeof photo ===
+                      "string"
+                        ? photo
+                        : photo?.url ||
+                          photo?.uri;
+
+
+                    if (!uri) {
+                      return null;
+                    }
+
+
+                    return (
+
+                      <Image
+                        key={
+                          photo?.id ||
+                          photo?.publicId ||
+                          index
+                        }
+
+                        source={{
+                          uri,
+                        }}
+
+                        resizeMode="cover"
+
+                        style={{
+                          width: 72,
+
+                          height: 72,
+
+                          borderRadius: 7,
+
+                          marginRight:
+                            index < 3
+                              ? 7
+                              : 0,
+                        }}
+                      />
+
+                    );
+
+                  }
+                )}
+
+            </View>
+
+          )
 
         )}
 
@@ -591,14 +840,14 @@ const ReviewInformation = ({
       <ReviewCard
         title="Witness"
 
+        loading={loading}
+
         status={{
           completed:
             witnessCompleted,
 
           text:
-            witnessCompleted
-              ? "Witness Saved"
-              : "Witness Not Confirmed",
+            witnessStatusText,
         }}
 
         icon={
@@ -611,7 +860,130 @@ const ReviewInformation = ({
         onEdit={() =>
           onEditStep?.(4)
         }
-      />
+      >
+
+        {/* =================================================
+            WITNESS SUMMARY
+        ================================================= */}
+
+        {!loading &&
+          witnessCompleted && (
+
+            <View>
+
+              {/* WITNESS NAME */}
+
+              {!!witnessData?.fullName && (
+
+                <Text
+                  style={{
+                    fontSize: 13,
+
+                    color:
+                      theme.colors.textSecondary,
+
+                    fontFamily:
+                      theme.fonts.regular,
+
+                    marginBottom: 5,
+                  }}
+                >
+                  {witnessData.fullName}
+                </Text>
+
+              )}
+
+
+              {/* FILE COUNTS */}
+
+              <View
+                style={{
+                  flexDirection:
+                    "row",
+
+                  alignItems:
+                    "center",
+
+                  marginTop: 2,
+                }}
+              >
+
+                {witnessPhotos.length > 0 && (
+
+                  <Text
+                    style={{
+                      fontSize: 12,
+
+                      color:
+                        theme.colors.textSecondary,
+
+                      fontFamily:
+                        theme.fonts.medium,
+
+                      marginRight: 12,
+                    }}
+                  >
+                    {witnessPhotos.length} Photo
+                    {witnessPhotos.length > 1
+                      ? "s"
+                      : ""}
+                  </Text>
+
+                )}
+
+
+                {witnessSignatures.length > 0 && (
+
+                  <Text
+                    style={{
+                      fontSize: 12,
+
+                      color:
+                        theme.colors.textSecondary,
+
+                      fontFamily:
+                        theme.fonts.medium,
+
+                      marginRight: 12,
+                    }}
+                  >
+                    {witnessSignatures.length} Signature
+                    {witnessSignatures.length > 1
+                      ? "s"
+                      : ""}
+                  </Text>
+
+                )}
+
+
+                {witnessDocuments.length > 0 && (
+
+                  <Text
+                    style={{
+                      fontSize: 12,
+
+                      color:
+                        theme.colors.textSecondary,
+
+                      fontFamily:
+                        theme.fonts.medium,
+                    }}
+                  >
+                    {witnessDocuments.length} Document
+                    {witnessDocuments.length > 1
+                      ? "s"
+                      : ""}
+                  </Text>
+
+                )}
+
+              </View>
+
+            </View>
+
+          )}
+
+      </ReviewCard>
 
 
       {/* =================================================
@@ -621,14 +993,14 @@ const ReviewInformation = ({
       <ReviewCard
         title="Remarks"
 
+        loading={loading}
+
         status={{
           completed:
-            Boolean(remarks),
+            remarksCompleted,
 
           text:
-            remarks
-              ? "Added"
-              : "Pending",
+            remarksStatusText,
         }}
 
         icon={
@@ -647,47 +1019,59 @@ const ReviewInformation = ({
             REMARK BOX
         ================================================= */}
 
-        <View
-          style={{
-            backgroundColor:
-              "#F5F6F7",
+        {loading ? (
 
-            borderWidth: 1,
+          <ShimmerPlaceholder
+            width="100%"
+            height={48}
+            borderRadius={9}
+          />
 
-            borderColor:
-              "#E0E2E5",
+        ) : (
 
-            borderRadius: 9,
-
-            paddingHorizontal: 12,
-
-            paddingVertical: 11,
-
-            minHeight: 48,
-          }}
-        >
-
-          <Text
+          <View
             style={{
-              fontSize: 14,
+              backgroundColor:
+                "#F5F6F7",
 
-              lineHeight: 20,
+              borderWidth: 1,
 
-              color:
-                remarks
-                  ? "#42454A"
-                  : "#8E9196",
+              borderColor:
+                "#E0E2E5",
 
-              fontFamily:
-                theme.fonts.regular,
+              borderRadius: 9,
+
+              paddingHorizontal: 12,
+
+              paddingVertical: 11,
+
+              minHeight: 48,
             }}
           >
-            {remarks
-              ? `"${remarks}"`
-              : "No remarks added."}
-          </Text>
 
-        </View>
+            <Text
+              style={{
+                fontSize: 14,
+
+                lineHeight: 20,
+
+                color:
+                  remarks
+                    ? "#42454A"
+                    : "#8E9196",
+
+                fontFamily:
+                  theme.fonts.regular,
+              }}
+            >
+              {remarks
+                ? `"${remarks}"`
+                : "No remarks added."}
+            </Text>
+
+          </View>
+
+        )}
 
       </ReviewCard>
 
@@ -698,4 +1082,40 @@ const ReviewInformation = ({
 };
 
 
-export default ReviewInformation;
+// =====================================================
+// CARD COMPLETION HELPER
+// =====================================================
+
+const reviewCardCompleted = (
+  apiCard,
+  fallbackData
+) => {
+
+  if (
+    typeof apiCard?.completed ===
+    "boolean"
+  ) {
+
+    return apiCard.completed;
+
+  }
+
+
+  return Boolean(
+    fallbackData?.status ===
+      "COMPLETED" ||
+
+    fallbackData?.status ===
+      "completed" ||
+
+    Object.keys(
+      fallbackData || {}
+    ).length > 0
+  );
+
+};
+
+
+export default memo(
+  ReviewInformation
+);

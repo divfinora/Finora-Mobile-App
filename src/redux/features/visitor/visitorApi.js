@@ -40,7 +40,7 @@ export const visitorApi = baseApi.injectEndpoints({
     }),
 
     // =====================================================
-    // APPLICATION DETAILS / RESUME
+    // APPLICATION DETAILS
     // GET /applyloan/my-applications/:loanId
     // =====================================================
     getVisitorApplicationDetails: builder.query({
@@ -48,6 +48,7 @@ export const visitorApi = baseApi.injectEndpoints({
         url: `/applyloan/my-applications/${loanId}`,
         method: "GET",
       }),
+
       providesTags: (result, error, loanId) => [
         {
           type: "VisitorApplicationDetails",
@@ -61,9 +62,14 @@ export const visitorApi = baseApi.injectEndpoints({
     // PATCH /applyloan/:loanId/location
     // =====================================================
     saveVisitorLocation: builder.mutation({
-      query: ({ loanId, latitude, longitude }) => ({
+      query: ({
+        loanId,
+        latitude,
+        longitude,
+      }) => ({
         url: `/applyloan/${loanId}/location`,
         method: "PATCH",
+
         body: {
           latitude,
           longitude,
@@ -76,7 +82,10 @@ export const visitorApi = baseApi.injectEndpoints({
     // PATCH /applyloan/:loanId/investigation
     // =====================================================
     saveVisitorInvestigation: builder.mutation({
-      query: ({ loanId, ...body }) => ({
+      query: ({
+        loanId,
+        ...body
+      }) => ({
         url: `/applyloan/${loanId}/investigation`,
         method: "PATCH",
         body,
@@ -88,7 +97,10 @@ export const visitorApi = baseApi.injectEndpoints({
     // POST /applyloan/:loanId/upload-photo
     // =====================================================
     uploadVisitorPhoto: builder.mutation({
-      query: ({ loanId, formData }) => ({
+      query: ({
+        loanId,
+        formData
+      }) => ({
         url: `/applyloan/${loanId}/upload-photo`,
         method: "POST",
         body: formData,
@@ -100,7 +112,10 @@ export const visitorApi = baseApi.injectEndpoints({
     // POST /applyloan/:loanId/upload-document
     // =====================================================
     uploadVisitorDocument: builder.mutation({
-      query: ({ loanId, formData }) => ({
+      query: ({
+        loanId,
+        formData
+      }) => ({
         url: `/applyloan/${loanId}/upload-document`,
         method: "POST",
         body: formData,
@@ -108,13 +123,30 @@ export const visitorApi = baseApi.injectEndpoints({
     }),
 
     // =====================================================
-    // WITNESS
+    // WITNESS SAVE
     // PATCH /applyloan/:loanId/witness
     // =====================================================
     saveVisitorWitness: builder.mutation({
-      query: ({ loanId, formData }) => ({
+      query: ({
+        loanId,
+        body
+      }) => ({
         url: `/applyloan/${loanId}/witness`,
         method: "PATCH",
+        body,
+      }),
+    }),
+
+    // =====================================================
+    // WITNESS FILE UPLOAD
+    // POST /applyloan/upload-file
+    // =====================================================
+    uploadWitnessDocuments: builder.mutation({
+      query: ({
+        formData
+      }) => ({
+        url: "/applyloan/upload-file",
+        method: "POST",
         body: formData,
       }),
     }),
@@ -124,7 +156,10 @@ export const visitorApi = baseApi.injectEndpoints({
     // PATCH /applyloan/:loanId/customer-consent
     // =====================================================
     saveVisitorCustomerConsent: builder.mutation({
-      query: ({ loanId, body }) => ({
+      query: ({
+        loanId,
+        body
+      }) => ({
         url: `/applyloan/${loanId}/customer-consent`,
         method: "PATCH",
         body,
@@ -136,7 +171,10 @@ export const visitorApi = baseApi.injectEndpoints({
     // PATCH /applyloan/:loanId/final-declaration
     // =====================================================
     saveVisitorFinalDeclaration: builder.mutation({
-      query: ({ loanId, body }) => ({
+      query: ({
+        loanId,
+        body
+      }) => ({
         url: `/applyloan/${loanId}/final-declaration`,
         method: "PATCH",
         body,
@@ -170,7 +208,10 @@ export const visitorApi = baseApi.injectEndpoints({
     // PATCH /applyloan/:loanId/submit-verification
     // =====================================================
     submitVisitorVerification: builder.mutation({
-      query: ({ loanId, body }) => ({
+      query: ({
+        loanId,
+        body
+      }) => ({
         url: `/applyloan/${loanId}/submit-verification`,
         method: "PATCH",
         body,
@@ -181,6 +222,7 @@ export const visitorApi = baseApi.injectEndpoints({
 });
 
 export const {
+
   useVisitorLoginMutation,
 
   useGetVisitorDashboardQuery,
@@ -194,6 +236,8 @@ export const {
   useUploadVisitorDocumentMutation,
 
   useSaveVisitorWitnessMutation,
+  useUploadWitnessDocumentsMutation,
+
   useSaveVisitorCustomerConsentMutation,
   useSaveVisitorFinalDeclarationMutation,
 
