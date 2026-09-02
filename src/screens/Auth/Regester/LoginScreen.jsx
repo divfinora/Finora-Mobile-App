@@ -74,10 +74,14 @@ const LoginScreen = ({ navigation }) => {
 
             onSuccess: (data) => {
 
+                let optData = data?.data;
+ 
+
                 navigation.navigate(
                     "enter-otp-register-user",
                     {
                         phone,
+                        otp: optData?.otp,
                     }
                 );
 

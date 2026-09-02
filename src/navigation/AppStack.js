@@ -33,6 +33,7 @@ import LoanCategoryScreen from "../screens/Loan/LoanProducts/LoanCategoryScreen.
 import SingleLoanDetailsFeeDetailsScreen from '../screens/GetLoan/SingleLoanDetails/components/SingleLoanDetailsFeeDetailsScreen.jsx';
 import SingleLoanDetailsCompleteEMIScreen from '../screens/GetLoan/SingleLoanDetails/components/SingleLoanDetailsCompleteEMIScreen.jsx';
 import VisitorInvestigationScreen from '../screens/Visitor/VisitorInvestigation/VisitorInvestigationScreen.jsx';
+import VisitorApplicationDetailsScreen from '../screens/Visitor/VisitorApplicationDetails/VisitorApplicationDetailsScreen.jsx';
 
 
 const Stack = createNativeStackNavigator();
@@ -202,6 +203,14 @@ const AppStack = () => {
           headerShown: false,
         }}
       />
+      <Stack.Screen
+        name="visitor-application-details-screen"
+        component={VisitorApplicationDetailsScreen}
+        options={{
+          headerShown: false,
+        }}
+      />
+
       {/* Visitory Flow ----------  end */}
 
     </Stack.Navigator>

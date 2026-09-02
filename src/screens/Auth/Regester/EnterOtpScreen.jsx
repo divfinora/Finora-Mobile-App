@@ -73,7 +73,7 @@ const EnterOtpScreen = ({
       ? 68
       : Math.min(
         60,
-      (width - theme.spacing.massive - 30) / OTP_LENGTH
+        (width - theme.spacing.massive - 30) / OTP_LENGTH
       );
 
 
@@ -96,6 +96,9 @@ const EnterOtpScreen = ({
   const phone =
     route?.params?.phone ??
     "84848XXXX84";
+  const LoginOtp =
+    route?.params?.otp ??
+    "123456";
 
 
 
@@ -106,7 +109,21 @@ const EnterOtpScreen = ({
     Array(OTP_LENGTH).fill("")
   );
 
+  useEffect(() => {
+    if (LoginOtp) {
+      const otpValue = String(LoginOtp)
+        .replace(/\D/g, "")
+        .slice(0, OTP_LENGTH);
 
+      setOtp(
+        otpValue
+          .split("")
+          .concat(
+            Array(OTP_LENGTH - otpValue.length).fill("")
+          )
+      );
+    }
+  }, [LoginOtp]);
 
   const [
     seconds,

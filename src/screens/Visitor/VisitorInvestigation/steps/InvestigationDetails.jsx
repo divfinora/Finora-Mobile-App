@@ -56,6 +56,8 @@ const InvestigationDetails = ({
   onChange,
 }) => {
 
+   console.log(data ,"data----")
+
   // =====================================================
   // LOCATION HOOK
   // =====================================================
@@ -302,6 +304,9 @@ const InvestigationDetails = ({
   // RENDER
   // =====================================================
 
+
+
+  
   return (
 
     <View>

@@ -27,7 +27,7 @@ import {
 
 import ShimmerPlaceholder from "../../../../components/common/Loader/ShimmerPlaceholder.jsx";
 
-import InlineRetry from "../../../../components/common/Loader/ShimmerPlaceholder.jsx";
+import InlineRetry from "../../../../components/common/RetryScreen/InlineRetry.jsx";
 
 
 // =====================================================
@@ -46,9 +46,7 @@ const ReviewCard = ({
   const isCompleted =
     status?.completed === true;
 
-
   return (
-
     <View
       style={{
         backgroundColor:
@@ -81,7 +79,7 @@ const ReviewCard = ({
       >
 
         {/* =================================================
-            LEFT CONTENT
+            LEFT
         ================================================= */}
 
         <View
@@ -116,9 +114,7 @@ const ReviewCard = ({
               marginRight: 12,
             }}
           >
-
             {icon}
-
           </View>
 
 
@@ -147,10 +143,6 @@ const ReviewCard = ({
             </Text>
 
 
-            {/* =================================================
-                STATUS
-            ================================================= */}
-
             <View
               style={{
                 flexDirection: "row",
@@ -164,7 +156,7 @@ const ReviewCard = ({
               {loading ? (
 
                 <ShimmerPlaceholder
-                  width={115}
+                  width={120}
                   height={14}
                   borderRadius={7}
                 />
@@ -172,6 +164,8 @@ const ReviewCard = ({
               ) : (
 
                 <>
+                  {/* STATUS ICON */}
+
                   {isCompleted ? (
 
                     <CheckCircle2
@@ -202,6 +196,8 @@ const ReviewCard = ({
                   )}
 
 
+                  {/* STATUS TEXT */}
+
                   <Text
                     style={{
                       marginLeft: 5,
@@ -224,6 +220,7 @@ const ReviewCard = ({
                           : "Pending"
                       )}
                   </Text>
+
                 </>
 
               )}
@@ -260,8 +257,7 @@ const ReviewCard = ({
                 style={{
                   fontSize: 14,
 
-                  color:
-                    "#FF641F",
+                  color: "#FF641F",
 
                   fontFamily:
                     theme.fonts.semiBold,
@@ -280,7 +276,7 @@ const ReviewCard = ({
 
 
       {/* =================================================
-          CARD CONTENT
+          CONTENT
       ================================================= */}
 
       {!!children && (
@@ -296,9 +292,7 @@ const ReviewCard = ({
       )}
 
     </View>
-
   );
-
 };
 
 
@@ -312,14 +306,13 @@ const ReviewInformation = ({
   onEditStep,
 }) => {
 
+  const loanId =
+    job?.loanId;
+
 
   // =====================================================
   // REVIEW API
   // =====================================================
-
-  const loanId =
-    job?.loanId;
-
 
   const {
     data: reviewResponse,
@@ -327,21 +320,17 @@ const ReviewInformation = ({
     isFetching,
     isError,
     refetch,
-  } =
-    useGetVisitorReviewQuery(
-      loanId,
-      {
-        skip: !loanId,
-      }
-    );
+  } = useGetVisitorReviewQuery(
+    loanId,
+    {
+      skip: !loanId,
+    }
+  );
 
-
-  // =====================================================
-  // LOADING
-  // =====================================================
 
   const loading =
-    isLoading || isFetching;
+    isLoading ||
+    isFetching;
 
 
   // =====================================================
@@ -375,17 +364,15 @@ const ReviewInformation = ({
       </View>
 
     );
-
   }
 
 
   // =====================================================
-  // API DATA
+  // REVIEW DATA
   // =====================================================
 
   const reviewData =
-    reviewResponse?.data ||
-    null;
+    reviewResponse?.data || {};
 
 
   // =====================================================
@@ -394,132 +381,184 @@ const ReviewInformation = ({
 
   const verificationCard =
     reviewData?.cards?.verification ||
-    null;
-
+    {};
 
   const investigationCard =
     reviewData?.cards?.investigation ||
-    null;
-
+    {};
 
   const photosCard =
     reviewData?.cards?.photos ||
-    null;
-
+    {};
 
   const witnessCard =
     reviewData?.cards?.witness ||
-    null;
-
+    {};
 
   const remarksCard =
     reviewData?.cards?.remarks ||
-    null;
+    {};
 
 
   // =====================================================
-  // FALLBACK DATA
+  // FALLBACK LOCAL DATA
   // =====================================================
 
   const verification =
-    data?.verification || {};
-
+    data?.verification ||
+    {};
 
   const investigation =
-    data?.investigation || {};
-
+    data?.investigation ||
+    {};
 
   const site =
-    data?.site || {};
-
+    data?.site ||
+    {};
 
   const witness =
-    data?.witness || {};
+    data?.witness ||
+    {};
 
 
   // =====================================================
-  // VERIFICATION STATUS
+  // VERIFICATION
   // =====================================================
 
   const verificationCompleted =
-    reviewCardCompleted(
-      verificationCard,
-      verification
-    );
+    typeof verificationCard?.completed ===
+      "boolean"
+      ? verificationCard.completed
+      : Boolean(
+          verification?.status ===
+            "COMPLETED"
+        );
 
 
   // =====================================================
-  // INVESTIGATION STATUS
+  // INVESTIGATION
   // =====================================================
 
   const investigationCompleted =
-    reviewCardCompleted(
-      investigationCard,
-      investigation
-    );
+    typeof investigationCard?.completed ===
+      "boolean"
+      ? investigationCard.completed
+      : Boolean(
+          Object.keys(
+            investigation || {}
+          ).length
+        );
 
 
   // =====================================================
-  // PHOTOS
+  // SITE PHOTOS
+  //
+  // IMPORTANT:
+  // ONLY cards.photos.verification
+  //
+  // This is Site Info photos.
+  //
+  // Do NOT use:
+  // cards.photos.other
+  // cards.photos.witness
+  // witness.data.photos
   // =====================================================
 
-  const verificationPhotos =
-    reviewData?.photoSummary?.verification?.photos ||
-    photosCard?.verification ||
-    site?.photos ||
-    site?.uploadedPhotos ||
-    [];
-
-
-  const totalPhotos =
-    reviewData?.photoSummary?.total ??
-    photosCard?.count ??
-    verificationPhotos.length;
-
-
-  const photosCompleted =
-    reviewData?.summary?.photosCompleted ??
-    photosCard?.completed ??
-    verificationPhotos.length > 0;
+  const sitePhotos =
+    Array.isArray(
+      photosCard?.verification
+    )
+      ? photosCard.verification
+      : [];
 
 
   // =====================================================
-  // WITNESS
+  // SITE PHOTO COUNT
+  // =====================================================
+
+  const sitePhotoCount =
+    sitePhotos.length;
+
+
+  // =====================================================
+  // SITE PHOTO STATUS
+  // =====================================================
+
+  const sitePhotosCompleted =
+    photosCard?.completed === true &&
+    sitePhotoCount > 0;
+
+
+  const sitePhotosStatusText =
+    sitePhotosCompleted
+      ? `${sitePhotoCount} Photos Uploaded`
+      : "No Photos Uploaded";
+
+
+  // =====================================================
+  // WITNESS DATA
   // =====================================================
 
   const witnessData =
     witnessCard?.data ||
-    reviewData?.editableData?.witness ||
-    witness ||
-    {};
+    witness;
 
+
+  // =====================================================
+  // WITNESS STATUS
+  // =====================================================
 
   const witnessCompleted =
-    reviewData?.summary?.witnessCompleted ??
-    witnessCard?.completed ??
+    witnessCard?.completed === true ||
     Boolean(
-      witnessData?.agreed ||
-      witnessData?.witnessConfirmed
+      witnessData?.agreed === true
     );
 
 
   // =====================================================
-  // WITNESS COUNTS
+  // WITNESS PHOTOS
   // =====================================================
 
   const witnessPhotos =
-    witnessData?.photos ||
-    [];
+    Array.isArray(
+      witnessData?.photos
+    )
+      ? witnessData.photos
+      : [];
 
+
+  // =====================================================
+  // WITNESS SIGNATURES
+  // =====================================================
 
   const witnessSignatures =
-    witnessData?.signatures ||
-    [];
+    Array.isArray(
+      witnessData?.signatures
+    )
+      ? witnessData.signatures
+      : [];
 
+
+  // =====================================================
+  // WITNESS DOCUMENTS
+  // =====================================================
 
   const witnessDocuments =
-    witnessData?.documents ||
-    [];
+    Array.isArray(
+      witnessData?.documents
+    )
+      ? witnessData.documents
+      : [];
+
+
+  // =====================================================
+  // WITNESS STATUS TEXT
+  // =====================================================
+
+  const witnessStatusText =
+    witnessCompleted
+      ? "Witness Saved"
+      : "Witness Not Confirmed";
 
 
   // =====================================================
@@ -530,42 +569,13 @@ const ReviewInformation = ({
     remarksCard?.value ||
     reviewData?.editableData?.remarks ||
     investigation?.remarks ||
-    investigation?.description ||
     site?.remarks ||
     "";
 
 
   const remarksCompleted =
-    remarksCard?.completed ??
+    remarksCard?.completed === true ||
     Boolean(remarks);
-
-
-  // =====================================================
-  // STATUS TEXT
-  // =====================================================
-
-  const verificationStatusText =
-    verificationCard?.completed
-      ? "Completed"
-      : "Pending";
-
-
-  const investigationStatusText =
-    investigationCard?.completed
-      ? "Completed"
-      : "Pending";
-
-
-  const photosStatusText =
-    photosCompleted
-      ? `${totalPhotos} Photos Uploaded`
-      : "No Photos Uploaded";
-
-
-  const witnessStatusText =
-    witnessCompleted
-      ? "Witness Saved"
-      : "Witness Not Confirmed";
 
 
   const remarksStatusText =
@@ -650,7 +660,9 @@ const ReviewInformation = ({
             verificationCompleted,
 
           text:
-            verificationStatusText,
+            verificationCompleted
+              ? "Completed"
+              : "Pending",
         }}
 
         icon={
@@ -680,7 +692,9 @@ const ReviewInformation = ({
             investigationCompleted,
 
           text:
-            investigationStatusText,
+            investigationCompleted
+              ? "Completed"
+              : "Pending",
         }}
 
         icon={
@@ -697,7 +711,7 @@ const ReviewInformation = ({
 
 
       {/* =================================================
-          PHOTOS
+          SITE INFO PHOTOS
       ================================================= */}
 
       <ReviewCard
@@ -707,10 +721,10 @@ const ReviewInformation = ({
 
         status={{
           completed:
-            photosCompleted,
+            sitePhotosCompleted,
 
           text:
-            photosStatusText,
+            sitePhotosStatusText,
         }}
 
         icon={
@@ -760,16 +774,15 @@ const ReviewInformation = ({
 
         ) : (
 
-          photosCompleted && (
+          sitePhotos.length > 0 && (
 
             <View
               style={{
-                flexDirection:
-                  "row",
+                flexDirection: "row",
               }}
             >
 
-              {verificationPhotos
+              {sitePhotos
                 .slice(0, 4)
                 .map(
                   (
@@ -778,23 +791,16 @@ const ReviewInformation = ({
                   ) => {
 
                     const uri =
-                      typeof photo ===
-                      "string"
-                        ? photo
-                        : photo?.url ||
-                          photo?.uri;
-
+                      photo?.url;
 
                     if (!uri) {
                       return null;
                     }
 
-
                     return (
 
                       <Image
                         key={
-                          photo?.id ||
                           photo?.publicId ||
                           index
                         }
@@ -862,16 +868,14 @@ const ReviewInformation = ({
         }
       >
 
-        {/* =================================================
-            WITNESS SUMMARY
-        ================================================= */}
-
         {!loading &&
           witnessCompleted && (
 
             <View>
 
-              {/* WITNESS NAME */}
+              {/* =================================================
+                  WITNESS NAME
+              ================================================= */}
 
               {!!witnessData?.fullName && (
 
@@ -885,7 +889,7 @@ const ReviewInformation = ({
                     fontFamily:
                       theme.fonts.regular,
 
-                    marginBottom: 5,
+                    marginBottom: 6,
                   }}
                 >
                   {witnessData.fullName}
@@ -894,19 +898,19 @@ const ReviewInformation = ({
               )}
 
 
-              {/* FILE COUNTS */}
+              {/* =================================================
+                  WITNESS FILE COUNTS
+              ================================================= */}
 
               <View
                 style={{
-                  flexDirection:
-                    "row",
+                  flexDirection: "row",
 
-                  alignItems:
-                    "center",
-
-                  marginTop: 2,
+                  alignItems: "center",
                 }}
               >
+
+                {/* WITNESS PHOTOS */}
 
                 {witnessPhotos.length > 0 && (
 
@@ -932,6 +936,8 @@ const ReviewInformation = ({
                 )}
 
 
+                {/* SIGNATURES */}
+
                 {witnessSignatures.length > 0 && (
 
                   <Text
@@ -955,6 +961,8 @@ const ReviewInformation = ({
 
                 )}
 
+
+                {/* DOCUMENTS */}
 
                 {witnessDocuments.length > 0 && (
 
@@ -1015,10 +1023,6 @@ const ReviewInformation = ({
         }
       >
 
-        {/* =================================================
-            REMARK BOX
-        ================================================= */}
-
         {loading ? (
 
           <ShimmerPlaceholder
@@ -1076,43 +1080,7 @@ const ReviewInformation = ({
       </ReviewCard>
 
     </View>
-
   );
-
-};
-
-
-// =====================================================
-// CARD COMPLETION HELPER
-// =====================================================
-
-const reviewCardCompleted = (
-  apiCard,
-  fallbackData
-) => {
-
-  if (
-    typeof apiCard?.completed ===
-    "boolean"
-  ) {
-
-    return apiCard.completed;
-
-  }
-
-
-  return Boolean(
-    fallbackData?.status ===
-      "COMPLETED" ||
-
-    fallbackData?.status ===
-      "completed" ||
-
-    Object.keys(
-      fallbackData || {}
-    ).length > 0
-  );
-
 };
 
 

@@ -101,7 +101,7 @@ export const visitorApi = baseApi.injectEndpoints({
         loanId,
         formData
       }) => ({
-        url: `/applyloan/${loanId}/upload-photo`,
+
         method: "POST",
         body: formData,
       }),
@@ -217,6 +217,26 @@ export const visitorApi = baseApi.injectEndpoints({
         body,
       }),
     }),
+    getVisitorVerificationSummary: builder.query({
+      query: (loanId) => ({
+        url: `/applyloan/applications/${loanId}/verification-summary`,
+        method: "GET",
+      }),
+    }),
+
+    getVisitorApplicationDetails: builder.query({
+      query: (loanId) => ({
+        url: `/applyloan/my-applications/${loanId}`,
+        method: "GET",
+      }),
+
+      providesTags: (result, error, loanId) => [
+        {
+          type: "VisitorApplicationDetails",
+          id: loanId,
+        },
+      ],
+    }),
 
   }),
 });
@@ -245,5 +265,5 @@ export const {
   useGetVisitorSubmitSummaryQuery,
 
   useSubmitVisitorVerificationMutation,
-
+  useGetVisitorVerificationSummaryQuery
 } = visitorApi;

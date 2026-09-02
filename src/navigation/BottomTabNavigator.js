@@ -13,7 +13,9 @@ import MyLoanScreen from "../screens/GetLoan/MyLoan/MyLoanScreen.jsx";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useSelector } from "react-redux";
 import VisitorHomeScreen from '../screens/Visitor/VisitorHomeScreen/VisitorHomeScreen.jsx'
+import MyApplicationsScreen from '../screens/Visitor/MyApplications/MyApplicationsScreen.jsx'
 import useUserRole from '../hooks/useUserRole.js'
+import VisitorProfileScreen from '../screens/Visitor/Profile/VisitorProfileScreen.jsx'
 const Tab = createBottomTabNavigator();
 
 
@@ -66,13 +68,13 @@ const {
       {/* HISTORY */}
       <Tab.Screen
         name="History"
-        component={MyLoanScreen}
+        component={ isVisitor ? MyApplicationsScreen: MyLoanScreen}
       />
 
       {/* PROFILE */}
       <Tab.Screen
         name="Profile"
-        component={ProfileScreen}
+        component={ isVisitor ? VisitorProfileScreen:ProfileScreen}
       />
     </Tab.Navigator>
   );

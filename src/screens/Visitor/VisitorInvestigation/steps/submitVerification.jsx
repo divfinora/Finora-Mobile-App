@@ -13,6 +13,14 @@ import {
 
 import { theme } from "../../../../theme";
 
+import {
+  useGetVisitorReviewQuery,
+} from "../../../../redux/features/visitor/visitorApi.js";
+
+import ShimmerPlaceholder from "../../../../components/common/Loader/ShimmerPlaceholder.jsx";
+
+import InlineRetry from "../../../../components/common/RetryScreen/InlineRetry.jsx";
+
 
 // =====================================================
 // CHECKBOX
@@ -40,9 +48,7 @@ const DeclarationCheckbox = ({
       }}
     >
 
-      {/* =================================================
-          CHECKBOX
-      ================================================= */}
+      {/* CHECKBOX */}
 
       <View
         style={{
@@ -87,9 +93,7 @@ const DeclarationCheckbox = ({
       </View>
 
 
-      {/* =================================================
-          TEXT
-      ================================================= */}
+      {/* TEXT */}
 
       <View
         style={{
@@ -137,9 +141,7 @@ const DeclarationCheckbox = ({
       </View>
 
     </TouchableOpacity>
-
   );
-
 };
 
 
@@ -180,6 +182,47 @@ const SubmitVerification = ({
 
 
   // =====================================================
+  // REVIEW API
+  // =====================================================
+
+  const loanId =
+    job?.loanId;
+
+
+  const {
+    data: reviewResponse,
+    isLoading: reviewLoading,
+    isFetching: reviewFetching,
+    isError: reviewError,
+    refetch: refetchReview,
+  } = useGetVisitorReviewQuery(
+    loanId,
+    {
+      skip: !loanId,
+    }
+  );
+
+
+  const reviewLoadingState =
+    reviewLoading ||
+    reviewFetching;
+
+
+  // =====================================================
+  // FILE COUNT
+  // =====================================================
+
+  const reviewData =
+    reviewResponse?.data || {};
+
+
+  const totalFiles =
+    (reviewData?.summary?.totalPhotos || 0) +
+    (reviewData?.summary?.totalDocuments || 0) +
+    (reviewData?.summary?.totalVideos || 0);
+
+
+  // =====================================================
   // UPDATE DECLARATION
   // =====================================================
 
@@ -196,11 +239,9 @@ const SubmitVerification = ({
 
     };
 
-
     onChange?.(
       updatedData
     );
-
   };
 
 
@@ -293,9 +334,7 @@ const SubmitVerification = ({
         }}
       >
 
-        {/* =================================================
-            CARD HEADER
-        ================================================= */}
+        {/* CARD HEADER */}
 
         <View
           style={{
@@ -307,8 +346,6 @@ const SubmitVerification = ({
               theme.spacing.lg,
           }}
         >
-
-          {/* ICON */}
 
           <View
             style={{
@@ -337,8 +374,6 @@ const SubmitVerification = ({
           </View>
 
 
-          {/* TITLE */}
-
           <Text
             style={{
               flex: 1,
@@ -358,9 +393,7 @@ const SubmitVerification = ({
         </View>
 
 
-        {/* =================================================
-            DESCRIPTION
-        ================================================= */}
+        {/* DESCRIPTION */}
 
         <Text
           style={{
@@ -386,9 +419,7 @@ const SubmitVerification = ({
         </Text>
 
 
-        {/* =================================================
-            CHECKBOX 1
-        ================================================= */}
+        {/* CHECKBOX 1 */}
 
         <DeclarationCheckbox
           checked={
@@ -407,9 +438,7 @@ const SubmitVerification = ({
         />
 
 
-        {/* =================================================
-            CHECKBOX 2
-        ================================================= */}
+        {/* CHECKBOX 2 */}
 
         <DeclarationCheckbox
           checked={
@@ -428,9 +457,7 @@ const SubmitVerification = ({
         />
 
 
-        {/* =================================================
-            CHECKBOX 3
-        ================================================= */}
+        {/* CHECKBOX 3 */}
 
         <DeclarationCheckbox
           checked={
@@ -452,212 +479,245 @@ const SubmitVerification = ({
 
 
       {/* =================================================
-          SUBMISSION SUMMARY
+          REVIEW API ERROR
       ================================================= */}
 
-      <View
-        style={{
-          backgroundColor:
-            "#F8F9FA",
-
-          borderRadius: 18,
-
-          padding: 18,
-
-          marginTop:
-            theme.spacing.lg,
-        }}
-      >
-
-        {/* TITLE */}
-
-        <Text
-          style={{
-            fontSize: 14,
-
-            color:
-              "#555A61",
-
-            fontFamily:
-              theme.fonts.semiBold,
-
-            letterSpacing: 0.4,
-
-            marginBottom:
-              theme.spacing.md,
-          }}
-        >
-          SUBMISSION SUMMARY
-        </Text>
-
-
-        {/* =================================================
-            FILES
-        ================================================= */}
+      {reviewError &&
+        !reviewResponse ? (
 
         <View
           style={{
-            flexDirection: "row",
-
-            justifyContent:
-              "space-between",
-
-            paddingVertical: 10,
-
-            borderBottomWidth: 1,
-
-            borderBottomColor:
-              "#E5E7EB",
+            marginTop:
+              theme.spacing.lg,
           }}
         >
 
+          <InlineRetry
+            title="Unable to load submission summary"
+            description="Something went wrong while loading the attached files."
+            buttonText="Retry"
+            loading={
+              reviewLoadingState
+            }
+            onRetry={
+              refetchReview
+            }
+          />
+
+        </View>
+
+      ) : (
+
+        /* =================================================
+            SUBMISSION SUMMARY
+        ================================================= */
+
+        <View
+          style={{
+            backgroundColor:
+              "#F8F9FA",
+
+            borderRadius: 18,
+
+            padding: 18,
+
+            marginTop:
+              theme.spacing.lg,
+          }}
+        >
+
+          {/* TITLE */}
+
           <Text
             style={{
               fontSize: 14,
 
               color:
-                theme.colors.gray700,
-
-              fontFamily:
-                theme.fonts.regular,
-            }}
-          >
-            Files Attached
-          </Text>
-
-
-          <Text
-            style={{
-              fontSize: 14,
-
-              color:
-                theme.colors.black,
+                "#555A61",
 
               fontFamily:
                 theme.fonts.semiBold,
+
+              letterSpacing: 0.4,
+
+              marginBottom:
+                theme.spacing.md,
             }}
           >
-            {data?.site?.photos?.length ||
-              data?.site?.uploadedPhotos?.length ||
-              0}{" "}
-            Items
+            SUBMISSION SUMMARY
           </Text>
+
+
+          {/* FILES */}
+
+          <View
+            style={{
+              flexDirection: "row",
+
+              justifyContent:
+                "space-between",
+
+              paddingVertical: 10,
+
+              borderBottomWidth: 1,
+
+              borderBottomColor:
+                "#E5E7EB",
+            }}
+          >
+
+            <Text
+              style={{
+                fontSize: 14,
+
+                color:
+                  theme.colors.gray700,
+
+                fontFamily:
+                  theme.fonts.regular,
+              }}
+            >
+              Files Attached
+            </Text>
+
+
+            {reviewLoadingState ? (
+
+              <ShimmerPlaceholder
+                width={65}
+                height={16}
+                borderRadius={8}
+              />
+
+            ) : (
+
+              <Text
+                style={{
+                  fontSize: 14,
+
+                  color:
+                    theme.colors.black,
+
+                  fontFamily:
+                    theme.fonts.semiBold,
+                }}
+              >
+                {totalFiles} Items
+              </Text>
+
+            )}
+
+          </View>
+
+
+          {/* METADATA */}
+
+          <View
+            style={{
+              flexDirection: "row",
+
+              justifyContent:
+                "space-between",
+
+              paddingVertical: 10,
+
+              borderBottomWidth: 1,
+
+              borderBottomColor:
+                "#E5E7EB",
+            }}
+          >
+
+            <Text
+              style={{
+                fontSize: 14,
+
+                color:
+                  theme.colors.gray700,
+
+                fontFamily:
+                  theme.fonts.regular,
+              }}
+            >
+              Metadata Status
+            </Text>
+
+
+            <Text
+              style={{
+                fontSize: 14,
+
+                color:
+                  allConfirmed
+                    ? "#FF641F"
+                    : "#D97706",
+
+                fontFamily:
+                  theme.fonts.medium,
+              }}
+            >
+              {allConfirmed
+                ? "Verified"
+                : "Pending"}
+            </Text>
+
+          </View>
+
+
+          {/* FINAL REVIEW */}
+
+          <View
+            style={{
+              flexDirection: "row",
+
+              justifyContent:
+                "space-between",
+
+              paddingTop: 10,
+            }}
+          >
+
+            <Text
+              style={{
+                fontSize: 14,
+
+                color:
+                  theme.colors.gray700,
+
+                fontFamily:
+                  theme.fonts.regular,
+              }}
+            >
+              Final Review
+            </Text>
+
+
+            <Text
+              style={{
+                fontSize: 14,
+
+                color:
+                  allConfirmed
+                    ? "#FF641F"
+                    : "#D97706",
+
+                fontFamily:
+                  theme.fonts.medium,
+              }}
+            >
+              {allConfirmed
+                ? "Ready"
+                : "Pending"}
+            </Text>
+
+          </View>
 
         </View>
 
-
-        {/* =================================================
-            METADATA
-        ================================================= */}
-
-        <View
-          style={{
-            flexDirection: "row",
-
-            justifyContent:
-              "space-between",
-
-            paddingVertical: 10,
-
-            borderBottomWidth: 1,
-
-            borderBottomColor:
-              "#E5E7EB",
-          }}
-        >
-
-          <Text
-            style={{
-              fontSize: 14,
-
-              color:
-                theme.colors.gray700,
-
-              fontFamily:
-                theme.fonts.regular,
-            }}
-          >
-            Metadata Status
-          </Text>
-
-
-          <Text
-            style={{
-              fontSize: 14,
-
-              color:
-                allConfirmed
-                  ? "#FF641F"
-                  : "#D97706",
-
-              fontFamily:
-                theme.fonts.medium,
-            }}
-          >
-            {allConfirmed
-              ? "Verified"
-              : "Pending"}
-          </Text>
-
-        </View>
-
-
-        {/* =================================================
-            FINAL REVIEW
-        ================================================= */}
-
-        <View
-          style={{
-            flexDirection: "row",
-
-            justifyContent:
-              "space-between",
-
-            paddingTop: 10,
-          }}
-        >
-
-          <Text
-            style={{
-              fontSize: 14,
-
-              color:
-                theme.colors.gray700,
-
-              fontFamily:
-                theme.fonts.regular,
-            }}
-          >
-            Final Review
-          </Text>
-
-
-          <Text
-            style={{
-              fontSize: 14,
-
-              color:
-                allConfirmed
-                  ? "#FF641F"
-                  : "#D97706",
-
-              fontFamily:
-                theme.fonts.medium,
-            }}
-          >
-            {allConfirmed
-              ? "Ready"
-              : "Pending"}
-          </Text>
-
-        </View>
-
-      </View>
+      )}
 
     </View>
-
   );
-
 };
 
 
