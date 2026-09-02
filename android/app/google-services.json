@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "762584061921",
+    "project_id": "finora-2c913",
+    "storage_bucket": "finora-2c913.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:762584061921:android:27b74f416a45a8833b64a0",
+        "android_client_info": {
+          "package_name": "com.finsaarthi"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAAB5cmf6QYehUtWXnmf9FH1E-1soZeA_A"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

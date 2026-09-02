@@ -1,4 +1,6 @@
-import React from "react";
+import React, {
+  useState,
+} from "react";
 
 import {
   View,
@@ -6,6 +8,7 @@ import {
   KeyboardAvoidingView,
   Platform,
   StatusBar,
+  RefreshControl,
 } from "react-native";
 
 import {
@@ -28,6 +31,13 @@ import VisitorSettingsSection from "./components/VisitorSettingsSection";
 
 import LogoutButton from "../../LogOut/LogoutButton.jsx";
 
+// ===============================================
+// VISITOR PROFILE SYNC
+// ===============================================
+
+import {
+  syncVisitorProfile,
+} from "../../../utils/syncVisitorProfile.js";
 
 const VisitorProfileScreen = () => {
 
@@ -35,11 +45,10 @@ const VisitorProfileScreen = () => {
   // VISITOR USER
   // =====================================================
 
-  const user =
-    useSelector(
-      (state) =>
-        state.auth?.user
-    );
+  const user = useSelector(
+    (state) =>
+      state.auth?.user
+  );
 
 
   // =====================================================
@@ -48,6 +57,49 @@ const VisitorProfileScreen = () => {
 
   const profileLoading =
     !user;
+
+
+  // =====================================================
+  // REFRESH STATE
+  // =====================================================
+
+  const [
+    refreshing,
+    setRefreshing,
+  ] = useState(false);
+
+
+  // =====================================================
+  // PULL TO REFRESH
+  // =====================================================
+
+  const onRefresh = async () => {
+
+    try {
+
+      setRefreshing(true);
+
+      // =========================================
+      // SYNC VISITOR PROFILE
+      // GET /User/my-profile
+      // =========================================
+
+      await syncVisitorProfile();
+
+    } catch (error) {
+
+      console.log(
+        "Visitor Profile Refresh Error:",
+        error
+      );
+
+    } finally {
+
+      setRefreshing(false);
+
+    }
+
+  };
 
 
   // =====================================================
@@ -112,6 +164,7 @@ const VisitorProfileScreen = () => {
           <View
             style={{
               flex: 1,
+
               paddingHorizontal:
                 theme.spacing.xxl,
             }}
@@ -127,10 +180,34 @@ const VisitorProfileScreen = () => {
 
 
             {/* =================================================
-                CONTENT
+                SCROLLABLE CONTENT
             ================================================= */}
 
             <ScrollView
+
+              refreshControl={
+
+                <RefreshControl
+
+                  refreshing={
+                    refreshing
+                  }
+
+                  onRefresh={
+                    onRefresh
+                  }
+
+                  colors={[
+                    theme.colors.primary500,
+                  ]}
+
+                  tintColor={
+                    theme.colors.primary500
+                  }
+
+                />
+
+              }
 
               showsVerticalScrollIndicator={
                 false

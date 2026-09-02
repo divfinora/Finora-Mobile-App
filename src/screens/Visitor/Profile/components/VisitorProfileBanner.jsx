@@ -7,10 +7,6 @@ import {
 } from "react-native";
 
 import {
-  useSelector,
-} from "react-redux";
-
-import {
   theme,
 } from "../../../../theme/index.js";
 
@@ -18,19 +14,9 @@ import VisitorProfileBannerSkeleton from "./VisitorProfileBannerSkeleton";
 
 
 const VisitorProfileBanner = ({
+  user,
   loading = false,
 }) => {
-
-  // =====================================================
-  // VISITOR USER
-  // =====================================================
-
-  const user =
-    useSelector(
-      (state) =>
-        state.auth?.user
-    );
-
 
   // =====================================================
   // LOADING
@@ -46,13 +32,37 @@ const VisitorProfileBanner = ({
 
 
   // =====================================================
+  // BASIC INFORMATION
+  // =====================================================
+
+  const basicInformation =
+    user?.basicInformation || {};
+
+
+  // =====================================================
+  // EMPLOYMENT INFORMATION
+  // =====================================================
+
+  const employmentInformation =
+    user?.employmentInformation || {};
+
+
+  // =====================================================
+  // PROFILE
+  // =====================================================
+
+  const profile =
+    user?.profile || {};
+
+
+  // =====================================================
   // PROFILE IMAGE
   // =====================================================
 
   const profileImage =
-    typeof user?.profileImage?.url === "string" &&
-    user?.profileImage?.url.trim()
-      ? user.profileImage.url
+    typeof profile?.profileImage?.url === "string" &&
+    profile?.profileImage?.url.trim()
+      ? profile.profileImage.url
       : "https://i.pravatar.cc/300?img=12";
 
 
@@ -61,19 +71,43 @@ const VisitorProfileBanner = ({
   // =====================================================
 
   const fullName =
+    basicInformation?.fullName ||
     user?.fullName ||
     "—";
 
 
   const designation =
+    employmentInformation?.designation ||
     user?.designation ||
     "—";
 
 
   const employeeId =
+    basicInformation?.employeeId ||
     user?.employeeId ||
     "—";
 
+
+  // =====================================================
+  // STATUS
+  // =====================================================
+
+  const status =
+    employmentInformation?.status ||
+    user?.status ||
+    "ACTIVE";
+
+
+  const formattedStatus =
+    status
+      ? status.charAt(0).toUpperCase() +
+        status.slice(1).toLowerCase()
+      : "Active";
+
+
+  // =====================================================
+  // SCREEN
+  // =====================================================
 
   return (
 
@@ -129,6 +163,9 @@ const VisitorProfileBanner = ({
 
           alignItems:
             "center",
+
+          overflow:
+            "hidden",
         }}
       >
 
@@ -217,7 +254,7 @@ const VisitorProfileBanner = ({
               theme.fonts.bold,
           }}
         >
-          Active
+          {formattedStatus}
         </Text>
 
       </View>

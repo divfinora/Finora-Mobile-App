@@ -60,6 +60,7 @@ import {
 } from "../../../redux/slices/authSlice";
 
 import VisitorPattern from "./assets/visitor-pattern.webp";
+import { syncVisitorProfile } from "../../../utils/syncVisitorProfile.js";
 
 
 const VisitorLoginScreen = () => {
@@ -271,10 +272,7 @@ const VisitorLoginScreen = () => {
                 onSuccess:
                     async (response) => {
 
-                        console.log(
-                            "VISITOR LOGIN RESPONSE:",
-                            response
-                        );
+
 
 
                         // =================================
@@ -312,7 +310,7 @@ const VisitorLoginScreen = () => {
                             response
                         );
 
-
+                        syncVisitorProfile();
                         // =================================
                         // SAVE USER
                         // =================================

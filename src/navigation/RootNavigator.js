@@ -5,7 +5,9 @@ import React, {
   useState,
 } from "react";
 
-import { useSelector } from "react-redux";
+import {
+  useSelector,
+} from "react-redux";
 
 import {
   NavigationContainer,
@@ -20,22 +22,58 @@ import {
   View,
 } from "react-native";
 
-import { getTokens } from "../utils/keychain";
+import {
+  getTokens,
+} from "../utils/keychain";
 
 import AuthStack from "./AuthStack";
 import AppStack from "./AppStack";
 
-const Stack = createNativeStackNavigator();
+import {
+  initializeFirebaseMessaging,
+  subscribeToFirebaseTokenRefresh,
+} from "../utils/firebaseMessaging";
+
+import {
+  saveFcmTokenToBackend,
+} from "../utils/fcmTokenService";
+
+
+const Stack =
+  createNativeStackNavigator();
+
 
 const RootNavigator = () => {
 
-  const { user } = useSelector(
-    (state) => state.auth
-  );
+  // ==========================================
+  // AUTH USER
+  // ==========================================
 
-  const [loading, setLoading] = useState(true);
+  const { user } =
+    useSelector(
+      (state) => state.auth
+    );
 
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
+
+  // ==========================================
+  // AUTH STATES
+  // ==========================================
+
+  const [
+    loading,
+    setLoading,
+  ] = useState(true);
+
+
+  const [
+    isAuthenticated,
+    setIsAuthenticated,
+  ] = useState(false);
+
+
+  // ==========================================
+  // CHECK AUTH
+  // ==========================================
 
   useEffect(() => {
 
@@ -43,37 +81,226 @@ const RootNavigator = () => {
 
   }, [user]);
 
-  const checkAuth = async () => {
 
-    try {
+  // ==========================================
+  // CHECK AUTH FUNCTION
+  // ==========================================
 
-      const tokens = await getTokens();
+  const checkAuth =
+    async () => {
 
-      if (
-        tokens?.accessToken &&
-        tokens?.refreshToken &&
-        user
-      ) {
+      try {
 
-        setIsAuthenticated(true);
+        const tokens =
+          await getTokens();
 
-      } else {
 
-        setIsAuthenticated(false);
+        if (
+          tokens?.accessToken &&
+          tokens?.refreshToken &&
+          user
+        ) {
+
+          setIsAuthenticated(
+            true
+          );
+
+        } else {
+
+          setIsAuthenticated(
+            false
+          );
+
+        }
+
+      } catch (error) {
+
+        console.log(
+          "Auth Check Error:",
+          error
+        );
+
+        setIsAuthenticated(
+          false
+        );
+
+      } finally {
+
+        setLoading(
+          false
+        );
 
       }
 
-    } catch (error) {
+    };
 
-      setIsAuthenticated(false);
 
-    } finally {
+  // ==========================================
+  // FIREBASE FCM SETUP
+  // ==========================================
+  //
+  // FCM setup ONLY when user is authenticated
+  //
+  // ==========================================
 
-      setLoading(false);
+  useEffect(() => {
 
+    // ----------------------------------------
+    // User login nahi hai
+    // ----------------------------------------
+
+    if (
+      !user ||
+      !isAuthenticated
+    ) {
+
+      console.log(
+        "⚠️ FCM Setup skipped - User not authenticated"
+      );
+
+      return;
     }
 
-  };
+
+    let unsubscribeTokenRefresh;
+
+
+    const setupFirebaseMessaging =
+      async () => {
+
+        try {
+
+          console.log(
+            "========================================"
+          );
+
+          console.log(
+            "🔥 Starting FCM Setup"
+          );
+
+          console.log(
+            "========================================"
+          );
+
+
+          // ====================================
+          // 1. GET FCM TOKEN
+          // ====================================
+
+          const token =
+            await initializeFirebaseMessaging();
+
+
+          // ====================================
+          // 2. SAVE TOKEN TO BACKEND
+          // ====================================
+
+          if (token) {
+
+            console.log(
+              "📤 Saving FCM Token to Backend..."
+            );
+
+            await saveFcmTokenToBackend(
+              token
+            );
+
+          } else {
+
+            console.log(
+              "⚠️ FCM Token not available"
+            );
+
+          }
+
+
+          // ====================================
+          // 3. TOKEN REFRESH LISTENER
+          // ====================================
+
+          unsubscribeTokenRefresh =
+            subscribeToFirebaseTokenRefresh(
+              async (newToken) => {
+
+                console.log(
+                  "========================================"
+                );
+
+                console.log(
+                  "🔄 FCM TOKEN REFRESHED"
+                );
+
+                console.log(
+                  "========================================"
+                );
+
+
+                if (!newToken) {
+
+                  console.log(
+                    "⚠️ New FCM Token is empty"
+                  );
+
+                  return;
+                }
+
+
+                // ==============================
+                // SAVE NEW TOKEN
+                // ==============================
+
+                await saveFcmTokenToBackend(
+                  newToken
+                );
+
+              }
+            );
+
+        } catch (error) {
+
+          console.log(
+            "❌ Firebase Messaging Setup Error:",
+            error
+          );
+
+        }
+
+      };
+
+
+    setupFirebaseMessaging();
+
+
+    // ========================================
+    // CLEANUP
+    // ========================================
+
+    return () => {
+
+      if (
+        typeof unsubscribeTokenRefresh ===
+        "function"
+      ) {
+
+        unsubscribeTokenRefresh();
+
+        console.log(
+          "🧹 FCM Token Refresh Listener Removed"
+        );
+
+      }
+
+    };
+
+  }, [
+    user,
+    isAuthenticated,
+  ]);
+
+
+  // ==========================================
+  // INITIAL LOADING
+  // ==========================================
 
   if (loading) {
 
@@ -87,13 +314,20 @@ const RootNavigator = () => {
         }}
       >
 
-        <ActivityIndicator size="large" />
+        <ActivityIndicator
+          size="large"
+        />
 
       </View>
 
     );
 
   }
+
+
+  // ==========================================
+  // NAVIGATION
+  // ==========================================
 
   return (
 
@@ -106,7 +340,6 @@ const RootNavigator = () => {
       >
 
         {
-
           isAuthenticated ? (
 
             <Stack.Screen
@@ -122,7 +355,6 @@ const RootNavigator = () => {
             />
 
           )
-
         }
 
       </Stack.Navigator>
@@ -132,5 +364,6 @@ const RootNavigator = () => {
   );
 
 };
+
 
 export default RootNavigator;

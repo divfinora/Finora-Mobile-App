@@ -51,24 +51,43 @@ export const authApi = baseApi.injectEndpoints({
     // REFRESH TOKEN
     // ==========================
     refreshToken: builder.mutation({
-
       query: (refreshToken) => ({
-
         url: "/auth/v1/refresh",
-
         method: "POST",
-
         body: {
           refreshToken,
         },
-
       }),
-
     }),
 
+    // ==========================
+    // CUSTOMER PROFILE
+    // GET /User/v1/profile
+    // ==========================
     getProfile: builder.query({
       query: () => ({
         url: "/User/v1/profile",
+        method: "GET",
+      }),
+    }),
+
+    saveFcmToken: builder.mutation({
+      query: ({ fcmToken }) => ({
+        url: "/User/fcm-token",
+        method: "PATCH",
+        body: {
+          fcmToken,
+        },
+      }),
+    }),
+
+    // ==========================
+    // VISITOR / EMPLOYEE PROFILE
+    // GET /User/my-profile
+    // ==========================
+    getVisitorProfile: builder.query({
+      query: () => ({
+        url: "/User/my-profile",
         method: "GET",
       }),
     }),
@@ -87,6 +106,10 @@ export const {
   useLoginWithMpinMutation,
 
   useRefreshTokenMutation,
-  useGetProfileQuery
+
+  useGetProfileQuery,
+
+  useGetVisitorProfileQuery,
+    useSaveFcmTokenMutation,
 
 } = authApi;

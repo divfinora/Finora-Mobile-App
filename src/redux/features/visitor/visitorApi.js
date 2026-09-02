@@ -237,6 +237,13 @@ export const visitorApi = baseApi.injectEndpoints({
         },
       ],
     }),
+    getEmployeeProfile: builder.query({
+      query: () => ({
+        url: "/User/my-profile",
+        method: "GET",
+      }),
+      providesTags: ["EmployeeProfile"],
+    })
 
   }),
 });
@@ -265,5 +272,6 @@ export const {
   useGetVisitorSubmitSummaryQuery,
 
   useSubmitVisitorVerificationMutation,
-  useGetVisitorVerificationSummaryQuery
+  useGetVisitorVerificationSummaryQuery,
+  useGetEmployeeProfileQuery,
 } = visitorApi;
