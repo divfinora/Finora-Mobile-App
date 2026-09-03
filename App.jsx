@@ -13,15 +13,7 @@ import { debugStorage } from "./src/utils/storageDebugger";
 const App = () => {
    
 
- useEffect(() => {
-
-  const unsubscribe = store.subscribe(() => {
-    debugStorage();
-  });
-
-  return unsubscribe;
-
-}, []);
+ 
 
   return (
     <Provider store={store}>

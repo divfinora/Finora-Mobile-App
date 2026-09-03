@@ -165,7 +165,49 @@ const VisitorInvestigationScreen = ({
       }
     );
 
+      
+//  ====================================
+  // Section Wise Pre fill Data  
 
+  useEffect(() => {
+  const investigation =
+    verificationSummary?.data?.investigationDetails;
+
+  if (!investigation) {
+    return;
+  }
+
+  const location =
+    investigation?.location || {};
+
+  setInvestigationData((previous) => ({
+    ...previous,
+
+    investigation: {
+      ...previous?.investigation,
+
+      // INPUT FIELDS ONLY
+      description:
+        investigation?.description || "",
+
+      latitude:
+        location?.latitude ?? null,
+
+      longitude:
+        location?.longitude ?? null,
+
+      address:
+        location?.address || "",
+
+      recommendation:
+        investigation?.recommendation || "",
+
+      remarks:
+        investigation?.remarks || "",
+    },
+  }));
+}, [verificationSummary]);
+//  ===================================
   // =====================================================
   // SAFE AREA
   // =====================================================
@@ -291,6 +333,8 @@ const VisitorInvestigationScreen = ({
 
     if (currentStep === 2) {
 
+      const description =
+  investigation?.description?.trim();
       const investigation =
         investigationData?.investigation || {};
 
@@ -333,7 +377,8 @@ const VisitorInvestigationScreen = ({
         recommendation,
 
         remarks,
-
+description
+        
       };
 
 
@@ -1114,40 +1159,30 @@ const VisitorInvestigationScreen = ({
   // AUTO FILL STATE
   // =====================================================
 
-  useEffect(() => {
+   useEffect(() => {
+  const investigation =
+    verificationSummary?.data?.investigationDetails;
 
-    const investigation =
-      verificationSummary
-        ?.data
-        ?.sections
-        ?.investigation
-        ?.data;
+  if (!investigation) {
+    return;
+  }
 
+  const location =
+    investigation?.location || {};
 
-    if (!investigation) {
-      return;
-    }
-
-
-    setInvestigationData(
-      (previous) => ({
-
-        ...previous,
-
-        investigation: {
-
-          ...previous.investigation,
-
-          ...investigation,
-
-        },
-
-      })
-    );
-
-  }, [
-    verificationSummary,
-  ]);
+  setInvestigationData((previous) => ({
+    ...previous,
+    investigation: {
+      ...previous?.investigation,
+      description: investigation?.description || "",
+      latitude: location?.latitude ?? null,
+      longitude: location?.longitude ?? null,
+      address: location?.address || "",
+      recommendation: investigation?.recommendation || "",
+      remarks: investigation?.remarks || "",
+    },
+  }));
+}, [verificationSummary]);
 
 
   // =====================================================

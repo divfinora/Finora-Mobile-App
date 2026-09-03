@@ -243,7 +243,23 @@ export const visitorApi = baseApi.injectEndpoints({
         method: "GET",
       }),
       providesTags: ["EmployeeProfile"],
-    })
+    }),
+
+    getEmployeeNotifications: builder.query({
+      query: ({
+        page = 1,
+        limit = 20,
+        filter = "ALL",
+      } = {}) => ({
+        url: "/notification/employee",
+        method: "GET",
+        params: {
+          page,
+          limit,
+          filter,
+        },
+      }),
+    }),
 
   }),
 });
@@ -274,4 +290,5 @@ export const {
   useSubmitVisitorVerificationMutation,
   useGetVisitorVerificationSummaryQuery,
   useGetEmployeeProfileQuery,
+  useGetEmployeeNotificationsQuery,
 } = visitorApi;

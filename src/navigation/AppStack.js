@@ -35,7 +35,7 @@ import SingleLoanDetailsCompleteEMIScreen from '../screens/GetLoan/SingleLoanDet
 import VisitorInvestigationScreen from '../screens/Visitor/VisitorInvestigation/VisitorInvestigationScreen.jsx';
 import VisitorApplicationDetailsScreen from '../screens/Visitor/VisitorApplicationDetails/VisitorApplicationDetailsScreen.jsx';
 import VisitorPersonalInfoScreen from '../screens/Visitor/VisitorProfileInfoScreen/VisitorPersonalInfoScreen.jsx';
-
+import VisitorGetNotificationScreen from '../screens/Visitor/Notification/VisitorNotificationScreen.jsx'
 
 const Stack = createNativeStackNavigator();
 
@@ -214,6 +214,13 @@ const AppStack = () => {
       <Stack.Screen
         name="visitor-personal-info-screen"
         component={VisitorPersonalInfoScreen}
+        options={{
+          headerShown: false,
+        }}
+      />
+        <Stack.Screen
+        name="visitor-get-notification-screen"
+        component={VisitorGetNotificationScreen}
         options={{
           headerShown: false,
         }}

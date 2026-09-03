@@ -81,11 +81,11 @@ const VisitorSettingsSection = () => {
 
 
         <VisitorSettingItem
-          title="Notification Settings"
+          title="Notification"
           icon={Bell}
           onPress={() =>
             navigation.navigate(
-              "notification-preferences-screen"
+              "visitor-get-notification-screen"
             )
           }
 
