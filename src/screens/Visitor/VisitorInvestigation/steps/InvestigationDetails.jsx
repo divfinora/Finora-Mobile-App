@@ -34,16 +34,8 @@ import useCurrentLocation
 // OUTCOME OPTIONS
 // =====================================================
 
-const OUTCOME_OPTIONS = [
-  {
-    label: "In Progress",
-    value: "IN_PROGRESS",
-  },
-  {
-    label: "Submitted",
-    value: "SUBMITTED",
-  },
-];
+
+
 
 
 // =====================================================
@@ -188,38 +180,12 @@ const InvestigationDetails = ({
   // SELECT OUTCOME
   // =====================================================
 
-  const handleSelectOutcome = (
-    option
-  ) => {
-
-    updateField(
-      "verificationStatus",
-      option.value
-    );
+ 
 
 
-    updateField(
-      "verificationStatusLabel",
-      option.label
-    );
+ 
 
-
-    setOutcomeVisible(false);
-
-  };
-
-
-  // =====================================================
-  // SELECTED OUTCOME
-  // =====================================================
-
-  const selectedOutcome =
-    OUTCOME_OPTIONS.find(
-      (option) =>
-        option.value ===
-        data?.verificationStatus
-    );
-
+ 
 
   // =====================================================
   // AUTO FETCH LOCATION
@@ -748,157 +714,207 @@ const InvestigationDetails = ({
             LOCATION PREVIEW
         ================================================= */}
 
-        <View
+     ```jsx
+{/* =================================================
+    LOCATION PREVIEW
+================================================= */}
+
+<View
+  style={{
+    height: 135,
+
+    marginTop:
+      theme.spacing.md,
+
+    borderRadius: 14,
+
+    overflow: "hidden",
+
+    backgroundColor:
+      theme.colors.gray100,
+
+    alignItems:
+      "center",
+
+    justifyContent:
+      "center",
+
+    ...inputBorder,
+  }}
+>
+
+  <MapPin
+    size={32}
+    color={
+      theme.colors.primary500
+    }
+  />
+
+
+  {/* =================================================
+      LOADING
+  ================================================= */}
+
+  {locationLoading ? (
+
+    <Text
+      style={{
+        marginTop:
+          theme.spacing.sm,
+
+        color:
+          theme.colors.gray500,
+
+        fontSize:
+          theme.typography.b3,
+
+        fontFamily:
+          theme.fonts.medium,
+      }}
+    >
+      Fetching current location...
+    </Text>
+
+  ) : hasValidLocation ? (
+
+    <>
+      <Text
+        style={{
+          marginTop:
+            theme.spacing.sm,
+
+          color:
+            theme.colors.black,
+
+          fontSize:
+            theme.typography.b3,
+
+          fontFamily:
+            theme.fonts.semiBold,
+        }}
+      >
+        Location detected
+      </Text>
+
+
+      {/* CURRENT LATITUDE / LONGITUDE */}
+
+      <Text
+        style={{
+          marginTop: 4,
+
+          color:
+            theme.colors.gray500,
+
+          fontSize: 11,
+
+          fontFamily:
+            theme.fonts.regular,
+        }}
+      >
+        {location.latitude?.toFixed(6)}
+        {", "}
+        {location.longitude?.toFixed(6)}
+      </Text>
+
+
+      {/* LAST LATITUDE / LONGITUDE */}
+
+      {(data?.lastLatitude != null ||
+        data?.lastLongitude != null) && (
+
+        <Text
           style={{
-            height: 135,
+            marginTop: 4,
 
-            marginTop:
-              theme.spacing.md,
+            color:
+              theme.colors.gray500,
 
-            borderRadius: 14,
+            fontSize: 11,
 
-            overflow: "hidden",
-
-            backgroundColor:
-              theme.colors.gray100,
-
-            alignItems:
-              "center",
-
-            justifyContent:
-              "center",
-
-            ...inputBorder,
+            fontFamily:
+              theme.fonts.regular,
           }}
         >
+          Last: {data?.lastLatitude ?? "--"}
+          {", "}
+          {data?.lastLongitude ?? "--"}
+        </Text>
 
-          <MapPin
-            size={32}
-            color={
-              theme.colors.primary500
-            }
-          />
+      )}
+    </>
 
+  ) : (
 
-          {/* =================================================
-              LOADING
-          ================================================= */}
+    <>
+      <Text
+        style={{
+          marginTop:
+            theme.spacing.sm,
 
-          {locationLoading ? (
+          color:
+            theme.colors.gray500,
 
-            <Text
-              style={{
-                marginTop:
-                  theme.spacing.sm,
+          fontSize:
+            theme.typography.b3,
 
-                color:
-                  theme.colors.gray500,
-
-                fontSize:
-                  theme.typography.b3,
-
-                fontFamily:
-                  theme.fonts.medium,
-              }}
-            >
-              Fetching current location...
-            </Text>
-
-          ) : hasValidLocation ? (
-
-            /* =================================================
-               LOCATION FOUND
-            ================================================= */
-
-            <>
-
-              <Text
-                style={{
-                  marginTop:
-                    theme.spacing.sm,
-
-                  color:
-                    theme.colors.black,
-
-                  fontSize:
-                    theme.typography.b3,
-
-                  fontFamily:
-                    theme.fonts.semiBold,
-                }}
-              >
-                Location detected
-              </Text>
+          fontFamily:
+            theme.fonts.medium,
+        }}
+      >
+        Location Preview
+      </Text>
 
 
-              <Text
-                style={{
-                  marginTop: 4,
+      {/* LAST LATITUDE / LONGITUDE */}
 
-                  color:
-                    theme.colors.gray500,
+      {(data?.lastLatitude != null ||
+        data?.lastLongitude != null) ? (
 
-                  fontSize: 11,
+        <Text
+          style={{
+            marginTop: 4,
 
-                  fontFamily:
-                    theme.fonts.regular,
-                }}
-              >
-                {location.latitude?.toFixed(6)}
-                {", "}
-                {location.longitude?.toFixed(6)}
-              </Text>
+            color:
+              theme.colors.gray500,
 
-            </>
+            fontSize: 11,
 
-          ) : (
+            fontFamily:
+              theme.fonts.regular,
+          }}
+        >
+          Last: {data?.lastLatitude ?? "--"}
+          {", "}
+          {data?.lastLongitude ?? "--"}
+        </Text>
 
-            /* =================================================
-               NO LOCATION
-            ================================================= */
+      ) : (
 
-            <>
+        <Text
+          style={{
+            marginTop: 2,
 
-              <Text
-                style={{
-                  marginTop:
-                    theme.spacing.sm,
+            color:
+              theme.colors.gray500,
 
-                  color:
-                    theme.colors.gray500,
+            fontSize: 11,
 
-                  fontSize:
-                    theme.typography.b3,
+            fontFamily:
+              theme.fonts.regular,
+          }}
+        >
+          Live GPS will appear here
+        </Text>
 
-                  fontFamily:
-                    theme.fonts.medium,
-                }}
-              >
-                Location Preview
-              </Text>
+      )}
+    </>
 
+  )}
 
-              <Text
-                style={{
-                  marginTop: 2,
+</View>
+```
 
-                  color:
-                    theme.colors.gray500,
-
-                  fontSize: 11,
-
-                  fontFamily:
-                    theme.fonts.regular,
-                }}
-              >
-                Live GPS will appear here
-              </Text>
-
-            </>
-
-          )}
-
-        </View>
 
       </View>
 
@@ -992,255 +1008,14 @@ const InvestigationDetails = ({
       </View>
 
 
-      {/* =================================================
-          RECOMMENDATION
-      ================================================= */}
+      
 
-      <View
-        style={{
-          backgroundColor:
-            theme.colors.white,
+     
 
-          borderRadius:
-            theme.radius.xl,
 
-          padding:
-            theme.spacing.lg,
+ 
 
-          marginBottom:
-            theme.spacing.xl,
-
-          ...theme.shadows.card,
-        }}
-      >
-
-        <Text
-          style={{
-            marginBottom:
-              theme.spacing.lg,
-
-            color:
-              theme.colors.black,
-
-            fontSize:
-              theme.typography.b2,
-
-            fontFamily:
-              theme.fonts.extraBold,
-          }}
-        >
-          RECOMMENDATION
-        </Text>
-
-
-        <Text
-          style={{
-            marginBottom:
-              theme.spacing.sm,
-
-            color:
-              theme.colors.gray700,
-
-            fontSize:
-              theme.typography.b4,
-
-            fontFamily:
-              theme.fonts.medium,
-          }}
-        >
-          Verification Status
-        </Text>
-
-
-        {/* =================================================
-            DROPDOWN
-        ================================================= */}
-
-        <TouchableOpacity
-          activeOpacity={0.8}
-
-          onPress={() =>
-            setOutcomeVisible(true)
-          }
-
-          style={{
-            height: 56,
-
-            borderRadius: 16,
-
-            backgroundColor:
-              theme.colors.gray100,
-
-            paddingHorizontal:
-              theme.spacing.lg,
-
-            flexDirection:
-              "row",
-
-            alignItems:
-              "center",
-
-            justifyContent:
-              "space-between",
-
-            ...inputBorder,
-          }}
-        >
-
-          <Text
-            style={{
-              color:
-                selectedOutcome
-                  ? theme.colors.black
-                  : theme.colors.gray500,
-
-              fontSize:
-                theme.typography.b1,
-
-              fontFamily:
-                theme.fonts.regular,
-            }}
-          >
-            {
-              selectedOutcome?.label ||
-              "Select Outcome"
-            }
-          </Text>
-
-
-          <ChevronDown
-            size={20}
-            color={
-              theme.colors.gray500
-            }
-          />
-
-        </TouchableOpacity>
-
-      </View>
-
-
-      {/* =================================================
-          COMMON BOTTOM SHEET
-      ================================================= */}
-
-      <CustomBottomSheet
-
-        visible={
-          outcomeVisible
-        }
-
-        onClose={() =>
-          setOutcomeVisible(false)
-        }
-
-        sheetheading="Select Outcome"
-
-        heightPercent={0.45}
-      >
-
-        {OUTCOME_OPTIONS.map(
-          (option) => {
-
-            const isSelected =
-              data?.verificationStatus ===
-              option.value;
-
-
-            return (
-
-              <TouchableOpacity
-                key={
-                  option.value
-                }
-
-                activeOpacity={0.8}
-
-                onPress={() =>
-                  handleSelectOutcome(
-                    option
-                  )
-                }
-
-                style={{
-                  minHeight: 56,
-
-                  borderRadius: 14,
-
-                  backgroundColor:
-                    isSelected
-                      ? "#FFF3EA"
-                      : theme.colors.gray100,
-
-                  borderWidth:
-                    isSelected
-                      ? 1
-                      : 0,
-
-                  borderColor:
-                    isSelected
-                      ? theme.colors.primary500
-                      : "transparent",
-
-                  paddingHorizontal:
-                    theme.spacing.lg,
-
-                  flexDirection:
-                    "row",
-
-                  alignItems:
-                    "center",
-
-                  justifyContent:
-                    "space-between",
-
-                  marginBottom:
-                    theme.spacing.sm,
-                }}
-              >
-
-                <Text
-                  style={{
-                    color:
-                      isSelected
-                        ? theme.colors.primary500
-                        : theme.colors.black,
-
-                    fontSize:
-                      theme.typography.b1,
-
-                    fontFamily:
-                      isSelected
-                        ? theme.fonts.semiBold
-                        : theme.fonts.regular,
-                  }}
-                >
-                  {option.label}
-                </Text>
-
-
-                {isSelected && (
-
-                  <Check
-                    size={20}
-
-                    color={
-                      theme.colors.primary500
-                    }
-
-                    strokeWidth={2.5}
-                  />
-
-                )}
-
-              </TouchableOpacity>
-
-            );
-
-          }
-        )}
-
-      </CustomBottomSheet>
+  
 
     </View>
 

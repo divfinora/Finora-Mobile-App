@@ -169,44 +169,7 @@ const VisitorInvestigationScreen = ({
   //  ====================================
   // Section Wise Pre fill Data  
 
-  useEffect(() => {
-    const investigation =
-      verificationSummary?.data?.investigationDetails;
-
-    if (!investigation) {
-      return;
-    }
-
-    const location =
-      investigation?.location || {};
-
-    setInvestigationData((previous) => ({
-      ...previous,
-
-      investigation: {
-        ...previous?.investigation,
-
-        // INPUT FIELDS ONLY
-        description:
-          investigation?.description || "",
-
-        latitude:
-          location?.latitude ?? null,
-
-        longitude:
-          location?.longitude ?? null,
-
-        address:
-          location?.address || "",
-
-        recommendation:
-          investigation?.recommendation || "",
-
-        remarks:
-          investigation?.remarks || "",
-      },
-    }));
-  }, [verificationSummary]);
+ 
   //  ===================================
   // =====================================================
   // SAFE AREA
@@ -332,13 +295,14 @@ const VisitorInvestigationScreen = ({
     // ===================================================
 
     if (currentStep === 2) {
+      
 
-      const description =
-        investigation?.description?.trim();
+ 
       const investigation =
         investigationData?.investigation || {};
 
-
+     const description =
+        investigation?.description?.trim();
       const latitude =
         investigation?.latitude;
 
@@ -351,14 +315,15 @@ const VisitorInvestigationScreen = ({
         investigation?.address?.trim();
  
 
-      const recommendation =
-        investigation?.recommendation?.trim();
+     
 
 
       const remarks =
         investigation?.remarks?.trim();
 
 
+        
+   
       const payload = {
 
         loanId:
@@ -374,9 +339,10 @@ const VisitorInvestigationScreen = ({
 
         address,
 
-        recommendation:"APPROVED",
+       
 
         remarks,
+
         description
 
       };
@@ -1149,10 +1115,7 @@ const VisitorInvestigationScreen = ({
   ] = useState(0);
 
 
-  console.log(
-    verificationSummary,
-    "verificationSummary---------------------"
-  );
+ 
 
 
   // =====================================================
@@ -1175,11 +1138,12 @@ const VisitorInvestigationScreen = ({
       investigation: {
         ...previous?.investigation,
         description: investigation?.description || "",
-        latitude: location?.latitude ?? null,
-        longitude: location?.longitude ?? null,
+        lastLatitude: location?.latitude ?? null,
+        lastLongitude: location?.longitude ?? null,
         address: location?.address || "",
-        recommendation: investigation?.recommendation || "",
         remarks: investigation?.remarks || "",
+           lastAddress:
+        location?.address || "",
       },
     }));
   }, [verificationSummary]);
