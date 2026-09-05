@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useRef, useState } from "react";
 
 import {
     View,
@@ -23,11 +23,15 @@ import { theme } from "../../../theme/index";
 import LoginImg from "../assets/login.webp";
 import { useLoginMutation } from "../../../redux/features/auth/authApi";
 import useHandleMutation from "../../../hooks/useHandleMutation";
+import KeyboardAvoidingBottomView from "../../../components/common/KeyBoard/KeyboardAvoidingBottomView";
+
 const LoginScreen = ({ navigation }) => {
 
     const { width, height } = useWindowDimensions();
 
     const [phone, setPhone] = useState("");
+
+    const scrollViewRef = useRef(null);
 
     const isTablet = width >= 768;
     const isSmall = height < 700;
@@ -43,7 +47,9 @@ const LoginScreen = ({ navigation }) => {
             reset,
         },
     ] = useLoginMutation();
+
     const { handleMutation } = useHandleMutation();
+
     const contentWidth = isTablet
         ? Math.min(width * 0.65, 520)
         : width - theme.spacing.massive;
@@ -75,7 +81,8 @@ const LoginScreen = ({ navigation }) => {
             onSuccess: (data) => {
 
                 let optData = data?.data;
- 
+
+                Keyboard.dismiss();
 
                 navigation.navigate(
                     "enter-otp-register-user",
@@ -89,7 +96,6 @@ const LoginScreen = ({ navigation }) => {
 
         });
 
-         
         if (!response) return;
 
     };
@@ -102,22 +108,21 @@ const LoginScreen = ({ navigation }) => {
                 backgroundColor: theme.colors.white,
             }}
         >
+
             <StatusBar
                 barStyle={theme.statusBar.dark}
                 backgroundColor={theme.colors.white}
             />
 
-            <KeyboardAvoidingView
-                style={{
-                    flex: 1,
-                }}
-           behavior={Platform.OS === "ios" ? "padding" : "height"}
-            >
+            <KeyboardAvoidingBottomView>
+
                 <TouchableWithoutFeedback
                     onPress={Keyboard.dismiss}
                     accessible={false}
                 >
+
                     <ScrollView
+                        ref={scrollViewRef}
                         showsVerticalScrollIndicator={false}
                         keyboardShouldPersistTaps="handled"
                         contentContainerStyle={{
@@ -126,6 +131,7 @@ const LoginScreen = ({ navigation }) => {
                             paddingBottom: theme.spacing.screen,
                         }}
                     >
+
                         <View
                             style={{
                                 width: contentWidth,
@@ -137,7 +143,6 @@ const LoginScreen = ({ navigation }) => {
                                         : theme.spacing.xxxl,
                             }}
                         >
-                            {/* HEADER */}
 
                             <Text
                                 style={{
@@ -173,8 +178,6 @@ const LoginScreen = ({ navigation }) => {
                                 Hello, welcome back to our account
                             </Text>
 
-                            {/* LOGIN IMAGE */}
-
                             <View
                                 style={{
                                     width: "100%",
@@ -185,6 +188,7 @@ const LoginScreen = ({ navigation }) => {
                                         : theme.spacing.xxl,
                                 }}
                             >
+
                                 <Image
                                     source={LoginImg}
                                     resizeMode="contain"
@@ -193,9 +197,8 @@ const LoginScreen = ({ navigation }) => {
                                         height: imageSize,
                                     }}
                                 />
-                            </View>
 
-                            {/* LOGIN TITLE */}
+                            </View>
 
                             <Text
                                 style={{
@@ -243,9 +246,6 @@ const LoginScreen = ({ navigation }) => {
                                 We'll send you an OTP to verify your number
                             </Text>
 
-                            {/* PHONE INPUT STARTS HERE */}
-                            {/* PHONE INPUT */}
-
                             <View
                                 style={{
                                     height: theme.input.height,
@@ -270,7 +270,6 @@ const LoginScreen = ({ navigation }) => {
                                     ...theme.shadows.card,
                                 }}
                             >
-                                {/* COUNTRY */}
 
                                 <View
                                     style={{
@@ -289,6 +288,7 @@ const LoginScreen = ({ navigation }) => {
                                             theme.colors.divider,
                                     }}
                                 >
+
                                     <Text
                                         style={{
                                             fontSize: theme.iconSize.sm,
@@ -312,9 +312,8 @@ const LoginScreen = ({ navigation }) => {
                                     >
                                         +91
                                     </Text>
-                                </View>
 
-                                {/* MOBILE NUMBER */}
+                                </View>
 
                                 <TextInput
                                     value={phone}
@@ -324,13 +323,20 @@ const LoginScreen = ({ navigation }) => {
 
                                         setPhone(value.slice(0, 10));
                                     }}
-                                   placeholder="Mobile number"
+                                    placeholder="Mobile number"
                                     placeholderTextColor={
                                         theme.colors.placeholder
                                     }
                                     keyboardType="number-pad"
                                     maxLength={10}
                                     returnKeyType="done"
+                                    onFocus={() => {
+                                        setTimeout(() => {
+                                            scrollViewRef.current?.scrollToEnd({
+                                                animated: true,
+                                            });
+                                        }, 150);
+                                    }}
                                     style={{
                                         flex: 1,
                                         height: "100%",
@@ -347,9 +353,8 @@ const LoginScreen = ({ navigation }) => {
                                         color: theme.colors.black,
                                     }}
                                 />
-                            </View>
 
-                            {/* REQUEST OTP */}
+                            </View>
 
                             <TouchableOpacity
                                 activeOpacity={0.9}
@@ -372,6 +377,7 @@ const LoginScreen = ({ navigation }) => {
                                     opacity: isLoading ? 0.7 : 1,
                                 }}
                             >
+
                                 {isLoading ? (
                                     <ActivityIndicator
                                         size="small"
@@ -391,9 +397,8 @@ const LoginScreen = ({ navigation }) => {
                                         Request OTP
                                     </Text>
                                 )}
-                            </TouchableOpacity>
 
-                            {/* REGISTER */}
+                            </TouchableOpacity>
 
                             <View
                                 style={{
@@ -406,6 +411,7 @@ const LoginScreen = ({ navigation }) => {
                                     alignItems: "center",
                                 }}
                             >
+
                                 <Text
                                     style={{
                                         fontSize:
@@ -429,6 +435,7 @@ const LoginScreen = ({ navigation }) => {
                                         )
                                     }
                                 >
+
                                     <Text
                                         style={{
                                             fontSize:
@@ -443,12 +450,19 @@ const LoginScreen = ({ navigation }) => {
                                     >
                                         Create an Account
                                     </Text>
+
                                 </TouchableOpacity>
+
                             </View>
+
                         </View>
+
                     </ScrollView>
+
                 </TouchableWithoutFeedback>
-            </KeyboardAvoidingView>
+
+            </KeyboardAvoidingBottomView>
+
         </SafeAreaView>
     );
 };

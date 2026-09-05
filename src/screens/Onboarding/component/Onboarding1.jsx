@@ -7,6 +7,9 @@ import {
   useWindowDimensions,
 } from "react-native";
 
+import LinearGradient from "react-native-linear-gradient";
+import MaskedView from "@react-native-masked-view/masked-view";
+
 import Onboarding1Img from "../assets/onboarding-1.webp";
 
 const Onboarding1 = () => {
@@ -30,6 +33,40 @@ const Onboarding1 = () => {
     ? Math.min(width * 0.7, 330)
     : Math.min(width * 0.62, 280);
 
+  // TITLE STYLE
+  const titleStyle = {
+    width: "100%",
+    maxWidth: 560,
+
+    marginTop: isVerySmall
+      ? 6
+      : isSmall
+      ? 10
+      : 20,
+
+    fontSize: isTablet
+      ? 28
+      : isVerySmall
+      ? 19
+      : isSmall
+      ? 21
+      : 23,
+
+    lineHeight: isTablet
+      ? 36
+      : isVerySmall
+      ? 24
+      : isSmall
+      ? 27
+      : 30,
+
+    fontWeight: "700",
+
+    textAlign: "center",
+
+    flexShrink: 1,
+  };
+
   return (
     <View
       style={{
@@ -50,7 +87,7 @@ const Onboarding1 = () => {
           : 18,
       }}
     >
-      {/* IMAGE */}
+      {/* ================= IMAGE ================= */}
 
       <Image
         source={Onboarding1Img}
@@ -61,46 +98,50 @@ const Onboarding1 = () => {
         resizeMode="contain"
       />
 
-      {/* TITLE */}
+      {/* ================= GRADIENT TITLE ================= */}
 
-      <Text
-        style={{
-          width: "100%",
-          maxWidth: 560,
-
-          marginTop: isVerySmall
-            ? 6
-            : isSmall
-            ? 10
-            : 20,
-
-          fontSize: isTablet
-            ? 28
-            : isVerySmall
-            ? 19
-            : isSmall
-            ? 21
-            : 23,
-
-          lineHeight: isTablet
-            ? 36
-            : isVerySmall
-            ? 24
-            : isSmall
-            ? 27
-            : 30,
-
-          fontWeight: "700",
-          color: "#FF8200",
-          textAlign: "center",
-
-          flexShrink: 1,
-        }}
+      <MaskedView
+        maskElement={
+          <Text
+            style={[
+              titleStyle,
+              {
+                color: "#000000",
+              },
+            ]}
+          >
+            Find & Manage Loans Easily
+          </Text>
+        }
       >
-        Professional Services, Simplified
-      </Text>
+        <LinearGradient
+          colors={[
+            "#FF8008",
+            "#FFC837",
+          ]}
+          start={{
+            x: 0,
+            y: 0.5,
+          }}
+          end={{
+            x: 1,
+            y: 0.5,
+          }}
+        >
+          <Text
+            style={[
+              titleStyle,
+              {
+                opacity: 0,
+              },
+            ]}
+          >
+            Find & Manage Loans Easily
+          </Text>
+        </LinearGradient>
+      </MaskedView>
 
-      {/* DESCRIPTION */}
+      {/* ================= DESCRIPTION ================= */}
 
       <Text
         style={{
@@ -130,14 +171,16 @@ const Onboarding1 = () => {
             : 23,
 
           fontWeight: "400",
+
           color: "#64748B",
+
           textAlign: "center",
 
           flexShrink: 1,
         }}
       >
-        Find trusted experts for repairs, installations, fabrication,
-        interiors, maintenance, and industrial services — all in one app.
+        Flexible loans, simple applications, smart financial
+        choices—all in one place.
       </Text>
     </View>
   );

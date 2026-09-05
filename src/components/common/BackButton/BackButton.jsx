@@ -60,7 +60,8 @@ const BackButton = ({
               width: 42,
               height: 42,
               justifyContent: "center",
-              // alignItems: "center",
+           
+            
             }}
           >
             <ArrowLeft

@@ -65,6 +65,7 @@ const Onboarding2 = () => {
 
       <Text
         style={{
+           background: "linear-gradient(90deg, #FF8008, #FFC837)",
           width: "100%",
           maxWidth: 560,
 
@@ -97,7 +98,7 @@ const Onboarding2 = () => {
           flexShrink: 1,
         }}
       >
-        Easy Booking, Fast Service
+       Find & Manage Loans Easily
       </Text>
 
       {/* DESCRIPTION */}
@@ -136,8 +137,7 @@ const Onboarding2 = () => {
           flexShrink: 1,
         }}
       >
-        Book your required service in minutes, track technician visits, and
-        stay updated from request to completion.
+     Check eligibility, understand the process, and track your EMIs effortlessly.
       </Text>
     </View>
   );

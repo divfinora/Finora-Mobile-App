@@ -42,6 +42,8 @@ import {
   useVerifyOtpMutation,
 } from "../../../redux/features/auth/authApi";
 
+import KeyboardAvoidingBottomView from "../../../components/common/KeyBoard/KeyboardAvoidingBottomView";
+
 
 const OTP_LENGTH = 6;
 
@@ -77,7 +79,6 @@ const EnterOtpScreen = ({
       );
 
 
-
   const [
     verifyOtp,
     {
@@ -86,20 +87,18 @@ const EnterOtpScreen = ({
   ] = useVerifyOtpMutation();
 
 
-
   const {
     handleMutation,
   } = useHandleMutation();
 
 
-
   const phone =
     route?.params?.phone ??
     "84848XXXX84";
+
   const LoginOtp =
     route?.params?.otp ??
     "123456";
-
 
 
   const [
@@ -108,6 +107,7 @@ const EnterOtpScreen = ({
   ] = useState(
     Array(OTP_LENGTH).fill("")
   );
+
 
   useEffect(() => {
     if (LoginOtp) {
@@ -125,6 +125,7 @@ const EnterOtpScreen = ({
     }
   }, [LoginOtp]);
 
+
   const [
     seconds,
     setSeconds,
@@ -133,13 +134,12 @@ const EnterOtpScreen = ({
   );
 
 
-
   const inputs =
     useRef([]);
 
+  const scrollViewRef =
+    useRef(null);
 
-
-  // AUTO FOCUS FIRST OTP BOX
 
   useEffect(() => {
 
@@ -154,48 +154,31 @@ const EnterOtpScreen = ({
     return () =>
       clearTimeout(timer);
 
-
   }, []);
 
 
-
-
-  // TIMER
-
   useEffect(() => {
-
 
     if (seconds <= 0)
       return;
 
 
-
     const interval =
       setInterval(() => {
-
 
         setSeconds(prev =>
           prev - 1
         );
 
-
       }, 1000);
-
 
 
     return () =>
       clearInterval(interval);
 
 
-
   }, [seconds]);
 
-
-
-
-
-
-  // OTP CHANGE + PASTE HANDLING
 
   const handleOtpChange = (
     text,
@@ -207,23 +190,16 @@ const EnterOtpScreen = ({
       text.replace(/\D/g, "");
 
 
-
-    // PASTE OTP
-
     if (value.length > 1) {
-
 
       const newOtp =
         [...otp];
-
-
 
       value
         .slice(0, OTP_LENGTH)
         .split("")
         .forEach(
           (digit, i) => {
-
 
             if (
               index + i < OTP_LENGTH
@@ -234,14 +210,11 @@ const EnterOtpScreen = ({
 
             }
 
-
           }
         );
 
 
-
       setOtp(newOtp);
-
 
 
       const nextIndex =
@@ -251,10 +224,8 @@ const EnterOtpScreen = ({
         );
 
 
-
       inputs.current[nextIndex]
         ?.focus();
-
 
 
       return;
@@ -262,20 +233,15 @@ const EnterOtpScreen = ({
     }
 
 
-
-
     const newOtp =
       [...otp];
-
 
 
     newOtp[index] =
       value;
 
 
-
     setOtp(newOtp);
-
 
 
     if (
@@ -292,13 +258,6 @@ const EnterOtpScreen = ({
   };
 
 
-
-
-
-
-
-  // BACKSPACE HANDLING
-
   const handleBackspace = (
     e,
     index
@@ -312,53 +271,36 @@ const EnterOtpScreen = ({
       return;
 
 
-
     const newOtp =
       [...otp];
 
 
-
     if (otp[index]) {
-
 
       newOtp[index] = "";
 
       setOtp(newOtp);
-
 
       return;
 
     }
 
 
-
-
     if (index > 0) {
 
-
       newOtp[index - 1] = "";
-
 
       setOtp(newOtp);
 
 
-
       inputs.current[index - 1]
         ?.focus();
-
 
     }
 
 
   };
 
-
-
-
-
-
-
-  // VERIFY OTP
 
   const handleVerify = async () => {
 
@@ -367,18 +309,15 @@ const EnterOtpScreen = ({
       otp.join("");
 
 
-
     if (
       code.length !== OTP_LENGTH
     )
       return;
 
 
-
     await handleMutation({
 
       apiFunc: verifyOtp,
-
 
       params: {
 
@@ -392,7 +331,6 @@ const EnterOtpScreen = ({
       showSuccess: true,
 
 
-
       onSuccess: (response) => {
 
 
@@ -400,6 +338,7 @@ const EnterOtpScreen = ({
           response?.data?.isRegistered
         ) {
 
+          Keyboard.dismiss();
 
           navigation.replace(
             "enter-mpin-login-user",
@@ -412,14 +351,12 @@ const EnterOtpScreen = ({
         }
         else {
 
-
           navigation.replace(
             "create-pin-register-user",
             {
               phone,
             }
           );
-
 
         }
 
@@ -433,13 +370,6 @@ const EnterOtpScreen = ({
   };
 
 
-
-
-
-
-
-  // RESEND OTP
-
   const handleResend = () => {
 
 
@@ -450,35 +380,24 @@ const EnterOtpScreen = ({
     );
 
 
-
     setSeconds(
       OTP_VALIDITY
     );
 
 
-
     setTimeout(() => {
-
 
       inputs.current[0]
         ?.focus();
 
-
-
     }, 200);
-
 
 
   };
 
 
-
-
-
   const isOtpComplete =
     otp.every(Boolean);
-
-
 
 
   const minutes =
@@ -489,11 +408,12 @@ const EnterOtpScreen = ({
     ).padStart(2, "0");
 
 
-
   const remainingSeconds =
     String(
       seconds % 60
     ).padStart(2, "0");
+
+
   return (
 
     <SafeAreaView
@@ -509,7 +429,7 @@ const EnterOtpScreen = ({
       />
 
 
-      <KeyboardAvoidingView
+      <KeyboardAvoidingBottomView
         style={{
           flex: 1,
         }}
@@ -539,117 +459,72 @@ const EnterOtpScreen = ({
 
 
             <ScrollView
-
+              ref={scrollViewRef}
               keyboardShouldPersistTaps="handled"
-
               showsVerticalScrollIndicator={false}
-
               contentContainerStyle={{
-
                 flexGrow: 1,
-
-                paddingBottom:
-                  theme.spacing.screen,
-
+                paddingBottom:40
+               
               }}
-
             >
 
 
               <View
-
                 style={{
-
                   width: "100%",
-
                   maxWidth: 520,
-
                   alignSelf: "center",
-
                   paddingTop:
                     isTablet
                       ? 40
                       : theme.spacing.lg,
-
                 }}
-
               >
 
 
-
-                {/* HEADER */}
-
                 <TouchableOpacity
-
                   onPress={() =>
                     navigation.goBack()
                   }
-
                   style={{
-
                     width: 42,
-
                     height: 42,
-
                     borderRadius:
                       theme.radius.circle,
-
                     justifyContent: "center",
-
                     alignItems: "center",
-
                     marginLeft: -8,
-
                     marginBottom:
-                      theme.spacing.xxxl,
-
+                      theme.spacing.lg,
                   }}
-
                 >
 
                   <ArrowLeft
-
                     size={22}
-
                     color={
                       theme.colors.black
                     }
-
                     strokeWidth={2.2}
-
                   />
 
                 </TouchableOpacity>
 
 
-
-
-
-                {/* IMAGE */}
-
                 <View
-
                   style={{
-
                     alignItems: "center",
-
                     marginBottom:
                       theme.spacing.xxxl,
-
                   }}
-
                 >
 
                   <Image
-
                     source={
                       OtpIllustration
                     }
-
                     resizeMode="contain"
-
                     style={{
-
                       width:
                         isTablet
                           ? 300
@@ -669,23 +544,14 @@ const EnterOtpScreen = ({
                               width * .60,
                               250
                             ),
-
                     }}
-
                   />
 
                 </View>
 
 
-
-
-
-                {/* TITLE */}
-
                 <Text
-
                   style={{
-
                     fontSize:
                       theme.typography.displayMD,
 
@@ -694,23 +560,14 @@ const EnterOtpScreen = ({
 
                     color:
                       theme.colors.black,
-
                   }}
-
                 >
-
                   Enter OTP
-
                 </Text>
 
 
-
-
-
                 <Text
-
                   style={{
-
                     marginTop:
                       theme.spacing.sm,
 
@@ -725,23 +582,14 @@ const EnterOtpScreen = ({
 
                     color:
                       theme.colors.textSecondary,
-
                   }}
-
                 >
-
                   A 6 digit code has been sent to
-
                 </Text>
 
 
-
-
-
                 <Text
-
                   style={{
-
                     marginTop: 4,
 
                     fontSize:
@@ -752,43 +600,22 @@ const EnterOtpScreen = ({
 
                     color:
                       theme.colors.black,
-
                   }}
-
                 >
-
                   +91 {phone}
-
                 </Text>
 
 
-
-
-
-
-
-                {/* OTP BOXES */}
-
-
                 <View
-
                   style={{
-
                     flexDirection: "row",
-
                     justifyContent: "space-between",
-
                     alignItems: "center",
-
                     width: "100%",
-
                     marginTop:
                       theme.spacing.xxl,
-
                   }}
-
                 >
-
 
                   {
                     otp.map(
@@ -798,71 +625,50 @@ const EnterOtpScreen = ({
                       ) => (
 
                         <TextInput
-
                           key={index}
 
-
                           ref={(ref) => {
-
                             inputs.current[index]
                               = ref;
-
                           }}
-
 
                           value={value}
 
-
+                          onFocus={() => {
+                            setTimeout(() => {
+                              scrollViewRef.current?.scrollToEnd({
+                                animated: true,
+                              });
+                            }, 150);
+                          }}
 
                           onChangeText={(text) =>
-
                             handleOtpChange(
                               text,
                               index
                             )
-
                           }
 
-
-
                           onKeyPress={(e) =>
-
                             handleBackspace(
                               e,
                               index
                             )
-
                           }
-
-
 
                           keyboardType="number-pad"
 
-
-
                           textContentType="oneTimeCode"
-
-
 
                           autoComplete="sms-otp"
 
-
-
                           importantForAutofill="yes"
-
-
 
                           autoCorrect={false}
 
-
-
                           contextMenuHidden={false}
 
-
-
                           selectTextOnFocus
-
-
 
                           maxLength={
                             Platform.OS === "ios"
@@ -870,49 +676,37 @@ const EnterOtpScreen = ({
                               : 20
                           }
 
-
-
                           style={{
-
                             width:
                               otpBoxSize,
 
                             height:
                               otpBoxSize,
 
-
                             borderRadius:
                               theme.radius.lg,
 
-
                             borderWidth:
                               theme.borderWidth.thin,
-
 
                             borderColor:
                               value
                                 ? theme.colors.primary500
                                 : theme.colors.gray200,
 
-
                             backgroundColor:
                               theme.colors.gray100,
 
-
                             textAlign: "center",
-
 
                             fontSize:
                               otpBoxSize * .4,
 
-
                             fontFamily:
                               theme.fonts.bold,
 
-
                             color:
                               theme.colors.black,
-
                           }}
 
                         />
@@ -921,266 +715,151 @@ const EnterOtpScreen = ({
                     )
                   }
 
-
                 </View>
 
 
-
-
-
-
-
-                {/* VERIFY BUTTON */}
-
-
                 <TouchableOpacity
-
                   activeOpacity={0.9}
-
                   disabled={
                     !isOtpComplete ||
                     isLoading
                   }
-
-
                   onPress={
                     handleVerify
                   }
-
-
                   style={{
-
                     width: "100%",
-
 
                     height:
                       theme.button.height,
 
-
                     marginTop:
                       theme.spacing.massive,
-
 
                     borderRadius:
                       theme.button.borderRadius,
 
-
                     justifyContent: "center",
-
 
                     alignItems: "center",
 
-
                     backgroundColor:
-
                       (!isOtpComplete || isLoading)
-
                         ? theme.button.disabled.backgroundColor
-
                         : theme.button.primary.backgroundColor,
-
-
                   }}
-
                 >
-
 
                   {
                     isLoading
-
                       ?
-
                       (
-
                         <ActivityIndicator
-
                           size="small"
-
                           color={
                             theme.button.primary.textColor
                           }
-
                         />
-
                       )
-
                       :
-
                       (
-
                         <Text
-
                           style={{
-
                             fontSize:
                               theme.button.fontSize,
-
 
                             fontFamily:
                               theme.fonts.semiBold,
 
-
                             color:
                               theme.button.primary.textColor,
-
                           }}
-
                         >
-
                           Verify
-
                         </Text>
-
                       )
-
                   }
-
 
                 </TouchableOpacity>
 
 
-
-
-
-
-
-                {/* TIMER */}
-
-
                 <View
-
                   style={{
-
                     alignItems: "center",
-
                     marginTop:
                       theme.spacing.xxxl,
-
                   }}
-
                 >
 
                   <Text
-
                     style={{
-
                       fontSize:
                         theme.typography.b3,
-
 
                       fontFamily:
                         theme.fonts.medium,
 
-
                       color:
                         theme.colors.textLight,
-
                     }}
-
                   >
-
                     OTP expires in
-
                   </Text>
 
 
-
                   <Text
-
                     style={{
-
                       marginTop: 4,
-
 
                       fontSize:
                         theme.typography.b1,
-
 
                       fontFamily:
                         theme.fonts.bold,
 
-
                       color:
                         theme.colors.primary500,
-
                     }}
-
                   >
-
                     {minutes}:{remainingSeconds}
-
                   </Text>
-
 
                 </View>
 
 
-
-
-
-
-
-                {/* RESEND */}
-
-
                 <TouchableOpacity
-
                   activeOpacity={0.8}
-
-
                   disabled={
                     seconds > 0
                   }
-
-
                   onPress={
                     handleResend
                   }
-
-
                   style={{
-
                     alignItems: "center",
-
                     marginTop:
                       theme.spacing.xxxl,
-
                   }}
-
                 >
 
                   <Text
-
                     style={{
-
                       fontSize:
                         theme.typography.b1,
-
 
                       fontFamily:
                         theme.fonts.medium,
 
-
                       color:
-
                         seconds > 0
-
                           ? theme.colors.black
-
                           : theme.colors.primary500,
-
-
                     }}
-
                   >
-
                     Resend OTP
-
                   </Text>
 
-
                 </TouchableOpacity>
-
 
 
               </View>
@@ -1195,7 +874,7 @@ const EnterOtpScreen = ({
         </View>
 
 
-      </KeyboardAvoidingView>
+      </KeyboardAvoidingBottomView>
 
 
     </SafeAreaView>

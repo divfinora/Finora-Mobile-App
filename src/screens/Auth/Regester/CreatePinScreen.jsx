@@ -9,7 +9,6 @@ import {
     Text,
     TextInput,
     TouchableOpacity,
-    KeyboardAvoidingView,
     ScrollView,
     TouchableWithoutFeedback,
     Keyboard,
@@ -42,24 +41,47 @@ import useHandleMutation
 import BackButton
     from "../../../components/common/BackButton/BackButton";
 
-
 import { useDispatch } from "react-redux";
+
 import { saveAuth } from "../../../utils/saveAuth";
-import {syncProfile} from '../../../utils/profileSync'
+
+import { syncProfile } from "../../../utils/profileSync";
+
+import KeyboardAvoidingBottomView
+    from "../../../components/common/KeyBoard/KeyboardAvoidingBottomView";
+
+import SuccessModal
+    from "../../../components/common/Modal/SuccessModal";
+
+
 const PIN_LENGTH = 4;
+
 
 const CreatePinScreen = ({
     navigation,
     route,
 }) => {
 
+    const [showSuccessModal, setShowSuccessModal] =
+        useState(false);
+
+    const [emailError, setEmailError] =
+        useState("");
+
+    const [pinError, setPinError] =
+        useState("");
+
     const dispatch = useDispatch();
+
+
     const {
         handleMutation,
     } = useHandleMutation();
 
+
     const phone =
         route?.params?.phone;
+
 
     const [
         register,
@@ -68,38 +90,65 @@ const CreatePinScreen = ({
         },
     ] = useRegisterMutation();
 
+
     const {
         width,
         height,
     } = useWindowDimensions();
 
+
     const isTablet =
         width >= 768;
 
+
     const isSmall =
         height < 700;
+
 
     const contentWidth =
         isTablet
             ? Math.min(width * .65, 520)
             : width - theme.spacing.massive;
-    const [name,
-        setName] = useState("");
 
-    const [email,
-        setEmail] = useState("");
 
-    const [pin, setPin] = useState(["", "", "", ""]);
+    const [
+        name,
+        setName,
+    ] = useState("");
+
+
+    const [
+        email,
+        setEmail,
+    ] = useState("");
+
+
+    const [
+        pin,
+        setPin,
+    ] = useState([
+        "",
+        "",
+        "",
+        "",
+    ]);
+
 
     const nameRef =
         useRef(null);
 
+
     const emailRef =
         useRef(null);
 
+
     const pinRef =
         useRef(null);
-    const pinRefs = useRef([]);
+
+
+    const pinRefs =
+        useRef([]);
+
 
     useEffect(() => {
 
@@ -110,58 +159,148 @@ const CreatePinScreen = ({
 
             }, 250);
 
+
         return () =>
             clearTimeout(timer);
 
     }, []);
+
+
     const isEmailValid = () => {
 
-        if (!email)
+        if (!email.trim()) {
             return true;
+        }
 
-        return /\S+@\S+\.\S+/.test(email);
+
+        const value =
+            email.trim();
+
+
+        const emailRegex =
+            /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)+$/;
+
+
+        return emailRegex.test(value);
 
     };
+
+
     const isValid =
-
         name.trim().length >= 3 &&
-
         isEmailValid() &&
+        pin.join("").length === PIN_LENGTH;
 
-        pin.length === PIN_LENGTH;
+
+    const handleEmailChange = (text) => {
+
+        setEmail(text);
+
+
+        if (!text.trim()) {
+
+            setEmailError("");
+
+            return;
+        }
+
+
+        const emailRegex =
+            /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)+$/;
+
+
+        if (!emailRegex.test(text.trim())) {
+
+            setEmailError(
+                "Please enter a valid email address"
+            );
+
+        } else {
+
+            setEmailError("");
+
+        }
+
+    };
+
 
     const handleContinue = async () => {
 
-        if (!isValid)
+        if (email.trim() && !isEmailValid()) {
+
+            setEmailError(
+                "Please enter a valid email address"
+            );
+
             return;
+        }
+
+
+        if (pin.join("").length !== PIN_LENGTH) {
+
+            setPinError(
+                "Please enter a 4-digit PIN"
+            );
+
+            return;
+        }
+
+
+        setEmailError("");
+
+        setPinError("");
+
+
+        if (!isValid) {
+            return;
+        }
 
 
         const payload = {
-            fullName: name.trim(),
-            mobile: phone,
-            email: email.trim(),
-            mpin: pin.join(""), // "1234"
+
+            fullName:
+                name.trim(),
+
+            mobile:
+                phone,
+
+            email:
+                email.trim(),
+
+            mpin:
+                pin.join(""),
+
         };
 
-        console.log(payload, "Payload ======")
 
         await handleMutation({
 
-            apiFunc: register,
+            apiFunc:
+                register,
 
-            params: payload,
+            params:
+                payload,
 
-            showSuccess: true,
+            showSuccess:
+                true,
 
-            onSuccess: async (response) => {
-                await saveAuth(
-                    dispatch,
-                    response
-                );
+            onSuccess:
+                async (response) => {
 
-           syncProfile();
+                    Keyboard.dismiss();
 
-            },
+                    setShowSuccessModal(true);
+
+
+                    await saveAuth(
+                        dispatch,
+                        response
+                    );
+
+
+                    syncProfile();
+
+                },
 
         });
 
@@ -173,16 +312,22 @@ const CreatePinScreen = ({
         <SafeAreaView
             style={{
                 flex: 1,
-                backgroundColor: theme.colors.white,
+                backgroundColor:
+                    theme.colors.white,
             }}
         >
 
             <StatusBar
-                barStyle={theme.statusBar.dark}
-                backgroundColor={theme.colors.white}
+                barStyle={
+                    theme.statusBar.dark
+                }
+                backgroundColor={
+                    theme.colors.white
+                }
             />
 
-            <KeyboardAvoidingView
+
+            <KeyboardAvoidingBottomView
                 style={{
                     flex: 1,
                 }}
@@ -193,30 +338,36 @@ const CreatePinScreen = ({
                 }
             >
 
-
-                <View style={{ paddingHorizontal: theme.spacing.xl, flex: 1 }}>
-
-
+                <View
+                    style={{
+                        paddingHorizontal:
+                            theme.spacing.xl,
+                        flex: 1,
+                    }}
+                >
 
                     <BackButton
                         onPress={() =>
                             navigation.goBack()
                         }
-                        // style={{
-                        //     marginLeft: -8,
-
-                        // }}
                     />
+
+
                     <TouchableWithoutFeedback
-                        onPress={Keyboard.dismiss}
+                        onPress={
+                            Keyboard.dismiss
+                        }
                     >
 
                         <ScrollView
                             keyboardShouldPersistTaps="handled"
-                            showsVerticalScrollIndicator={false}
+                            showsVerticalScrollIndicator={
+                                false
+                            }
                             contentContainerStyle={{
                                 flexGrow: 1,
-                                paddingBottom: theme.spacing.screen,
+                                paddingBottom:
+                                    theme.spacing.screen,
                             }}
                         >
 
@@ -225,121 +376,84 @@ const CreatePinScreen = ({
                                     width: "100%",
                                     maxWidth: 520,
                                     alignSelf: "center",
-
-                                    paddingTop:
-                                        isTablet
-                                            ? 40
-                                            : theme.spacing.lg,
                                 }}
                             >
 
-                                {/* BACK BUTTON */}
-
-
-
-                                {/* LOCK */}
-
                                 <View
-
                                     style={{
-
                                         width: 64,
-
                                         height: 64,
-
                                         borderRadius: 32,
-
                                         backgroundColor:
                                             theme.colors.primary100,
-
                                         justifyContent:
                                             "center",
-
                                         alignItems:
                                             "center",
-
                                         marginBottom:
                                             theme.spacing.xl,
-
                                     }}
-
                                 >
 
                                     <LockKeyhole
-
                                         size={26}
-
                                         color={
                                             theme.colors.primary500
                                         }
-
                                     />
 
                                 </View>
 
-                                {/* TITLE */}
 
                                 <Text
-
                                     style={{
-
                                         fontSize:
                                             theme.typography.displayMD,
-
                                         fontFamily:
                                             theme.fonts.headingBold,
-
                                         color:
                                             theme.colors.black,
-
                                     }}
-
                                 >
-
                                     Create PIN
-
                                 </Text>
 
+
                                 <Text
-
                                     style={{
-
                                         marginTop:
                                             theme.spacing.sm,
-
                                         fontSize:
                                             theme.typography.b1,
-
                                         lineHeight:
                                             theme.lineHeight.b1,
-
                                         fontFamily:
                                             theme.fonts.medium,
-
                                         color:
                                             theme.colors.textSecondary,
-
                                     }}
-
                                 >
-
                                     Create a 4-digit PIN to secure your account
-
                                 </Text>
 
-                                {/* FULL NAME */}
 
                                 <Text
                                     style={{
-                                        marginTop: theme.spacing.xxxl,
-                                        marginBottom: theme.spacing.sm,
-                                        fontSize: theme.typography.b2,
-                                        fontFamily: theme.fonts.semiBold,
-                                        color: theme.colors.textPrimary,
+                                        marginTop:
+                                            theme.spacing.xxxl,
+                                        marginBottom:
+                                            theme.spacing.sm,
+                                        fontSize:
+                                            theme.typography.b2,
+                                        fontFamily:
+                                            theme.fonts.semiBold,
+                                        color:
+                                            theme.colors.textPrimary,
                                     }}
                                 >
                                     Full Name
                                 </Text>
+
 
                                 <TextInput
                                     ref={nameRef}
@@ -347,176 +461,350 @@ const CreatePinScreen = ({
                                     onChangeText={setName}
                                     returnKeyType="next"
                                     placeholder="Enter your full name"
-                                    placeholderTextColor={theme.colors.textLight}
+                                    placeholderTextColor={
+                                        theme.colors.textLight
+                                    }
                                     onSubmitEditing={() =>
                                         emailRef.current?.focus()
                                     }
                                     style={{
                                         height: 56,
-                                        borderRadius: theme.radius.lg,
-                                        borderWidth: theme.borderWidth.thin,
-                                        borderColor: theme.colors.gray200,
-                                        backgroundColor: theme.colors.white,
-                                        paddingHorizontal: theme.spacing.lg,
-                                        fontSize: theme.typography.b2,
-                                        fontFamily: theme.fonts.medium,
-                                        color: theme.colors.black,
+                                        borderRadius:
+                                            theme.radius.lg,
+                                        borderWidth:
+                                            theme.borderWidth.thin,
+                                        borderColor:
+                                            theme.colors.gray200,
+                                        backgroundColor:
+                                            theme.colors.white,
+                                        paddingHorizontal:
+                                            theme.spacing.lg,
+                                        fontSize:
+                                            theme.typography.b2,
+                                        fontFamily:
+                                            theme.fonts.medium,
+                                        color:
+                                            theme.colors.black,
                                     }}
                                 />
 
-                                {/* EMAIL */}
 
                                 <Text
                                     style={{
-                                        marginTop: theme.spacing.xl,
-                                        marginBottom: theme.spacing.sm,
-                                        fontSize: theme.typography.b2,
-                                        fontFamily: theme.fonts.semiBold,
-                                        color: theme.colors.textPrimary,
+                                        marginTop:
+                                            theme.spacing.xl,
+                                        marginBottom:
+                                            theme.spacing.sm,
+                                        fontSize:
+                                            theme.typography.b2,
+                                        fontFamily:
+                                            theme.fonts.semiBold,
+                                        color:
+                                            theme.colors.textPrimary,
                                     }}
                                 >
                                     Email (Optional)
                                 </Text>
 
+
                                 <TextInput
                                     ref={emailRef}
                                     value={email}
-                                    onChangeText={setEmail}
+                                    onChangeText={
+                                        handleEmailChange
+                                    }
                                     keyboardType="email-address"
                                     autoCapitalize="none"
                                     autoCorrect={false}
                                     returnKeyType="done"
                                     placeholder="Enter your email"
-                                    placeholderTextColor={theme.colors.textLight}
+                                    placeholderTextColor={
+                                        theme.colors.textLight
+                                    }
                                     onSubmitEditing={() =>
-                                        pinRef.current?.focus()
+                                        pinRefs.current[0]?.focus()
                                     }
                                     style={{
                                         height: 56,
-                                        borderRadius: theme.radius.lg,
-                                        borderWidth: theme.borderWidth.thin,
-                                        borderColor: theme.colors.gray200,
-                                        backgroundColor: theme.colors.white,
-                                        paddingHorizontal: theme.spacing.lg,
-                                        fontSize: theme.typography.b2,
-                                        fontFamily: theme.fonts.medium,
-                                        color: theme.colors.black,
+                                        borderRadius:
+                                            theme.radius.lg,
+                                        borderWidth:
+                                            theme.borderWidth.thin,
+                                        borderColor:
+                                            emailError
+                                                ? theme.colors.error
+                                                : theme.colors.gray200,
+                                        backgroundColor:
+                                            theme.colors.white,
+                                        paddingHorizontal:
+                                            theme.spacing.lg,
+                                        fontSize:
+                                            theme.typography.b2,
+                                        fontFamily:
+                                            theme.fonts.medium,
+                                        color:
+                                            theme.colors.black,
                                     }}
                                 />
 
-                                {/* CREATE PIN */}
+
+                                {emailError ? (
+
+                                    <Text
+                                        style={{
+                                            marginTop:
+                                                theme.spacing.sm,
+                                            fontSize:
+                                                theme.typography.b3,
+                                            fontFamily:
+                                                theme.fonts.medium,
+                                            color:
+                                                theme.colors.error,
+                                        }}
+                                    >
+                                        {emailError}
+                                    </Text>
+
+                                ) : null}
+
 
                                 <Text
                                     style={{
-                                        marginTop: theme.spacing.xxl,
-                                        marginBottom: theme.spacing.md,
-                                        fontSize: theme.typography.b2,
-                                        fontFamily: theme.fonts.semiBold,
-                                        color: theme.colors.textPrimary,
+                                        marginTop:
+                                            theme.spacing.xxl,
+                                        marginBottom:
+                                            theme.spacing.md,
+                                        fontSize:
+                                            theme.typography.b2,
+                                        fontFamily:
+                                            theme.fonts.semiBold,
+                                        color:
+                                            theme.colors.textPrimary,
                                     }}
                                 >
-                                    Create PIN
+                                    Create PIN{" "}
+
+                                    <Text
+                                        style={{
+                                            color:
+                                                theme.colors.error,
+                                        }}
+                                    >
+                                        *
+                                    </Text>
                                 </Text>
+
 
                                 <View
                                     style={{
-                                        flexDirection: "row",
-                                        marginLeft: theme.spacing.sm,
-                                        gap: theme.spacing.md,
+                                        flexDirection:
+                                            "row",
+                                        marginLeft:
+                                            theme.spacing.sm,
+                                        gap:
+                                            theme.spacing.md,
                                     }}
                                 >
-                                    {pin.map((digit, index) => (
-                                        <TextInput
-                                            key={index}
-                                            ref={(ref) => (pinRefs.current[index] = ref)}
-                                            value={digit}
-                                            keyboardType="number-pad"
-                                            maxLength={1}
-                                            textAlign="center"
-                                            returnKeyType="next"
-                                            style={{
-                                                width: isTablet ? 68 : 60,
-                                                height: isTablet ? 68 : 60,
 
-                                                borderRadius: theme.radius.lg,
-                                                borderWidth: theme.borderWidth.thin,
+                                    {pin.map(
+                                        (
+                                            digit,
+                                            index
+                                        ) => (
 
-                                                borderColor: digit
-                                                    ? theme.colors.primary500
-                                                    : theme.colors.gray200,
-
-                                                backgroundColor: theme.colors.gray100,
-
-                                                fontSize: 24,
-                                                fontFamily: theme.fonts.headingBold,
-                                                color: theme.colors.black,
-                                            }}
-                                            onChangeText={(text) => {
-                                                const value = text.replace(/[^0-9]/g, "");
-
-                                                const newPin = [...pin];
-                                                newPin[index] = value;
-                                                setPin(newPin);
-
-                                                if (value && index < PIN_LENGTH - 1) {
-                                                    pinRefs.current[index + 1]?.focus();
+                                            <TextInput
+                                                key={index}
+                                                ref={(ref) =>
+                                                    (
+                                                        pinRefs.current[index]
+                                                    ) = ref
                                                 }
-                                            }}
-                                            onKeyPress={({ nativeEvent }) => {
-                                                if (
-                                                    nativeEvent.key === "Backspace" &&
-                                                    !pin[index] &&
-                                                    index > 0
-                                                ) {
-                                                    pinRefs.current[index - 1]?.focus();
+                                                value={digit}
+                                                keyboardType="number-pad"
+                                                maxLength={1}
+                                                textAlign="center"
+                                                returnKeyType="next"
+                                                secureTextEntry={true}
+                                                style={{
+                                                    width:
+                                                        isTablet
+                                                            ? 68
+                                                            : 60,
+
+                                                    height:
+                                                        isTablet
+                                                            ? 68
+                                                            : 60,
+
+                                                    borderRadius:
+                                                        theme.radius.lg,
+
+                                                    borderWidth:
+                                                        theme.borderWidth.thin,
+
+                                                    borderColor:
+                                                        pinError
+                                                            ? theme.colors.error
+                                                            : digit
+                                                                ? theme.colors.primary500
+                                                                : theme.colors.gray200,
+
+                                                    backgroundColor:
+                                                        theme.colors.gray100,
+
+                                                    fontSize:
+                                                        24,
+
+                                                    fontFamily:
+                                                        theme.fonts.headingBold,
+
+                                                    color:
+                                                        theme.colors.black,
+                                                }}
+
+                                                onChangeText={
+                                                    (text) => {
+
+                                                        const value =
+                                                            text.replace(
+                                                                /[^0-9]/g,
+                                                                ""
+                                                            );
+
+
+                                                        const newPin =
+                                                            [...pin];
+
+
+                                                        newPin[index] =
+                                                            value;
+
+
+                                                        setPin(
+                                                            newPin
+                                                        );
+
+
+                                                        if (
+                                                            value
+                                                        ) {
+
+                                                            setPinError(
+                                                                ""
+                                                            );
+
+                                                        }
+
+
+                                                        if (
+                                                            value &&
+                                                            index <
+                                                                PIN_LENGTH - 1
+                                                        ) {
+
+                                                            pinRefs
+                                                                .current[
+                                                                    index + 1
+                                                                ]
+                                                                ?.focus();
+
+                                                        }
+
+                                                    }
                                                 }
-                                            }}
-                                        />
-                                    ))}
+
+                                                onKeyPress={
+                                                    ({
+                                                        nativeEvent,
+                                                    }) => {
+
+                                                        if (
+                                                            nativeEvent.key ===
+                                                                "Backspace" &&
+                                                            !pin[index] &&
+                                                            index >
+                                                                0
+                                                        ) {
+
+                                                            pinRefs
+                                                                .current[
+                                                                    index - 1
+                                                                ]
+                                                                ?.focus();
+
+                                                        }
+
+                                                    }
+                                                }
+                                            />
+
+                                        )
+                                    )}
+
                                 </View>
 
 
-                                {/* ============================== */}
-                                {/* SECURITY TIP CARD */}
-                                {/* ============================== */}
+                                {pinError ? (
+
+                                    <Text
+                                        style={{
+                                            marginTop:
+                                                theme.spacing.sm,
+                                            fontSize:
+                                                theme.typography.b3,
+                                            fontFamily:
+                                                theme.fonts.medium,
+                                            color:
+                                                theme.colors.error,
+                                        }}
+                                    >
+                                        {pinError}
+                                    </Text>
+
+                                ) : null}
+
 
                                 <View
                                     style={{
-                                        flexDirection: "row",
-                                        alignItems: "center",
-
-                                        marginTop: theme.spacing.xxxl,
-
-                                        padding: theme.spacing.lg,
-
-                                        borderRadius: theme.radius.lg,
-
+                                        flexDirection:
+                                            "row",
+                                        alignItems:
+                                            "center",
+                                        marginTop:
+                                            theme.spacing.xxxl,
+                                        padding:
+                                            theme.spacing.lg,
+                                        borderRadius:
+                                            theme.radius.lg,
                                         borderWidth: 1,
-
-                                        borderColor: "#FFD5BF",
-
-                                        backgroundColor: "#FFF8F4",
+                                        borderColor:
+                                            "#FFD5BF",
+                                        backgroundColor:
+                                            "#FFF8F4",
                                     }}
                                 >
 
                                     <ShieldAlert
                                         size={18}
-                                        color={theme.colors.primary500}
+                                        color={
+                                            theme.colors.primary500
+                                        }
                                     />
+
 
                                     <Text
                                         style={{
                                             flex: 1,
-
-                                            marginLeft: theme.spacing.sm,
-
-                                            fontSize: theme.typography.b3,
-
-                                            fontFamily: theme.fonts.medium,
-
-                                            color: theme.colors.textSecondary,
-
-                                            lineHeight: 20,
+                                            marginLeft:
+                                                theme.spacing.sm,
+                                            fontSize:
+                                                theme.typography.b3,
+                                            fontFamily:
+                                                theme.fonts.medium,
+                                            color:
+                                                theme.colors.textSecondary,
+                                            lineHeight:
+                                                20,
                                         }}
                                     >
                                         Tip: Choose a PIN that's easy to remember but hard to guess
@@ -524,72 +812,92 @@ const CreatePinScreen = ({
 
                                 </View>
 
-                                {/* ============================== */}
-                                {/* CONTINUE BUTTON */}
-                                {/* ============================== */}
-
-                                <TouchableOpacity
-                                    activeOpacity={0.9}
-                                    disabled={!isValid || isLoading}
-                                    onPress={handleContinue}
-                                    style={{
-                                        width: "100%",
-
-                                        height: theme.button.height,
-
-                                        marginTop: theme.spacing.massive,
-
-                                        marginBottom: theme.spacing.xxxl,
-
-                                        borderRadius: theme.button.borderRadius,
-
-                                        justifyContent: "center",
-
-                                        alignItems: "center",
-
-                                        backgroundColor:
-                                            isValid
-                                                ? theme.button.primary.backgroundColor
-                                                : theme.button.disabled.backgroundColor,
-                                    }}
-                                >
-
-                                    {
-                                        isLoading ? (
-
-                                            <ActivityIndicator
-                                                color={theme.button.primary.textColor}
-                                            />
-
-                                        ) : (
-
-                                            <Text
-                                                style={{
-                                                    fontSize: theme.button.fontSize,
-
-                                                    fontFamily: theme.fonts.semiBold,
-
-                                                    color: theme.button.primary.textColor,
-                                                }}
-                                            >
-                                                Continue
-                                            </Text>
-
-                                        )
-                                    }
-
-                                </TouchableOpacity>
-
                             </View>
 
                         </ScrollView>
 
                     </TouchableWithoutFeedback>
+
+
+                    <TouchableOpacity
+                        activeOpacity={0.9}
+                        disabled={isLoading}
+                        onPress={handleContinue}
+                        style={{
+                            width: "100%",
+                            height:
+                                theme.button.height,
+                            marginTop:
+                                theme.spacing.sm,
+                            marginBottom:
+                                10,
+                            borderRadius:
+                                theme.button.borderRadius,
+                            justifyContent:
+                                "center",
+                            alignItems:
+                                "center",
+                            backgroundColor:
+                                isValid
+                                    ? theme.button.primary.backgroundColor
+                                    : theme.button.disabled.backgroundColor,
+                        }}
+                    >
+
+                        {
+                            isLoading ? (
+
+                                <ActivityIndicator
+                                    color={
+                                        theme.button.primary.textColor
+                                    }
+                                />
+
+                            ) : (
+
+                                <Text
+                                    style={{
+                                        fontSize:
+                                            theme.button.fontSize,
+                                        fontFamily:
+                                            theme.fonts.semiBold,
+                                        color:
+                                            theme.button.primary.textColor,
+                                    }}
+                                >
+                                    Continue
+                                </Text>
+
+                            )
+                        }
+
+                    </TouchableOpacity>
+
                 </View>
-            </KeyboardAvoidingView>
+
+            </KeyboardAvoidingBottomView>
+
+
+            <SuccessModal
+                visible={
+                    showSuccessModal
+                }
+                onClose={() => {
+                    setShowSuccessModal(
+                        false
+                    );
+                }}
+                title="PIN Set Successfully"
+                description={
+                    "Your account is now secure and\nready to use."
+                }
+            />
 
         </SafeAreaView>
 
     );
-}
-export default CreatePinScreen
+
+};
+
+
+export default CreatePinScreen;

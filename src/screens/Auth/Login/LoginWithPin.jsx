@@ -20,6 +20,7 @@ import {
 } from "react-native";
 import {
     SafeAreaView,
+    useSafeAreaInsets,
 } from "react-native-safe-area-context";
 
 import {
@@ -41,16 +42,16 @@ import useHandleMutation
     from "../../../hooks/useHandleMutation";
 import { useDispatch } from "react-redux";
 import { saveAuth } from "../../../utils/saveAuth"
-import {syncProfile} from '../../../utils/profileSync'
- 
+import { syncProfile } from '../../../utils/profileSync'
+import KeyboardAvoidingBottomView from "../../../components/common/KeyBoard/KeyboardAvoidingBottomView";
 const PIN_LENGTH = 4;
 
 const LoginWithPin = ({
     navigation,
 }) => {
- const dispatch = useDispatch()
+    const dispatch = useDispatch()
     //  Api CAlll 
- 
+
     const {
         handleMutation,
     } = useHandleMutation();
@@ -167,13 +168,16 @@ const LoginWithPin = ({
                     response
                 );
 
-            syncProfile();
+                syncProfile();
 
             },
 
         });
 
     };
+
+   const insets =
+     useSafeAreaInsets();
 
     return (
 
@@ -189,15 +193,9 @@ const LoginWithPin = ({
                 backgroundColor={theme.colors.white}
             />
 
-            <KeyboardAvoidingView
-                style={{
-                    flex: 1,
-                }}
-                behavior={
-                    Platform.OS === "ios"
-                        ? "padding"
-                        : "height"
-                }
+            <KeyboardAvoidingBottomView
+               
+               
             >
 
                 <View
@@ -211,9 +209,9 @@ const LoginWithPin = ({
                         onPress={() =>
                             navigation.goBack()
                         }
-                        // style={{
-                        //     marginLeft: -8,
-                        // }}
+                    // style={{
+                    //     marginLeft: -8,
+                    // }}
                     />
 
                     <TouchableWithoutFeedback
@@ -235,11 +233,9 @@ const LoginWithPin = ({
                                     maxWidth: contentWidth,
                                     alignSelf: "center",
 
-                                    paddingTop:
-                                        isTablet
-                                            ? 40
-                                            : theme.spacing.lg,
+
                                 }}
+
                             >
 
                                 {/* LOCK ICON */}
@@ -258,6 +254,7 @@ const LoginWithPin = ({
 
                                         marginBottom:
                                             theme.spacing.xl,
+
                                     }}
                                 >
 
@@ -388,7 +385,7 @@ const LoginWithPin = ({
                                     }}
                                 />
 
-                                <TouchableOpacity onPress={()=>{ navigation.navigate("visitor-login-pannel")}}>
+                                <TouchableOpacity onPress={() => { navigation.navigate("visitor-login-pannel") }}>
                                     <Text>Visitory Login</Text>
                                 </TouchableOpacity>
 
@@ -585,75 +582,78 @@ const LoginWithPin = ({
                                 {/* CONTINUE BUTTON */}
                                 {/* ===================================== */}
 
-                                <TouchableOpacity
-                                    activeOpacity={0.9}
-                                    disabled={!isValid || isLoading}
-                                    onPress={handleLogin}
-                                    style={{
-                                        width: "100%",
 
-                                        height: theme.button.height,
-
-                                        marginTop: theme.spacing.massive,
-
-                                        marginBottom: theme.spacing.xxxl,
-
-                                        borderRadius:
-                                            theme.button.borderRadius,
-
-                                        justifyContent: "center",
-
-                                        alignItems: "center",
-
-                                        backgroundColor:
-                                            isValid
-                                                ? theme.button.primary.backgroundColor
-                                                : theme.button.disabled.backgroundColor,
-                                    }}
-                                >
-
-                                    {
-                                        isLoading ? (
-
-                                            <ActivityIndicator
-                                                color={
-                                                    theme.button.primary.textColor
-                                                }
-                                            />
-
-                                        ) : (
-
-                                            <Text
-                                                style={{
-                                                    fontSize:
-                                                        theme.button.fontSize,
-
-                                                    fontFamily:
-                                                        theme.fonts.semiBold,
-
-                                                    color:
-                                                        theme.button.primary.textColor,
-                                                }}
-                                            >
-
-                                                Continue
-
-                                            </Text>
-
-                                        )
-                                    }
-
-                                </TouchableOpacity>
 
                             </View>
 
                         </ScrollView>
 
-                    </TouchableWithoutFeedback>
 
+
+                    </TouchableWithoutFeedback>
+                    <TouchableOpacity
+                        activeOpacity={0.9}
+                        disabled={!isValid || isLoading}
+                        onPress={handleLogin}
+                        style={{
+
+                           
+                            width: "100%",
+
+                            height: theme.button.height,
+
+                            marginTop: theme.spacing.sm,
+marginBottom:10,
+                           
+                            borderRadius:
+                                theme.button.borderRadius,
+
+                            justifyContent: "center",
+
+                            alignItems: "center",
+
+                            backgroundColor:
+                                isValid
+                                    ? theme.button.primary.backgroundColor
+                                    : theme.button.disabled.backgroundColor,
+                        }}
+                    >
+
+                        {
+                            isLoading ? (
+
+                                <ActivityIndicator
+                                    color={
+                                        theme.button.primary.textColor
+                                    }
+                                />
+
+                            ) : (
+
+                                <Text
+                                    style={{
+                                        fontSize:
+                                            theme.button.fontSize,
+
+                                        fontFamily:
+                                            theme.fonts.semiBold,
+
+                                        color:
+                                            theme.button.primary.textColor,
+                                    }}
+                                >
+
+                                    Continue
+
+                                </Text>
+
+                            )
+                        }
+
+                    </TouchableOpacity>
                 </View>
 
-            </KeyboardAvoidingView>
+            </KeyboardAvoidingBottomView>
 
         </SafeAreaView>
 

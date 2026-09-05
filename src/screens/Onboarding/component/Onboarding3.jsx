@@ -65,6 +65,7 @@ const Onboarding3 = () => {
 
       <Text
         style={{
+           background: "linear-gradient(90deg, #FF8008, #FFC837)",
           width: "100%",
           maxWidth: 560,
 
@@ -97,7 +98,7 @@ const Onboarding3 = () => {
           flexShrink: 1,
         }}
       >
-        Hassle-Free Payments
+       Unlock Government Benefits
       </Text>
 
       {/* DESCRIPTION */}
@@ -136,8 +137,7 @@ const Onboarding3 = () => {
           flexShrink: 1,
         }}
       >
-        Pay only after service completion with secure payment options, clear
-        pricing, and a smooth customer experience.
+       Explore schemes, subsidies, and check your eligibility in just a few taps. 
       </Text>
     </View>
   );

@@ -1,1075 +1,894 @@
 import React, {
-  memo,
-  useState,
+    useRef,
+    useState,
 } from "react";
 
 import {
-  View,
-  Text,
-  TouchableOpacity,
-  ActivityIndicator,
+    View,
+    Text,
+    Image,
+    TextInput,
+    TouchableOpacity,
+    ScrollView,
+    TouchableWithoutFeedback,
+    Keyboard,
+    useWindowDimensions,
+    StatusBar,
+    ActivityIndicator,
 } from "react-native";
 
 import {
-  Camera,
-  FileText,
-  PenLine,
-  ShieldCheck,
-  Upload,
-} from "lucide-react-native";
+    SafeAreaView,
+} from "react-native-safe-area-context";
+
+import { theme } from "../../../theme/index";
+
+import LoginImg from "../assets/login.webp";
 
 import {
-  theme,
-} from "../../../../theme";
+    useLoginMutation,
+} from "../../../redux/features/auth/authApi";
 
-import CommonInput from "../../../../components/common/Input/CommonInput";
+import useHandleMutation from "../../../hooks/useHandleMutation";
 
-import UploadBottomSheet from
-  "../../../../components/common/Modal/UploadBottomSheet";
-
-import IDDetailsModal from
-  "../components/IDDetailsModal";
+import KeyboardAvoidingBottomView from "../../../components/common/KeyBoard/KeyboardAvoidingBottomView";
 
 
-const WitnessDetails = ({
-  data = {},
-  onChange,
-  uploading = false,
+const LoginScreen = ({
+    navigation,
 }) => {
 
-  // =====================================================
-  // UPLOAD SHEET
-  // =====================================================
-
-  const [
-    sheetVisible,
-    setSheetVisible,
-  ] = useState(false);
+    const {
+        width,
+        height,
+    } = useWindowDimensions();
 
 
-  // =====================================================
-  // ID DETAILS MODAL
-  // =====================================================
-
-  const [
-    idModalVisible,
-    setIdModalVisible,
-  ] = useState(false);
+    const [
+        phone,
+        setPhone,
+    ] = useState("");
 
 
-  // =====================================================
-  // CURRENT UPLOAD TYPE
-  // =====================================================
-
-  const [
-    uploadType,
-    setUploadType,
-  ] = useState("");
+    /*
+     * ScrollView reference
+     */
+    const scrollViewRef =
+        useRef(null);
 
 
-  // =====================================================
-  // VALUES
-  // =====================================================
-
-  const witnessName =
-    data?.witnessName || "";
-
-  const mobileNumber =
-    data?.mobileNumber || "";
-
-  const relation =
-    data?.relation || "";
-
-  const idType =
-    data?.idType || "";
-
-  const idNumber =
-    data?.idNumber || "";
-
-  const selfie =
-    data?.selfie || null;
-
-  const signature =
-    data?.signature || null;
-
-  const idDocument =
-    data?.idDocument || null;
-
-  const witnessConfirmed =
-    data?.witnessConfirmed === true;
+    const isTablet =
+        width >= 768;
 
 
-  // =====================================================
-  // UPDATE FIELD
-  // =====================================================
-
-  const updateField = (
-    field,
-    value
-  ) => {
-
-    onChange?.({
-
-      ...data,
-
-      [field]:
-        value,
-
-    });
-
-  };
+    const isSmall =
+        height < 700;
 
 
-  // =====================================================
-  // OPEN UPLOAD SHEET
-  // =====================================================
+    /*
+     * Login API
+     */
+    const [
+        login,
+        {
+            isLoading,
+            isSuccess,
+            isError,
+            error,
+            data,
+            reset,
+        },
+    ] = useLoginMutation();
 
-  const openUploadSheet = (
-    type
-  ) => {
 
-    setUploadType(
-      type
+    const {
+        handleMutation,
+    } = useHandleMutation();
+
+
+    /*
+     * Responsive content width
+     */
+    const contentWidth =
+        isTablet
+            ? Math.min(
+                width * 0.65,
+                520
+            )
+            : width -
+            theme.spacing.massive;
+
+
+    /*
+     * Responsive image
+     */
+    const imageSize =
+        isTablet
+            ? 330
+            : isSmall
+                ? 200
+                : Math.min(
+                    width * 0.58,
+                    260
+                );
+
+
+    /*
+     * Request OTP
+     */
+    const handleRequestOtp =
+        async () => {
+
+            if (
+                phone.length !== 10
+            ) {
+                return;
+            }
+
+
+            const response =
+                await handleMutation({
+
+                    apiFunc: login,
+
+                    params: {
+                        mobile: phone,
+                    },
+
+                    showSuccess: true,
+
+                    customSuccessMsg:
+                        "OTP Sent Successfully",
+
+
+                    onSuccess: (data) => {
+
+                        const optData =
+                            data?.data;
+
+
+                        /*
+                         * Close keyboard
+                         */
+                        Keyboard.dismiss();
+
+
+                        /*
+                         * Navigate to OTP
+                         */
+                        navigation.navigate(
+                            "enter-otp-register-user",
+                            {
+                                phone,
+                                otp: optData?.otp,
+                            }
+                        );
+
+                    },
+
+                });
+
+
+            if (!response) {
+                return;
+            }
+
+        };
+
+
+    return (
+        <SafeAreaView
+            style={{
+                flex: 1,
+
+                backgroundColor:
+                    theme.colors.white,
+            }}
+        >
+
+            {/* ================= STATUS BAR ================= */}
+
+            <StatusBar
+                barStyle={
+                    theme.statusBar.dark
+                }
+                backgroundColor={
+                    theme.colors.white
+                }
+            />
+
+
+            {/* ================= KEYBOARD WRAPPER ================= */}
+
+            <KeyboardAvoidingBottomView
+                scrollViewRef={
+                    scrollViewRef
+                }
+                keyboardSpacing={20}
+            >
+
+                <TouchableWithoutFeedback
+                    onPress={
+                        Keyboard.dismiss
+                    }
+                    accessible={false}
+                >
+
+                    {/* ================= SCROLL VIEW ================= */}
+
+                    <ScrollView
+                        ref={
+                            scrollViewRef
+                        }
+
+                        showsVerticalScrollIndicator={
+                            false
+                        }
+
+                        keyboardShouldPersistTaps={
+                            "handled"
+                        }
+
+                        keyboardDismissMode={
+                            "on-drag"
+                        }
+
+                        contentContainerStyle={{
+                            flexGrow: 1,
+
+                            alignItems:
+                                "center",
+
+                            paddingBottom:
+                                theme.spacing.screen,
+                        }}
+                    >
+
+                        {/* ================= CONTENT ================= */}
+
+                        <View
+                            style={{
+                                width:
+                                    contentWidth,
+
+                                maxWidth: 520,
+
+                                paddingTop:
+                                    isTablet
+                                        ? 50
+                                        : isSmall
+                                            ? theme.spacing.xl
+                                            : theme.spacing.xxxl,
+                            }}
+                        >
+
+                            {/* ================= HEADER ================= */}
+
+                            <Text
+                                style={{
+                                    fontSize:
+                                        isTablet
+                                            ? theme.typography.h2
+                                            : theme.typography.h3,
+
+                                    lineHeight:
+                                        isTablet
+                                            ? theme.lineHeight.h2
+                                            : theme.lineHeight.h3,
+
+                                    fontFamily:
+                                        theme.fonts.headingBold,
+
+                                    color:
+                                        theme.colors.black,
+                                }}
+                            >
+                                Login Account
+                            </Text>
+
+
+                            <Text
+                                style={{
+                                    marginTop:
+                                        theme.spacing.xs,
+
+                                    fontSize:
+                                        theme.typography.b2,
+
+                                    lineHeight:
+                                        theme.lineHeight.b1,
+
+                                    fontFamily:
+                                        theme.fonts.medium,
+
+                                    color:
+                                        theme.colors.textSecondary,
+                                }}
+                            >
+                                Hello, welcome back to our account
+                            </Text>
+
+
+                            {/* ================= IMAGE ================= */}
+
+                            <View
+                                style={{
+                                    width: "100%",
+
+                                    alignItems:
+                                        "center",
+
+                                    marginTop:
+                                        isSmall
+                                            ? theme.spacing.lg
+                                            : theme.spacing.xxl,
+                                }}
+                            >
+
+                                <Image
+                                    source={
+                                        LoginImg
+                                    }
+
+                                    resizeMode="contain"
+
+                                    style={{
+                                        width:
+                                            imageSize,
+
+                                        height:
+                                            imageSize,
+                                    }}
+                                />
+
+                            </View>
+
+
+                            {/* ================= LOGIN TITLE ================= */}
+
+                            <Text
+                                style={{
+                                    marginTop:
+                                        isSmall
+                                            ? theme.spacing.lg
+                                            : theme.spacing.xxxl,
+
+                                    fontSize:
+                                        isTablet
+                                            ? theme.typography.displayMD
+                                            : theme.typography.h1,
+
+                                    lineHeight:
+                                        isTablet
+                                            ? theme.lineHeight.displayMD
+                                            : theme.lineHeight.h2,
+
+                                    fontFamily:
+                                        theme.fonts.headingBold,
+
+                                    color:
+                                        theme.colors.navy900,
+                                }}
+                            >
+
+                                <Text
+                                    style={{
+                                        fontFamily:
+                                            theme.fonts.headingBold,
+
+                                        color:
+                                            theme.colors.primary500,
+                                    }}
+                                >
+                                    Login
+                                </Text>
+
+                                {" "}with your number
+
+                            </Text>
+
+
+                            {/* ================= DESCRIPTION ================= */}
+
+                            <Text
+                                style={{
+                                    marginTop:
+                                        theme.spacing.sm,
+
+                                    fontSize:
+                                        theme.typography.b2,
+
+                                    lineHeight:
+                                        theme.lineHeight.b1,
+
+                                    fontFamily:
+                                        theme.fonts.regular,
+
+                                    color:
+                                        theme.colors.textLight,
+                                }}
+                            >
+                                We'll send you an OTP to verify your number
+                            </Text>
+
+
+                            {/* ================= PHONE INPUT ================= */}
+
+                            <View
+                                style={{
+                                    height:
+                                        theme.input.height,
+
+                                    width: "100%",
+
+                                    marginTop:
+                                        isSmall
+                                            ? theme.spacing.xl
+                                            : theme.spacing.xxxl,
+
+                                    borderWidth:
+                                        theme.input.borderWidth,
+
+                                    borderColor:
+                                        theme.input.default.borderColor,
+
+                                    borderRadius:
+                                        theme.input.borderRadius,
+
+                                    flexDirection:
+                                        "row",
+
+                                    alignItems:
+                                        "center",
+
+                                    backgroundColor:
+                                        theme.colors.white,
+
+                                    ...theme.shadows.card,
+                                }}
+                            >
+
+                                {/* COUNTRY */}
+
+                                <View
+                                    style={{
+                                        height: "60%",
+
+                                        paddingHorizontal:
+                                            theme.spacing.lg + 2,
+
+                                        flexDirection:
+                                            "row",
+
+                                        alignItems:
+                                            "center",
+
+                                        borderRightWidth:
+                                            theme.borderWidth.thin,
+
+                                        borderRightColor:
+                                            theme.colors.divider,
+                                    }}
+                                >
+
+                                    <Text
+                                        style={{
+                                            fontSize:
+                                                theme.iconSize.sm,
+                                        }}
+                                    >
+                                        🇮🇳
+                                    </Text>
+
+
+                                    <Text
+                                        style={{
+                                            marginLeft:
+                                                theme.spacing.sm,
+
+                                            fontSize:
+                                                theme.typography.b2,
+
+                                            fontFamily:
+                                                theme.fonts.semiBold,
+
+                                            color:
+                                                theme.colors.navy900,
+                                        }}
+                                    >
+                                        +91
+                                    </Text>
+
+                                </View>
+
+
+                                {/* MOBILE INPUT */}
+
+                                <TextInput
+                                    value={
+                                        phone
+                                    }
+
+                                    onChangeText={(
+                                        text
+                                    ) => {
+
+                                        const value =
+                                            text.replace(
+                                                /[^0-9]/g,
+                                                ""
+                                            );
+
+
+                                        setPhone(
+                                            value.slice(
+                                                0,
+                                                10
+                                            )
+                                        );
+
+                                    }}
+
+                                    placeholder="Mobile number"
+
+                                    placeholderTextColor={
+                                        theme.colors.placeholder
+                                    }
+
+                                    keyboardType="number-pad"
+
+                                    maxLength={10}
+
+                                    returnKeyType="done"
+
+                                    /*
+                                     * IMPORTANT
+                                     *
+                                     * Keyboard open hote hi
+                                     * ScrollView bottom par jayega.
+                                     */
+                                    onFocus={() => {
+
+                                        setTimeout(
+                                            () => {
+
+                                                scrollViewRef.current?.scrollToEnd({
+                                                    animated: true,
+                                                });
+
+                                            },
+                                            150
+                                        );
+
+                                    }}
+
+                                    style={{
+                                        flex: 1,
+
+                                        height: "100%",
+
+                                        paddingHorizontal:
+                                            theme.input.paddingHorizontal,
+
+                                        fontSize:
+                                            theme.input.fontSize,
+
+                                        fontFamily:
+                                            theme.fonts.medium,
+
+                                        color:
+                                            theme.colors.black,
+                                    }}
+                                />
+
+                            </View>
+
+
+                            {/* ================= REQUEST OTP ================= */}
+
+                            <TouchableOpacity
+                                activeOpacity={0.9}
+
+                                disabled={
+                                    isLoading ||
+                                    phone.length !== 10
+                                }
+
+                                onPress={
+                                    handleRequestOtp
+                                }
+
+                                style={{
+                                    width: "100%",
+
+                                    height:
+                                        theme.button.height,
+
+                                    marginTop:
+                                        theme.spacing.lg,
+
+                                    borderRadius:
+                                        theme.button.borderRadius,
+
+                                    backgroundColor:
+                                        phone.length === 10
+                                            ? theme.button.primary.backgroundColor
+                                            : theme.button.disabled.backgroundColor,
+
+                                    justifyContent:
+                                        "center",
+
+                                    alignItems:
+                                        "center",
+
+                                    opacity:
+                                        isLoading
+                                            ? 0.7
+                                            : 1,
+                                }}
+                            >
+
+                                {isLoading ? (
+
+                                    <ActivityIndicator
+                                        size="small"
+
+                                        color={
+                                            theme.button.primary.textColor
+                                        }
+                                    />
+
+                                ) : (
+
+                                    <Text
+                                        style={{
+                                            fontSize:
+                                                theme.button.fontSize,
+
+                                            fontFamily:
+                                                theme.fonts.semiBold,
+
+                                            color:
+                                                phone.length === 10
+                                                    ? theme.button.primary.textColor
+                                                    : theme.button.disabled.textColor,
+                                        }}
+                                    >
+                                        Request OTP
+                                    </Text>
+
+                                )}
+
+                            </TouchableOpacity>
+
+
+                            {/* ================= REGISTER ================= */}
+
+                            <View
+                                style={{
+                                    marginTop:
+                                        theme.spacing.lg,
+
+                                    flexDirection:
+                                        "row",
+
+                                    justifyContent:
+                                        "center",
+
+                                    alignItems:
+                                        "center",
+                                }}
+                            >
+
+                                <Text
+                                    style={{
+                                        fontSize:
+                                            theme.typography.b3,
+
+                                        fontFamily:
+                                            theme.fonts.medium,
+
+                                        color:
+                                            theme.colors.textLight,
+                                    }}
+                                >
+                                    Not Registered yet?{" "}
+                                </Text>
+
+
+                                <TouchableOpacity
+                                    activeOpacity={0.8}
+
+                                    onPress={() => {
+
+                                        Keyboard.dismiss();
+
+                                        navigation.navigate(
+                                            "Register"
+                                        );
+
+                                    }}
+                                >
+
+                                    <Text
+                                        style={{
+                                            fontSize:
+                                                theme.typography.b3,
+
+                                            fontFamily:
+                                                theme.fonts.semiBold,
+
+                                            color:
+                                                theme.colors.primary500,
+                                        }}
+                                    >
+                                        Create an Account
+                                    </Text>
+
+                                </TouchableOpacity>
+
+                            </View>
+
+                        </View>
+
+                    </ScrollView>
+
+                </TouchableWithoutFeedback>
+
+            </KeyboardAvoidingBottomView>
+
+        </SafeAreaView>
     );
+};
 
-    setSheetVisible(
-      true
-    );
 
-  };
+export default LoginScreen;
 
 
-  // =====================================================
-  // OPEN ID DETAILS
-  // =====================================================
 
-  const handleOpenIDDocument = () => {
+import React, {
+    useEffect,
+    useState,
+} from "react";
 
-    setIdModalVisible(
-      true
-    );
+import {
+    View,
+    Keyboard,
+    Platform,
+} from "react-native";
 
-  };
+import {
+    useSafeAreaInsets,
+} from "react-native-safe-area-context";
 
 
-  // =====================================================
-  // ID DETAILS CONTINUE
-  // =====================================================
+const KeyboardAvoidingBottomView = ({
+    children,
+    style,
+    keyboardSpacing = 0,
 
-  const handleIDDetailsContinue = (
-    values
-  ) => {
+    // AUTO SCROLL
+    scrollViewRef,
+}) => {
 
-    const nextData = {
+    const insets =
+        useSafeAreaInsets();
 
-      ...data,
 
-      idType:
-        values?.idType || "",
+    const [
+        keyboardHeight,
+        setKeyboardHeight,
+    ] = useState(0);
 
-      idNumber:
-        values?.idNumber || "",
 
-    };
+    useEffect(() => {
 
+        const showEvent =
+            Platform.OS === "ios"
+                ? "keyboardWillShow"
+                : "keyboardDidShow";
 
-    onChange?.(
-      nextData
-    );
 
+        const hideEvent =
+            Platform.OS === "ios"
+                ? "keyboardWillHide"
+                : "keyboardDidHide";
 
-    setIdModalVisible(
-      false
-    );
 
+        const keyboardShowListener =
+            Keyboard.addListener(
+                showEvent,
+                (event) => {
 
-    // Open common upload sheet
-    setTimeout(() => {
+                    const height =
+                        event?.endCoordinates?.height || 0;
 
-      setUploadType(
-        "idDocument"
-      );
 
-      setSheetVisible(
-        true
-      );
+                    setKeyboardHeight(
+                        height
+                    );
 
-    }, 200);
 
-  };
+                    // =========================
+                    // AUTO SLIDE
+                    // =========================
 
+                    setTimeout(() => {
 
-  // =====================================================
-  // CAMERA
-  // =====================================================
+                        if (
+                            scrollViewRef?.current
+                        ) {
 
-  const openCamera = () => {
+                            scrollViewRef.current.scrollToEnd({
+                                animated: true,
+                            });
 
-    setSheetVisible(
-      false
-    );
+                        }
 
-    console.log(
-      "Open camera for:",
-      uploadType
-    );
+                    }, 150);
 
-    // ---------------------------------------------------
-    // IMPORTANT:
-    // Parent component se actual camera picker
-    // callback pass kar sakte ho.
-    // ---------------------------------------------------
+                }
+            );
 
-  };
 
+        const keyboardHideListener =
+            Keyboard.addListener(
+                hideEvent,
+                () => {
 
-  // =====================================================
-  // GALLERY
-  // =====================================================
+                    setKeyboardHeight(
+                        0
+                    );
 
-  const openGallery = () => {
+                }
+            );
 
-    setSheetVisible(
-      false
-    );
 
-    console.log(
-      "Open gallery for:",
-      uploadType
-    );
+        return () => {
 
-  };
+            keyboardShowListener.remove();
 
+            keyboardHideListener.remove();
 
-  // =====================================================
-  // DOCUMENT
-  // =====================================================
+        };
 
-  const openDocument = () => {
+    }, [
+        scrollViewRef,
+    ]);
 
-    setSheetVisible(
-      false
-    );
 
-    console.log(
-      "Open document picker for:",
-      uploadType
-    );
+    const isKeyboardVisible =
+        keyboardHeight > 0;
 
-  };
 
+    const bottomSpace =
+        isKeyboardVisible
+            ? keyboardHeight + keyboardSpacing
+            : 10;
 
-  // =====================================================
-  // FILE SELECTED FROM PICKER
-  // =====================================================
-
-  /*
-   * IMPORTANT:
-   *
-   * Tumhare common UploadBottomSheet ke andar
-   * openCamera/openGallery/openDocument callback
-   * picker open karte hain.
-   *
-   * Actual picker ke result ke baad parent se
-   * ye function call karna:
-   *
-   * handleSelectedFile(file)
-   *
-   */
-
-  const handleSelectedFile = (
-    file
-  ) => {
-
-    if (!file) {
-      return;
-    }
-
-
-    if (
-      uploadType === "selfie"
-    ) {
-
-      updateField(
-        "selfie",
-        file
-      );
-
-    }
-
-
-    if (
-      uploadType === "signature"
-    ) {
-
-      updateField(
-        "signature",
-        file
-      );
-
-    }
-
-
-    if (
-      uploadType === "idDocument"
-    ) {
-
-      updateField(
-        "idDocument",
-        file
-      );
-
-    }
-
-
-    setSheetVisible(
-      false
-    );
-
-  };
-
-
-  // =====================================================
-  // UPLOAD CARD
-  // =====================================================
-
-  const renderUploadCard = ({
-    title,
-    subtitle,
-    icon,
-    file,
-    type,
-    required = true,
-    onPress,
-  }) => {
 
     return (
 
-      <TouchableOpacity
-        activeOpacity={0.86}
-
-        onPress={
-          onPress ||
-          (() =>
-            openUploadSheet(
-              type
-            ))
-        }
-
-        disabled={
-          uploading
-        }
-
-        style={{
-          minHeight: 88,
-
-          borderRadius: 16,
-
-          borderWidth: 1,
-
-          borderColor:
-            file
-              ? "#CBE7D2"
-              : "#E9DDD5",
-
-          backgroundColor:
-            file
-              ? "#F8FCF9"
-              : "#FFFCFA",
-
-          padding:
-            theme.spacing.md,
-
-          flexDirection:
-            "row",
-
-          alignItems:
-            "center",
-
-          marginBottom:
-            theme.spacing.md,
-
-          opacity:
-            uploading
-              ? 0.6
-              : 1,
-        }}
-      >
-
-        {/* =================================================
-            ICON
-        ================================================= */}
-
         <View
-          style={{
-            width: 46,
+            style={[
+                {
+                    flex: 1,
 
-            height: 46,
+                    paddingBottom:
+                        bottomSpace,
+                },
 
-            borderRadius: 14,
-
-            backgroundColor:
-              file
-                ? "#E8F7EC"
-                : "#FFF3E8",
-
-            alignItems:
-              "center",
-
-            justifyContent:
-              "center",
-          }}
+                style,
+            ]}
         >
 
-          {file ? (
-
-            <ShieldCheck
-              size={21}
-              color="#2E8B57"
-              strokeWidth={2.1}
-            />
-
-          ) : (
-
-            icon
-
-          )}
+            {children}
 
         </View>
-
-
-        {/* =================================================
-            CONTENT
-        ================================================= */}
-
-        <View
-          style={{
-            flex: 1,
-
-            marginLeft:
-              theme.spacing.md,
-          }}
-        >
-
-          <View
-            style={{
-              flexDirection:
-                "row",
-
-              alignItems:
-                "center",
-            }}
-          >
-
-            <Text
-              style={{
-                color:
-                  theme.colors.black,
-
-                fontSize:
-                  theme.typography.b2,
-
-                fontFamily:
-                  theme.fonts.semiBold,
-              }}
-            >
-              {title}
-            </Text>
-
-
-            {required && (
-
-              <Text
-                style={{
-                  color:
-                    theme.colors.primary500,
-
-                  fontSize: 14,
-
-                  marginLeft: 3,
-                }}
-              >
-                *
-              </Text>
-
-            )}
-
-          </View>
-
-
-          <Text
-            numberOfLines={1}
-            style={{
-              marginTop: 4,
-
-              color:
-                file
-                  ? "#2E8B57"
-                  : theme.colors.gray500,
-
-              fontSize: 11.5,
-
-              fontFamily:
-                theme.fonts.regular,
-            }}
-          >
-            {file
-              ? file?.name ||
-              "Document selected"
-              : subtitle}
-          </Text>
-
-        </View>
-
-
-        {/* =================================================
-            ACTION
-        ================================================= */}
-
-        {uploading ? (
-
-          <ActivityIndicator
-            size="small"
-            color={
-              theme.colors.primary500
-            }
-          />
-
-        ) : (
-
-          <Upload
-            size={18}
-            color={
-              file
-                ? "#2E8B57"
-                : theme.colors.primary500
-            }
-
-            strokeWidth={2.2}
-          />
-
-        )}
-
-      </TouchableOpacity>
 
     );
-
-  };
-
-
-  // =====================================================
-  // RENDER
-  // =====================================================
-
-  return (
-
-    <View>
-
-      {/* =================================================
-          WITNESS DETAILS
-      ================================================= */}
-
-      <View
-        style={{
-          backgroundColor:
-            theme.colors.white,
-
-          borderRadius: 20,
-
-          padding:
-            theme.spacing.lg,
-
-          marginBottom:
-            theme.spacing.lg,
-
-          borderWidth: 1,
-
-          borderColor:
-            "#F0E5DD",
-
-          ...theme.shadows.card,
-        }}
-      >
-
-        <Text
-          style={{
-            color:
-              theme.colors.black,
-
-            fontSize:
-              theme.typography.b1,
-
-            fontFamily:
-              theme.fonts.headingBold,
-
-            marginBottom:
-              theme.spacing.lg,
-          }}
-        >
-          Witness Details
-        </Text>
-
-
-        {/* =================================================
-            FULL NAME
-        ================================================= */}
-
-        <CommonInput
-
-          label="Full Name"
-          required
-          placeholder="Enter witness full name"
-
-          value={
-            witnessName
-          }
-
-          onChangeText={
-            value =>
-              updateField(
-                "witnessName",
-                value
-              )
-          }
-
-          editable={
-            !uploading
-          }
-
-          containerStyle={{
-            marginBottom:
-              theme.spacing.md,
-          }}
-          inputContainerStyle={{
-            ...theme.input.inputBorder
-          }}
-        />
-
-
-        {/* =================================================
-            MOBILE
-        ================================================= */}
-
-        <CommonInput
-          label="Mobile Number"
-          required
-          placeholder="Enter 10-digit mobile number"
-
-          value={
-            mobileNumber
-          }
-
-          onChangeText={
-            value =>
-              updateField(
-                "mobileNumber",
-                value.replace(
-                  /\D/g,
-                  ""
-                )
-              )
-          }
-
-          keyboardType="phone-pad"
-
-          maxLength={10}
-
-          editable={
-            !uploading
-          }
-
-          containerStyle={{
-            marginBottom:
-              theme.spacing.md,
-          }}
-            inputContainerStyle={{
-            ...theme.input.inputBorder
-          }}
-        />
-
-
-        {/* =================================================
-            RELATION
-        ================================================= */}
-
-        <CommonInput
-          label="Relation to Applicant"
-          required
-          placeholder="Enter relation"
-
-          value={
-            relation
-          }
-
-          onChangeText={
-            value =>
-              updateField(
-                "relation",
-                value
-              )
-          }
-
-          editable={
-            !uploading
-          }
-
-          containerStyle={{
-            marginBottom:
-              theme.spacing.lg,
-          }}
-            inputContainerStyle={{
-            ...theme.input.inputBorder
-          }}
-        />
-
-      </View>
-
-
-      {/* =================================================
-          VERIFICATION DOCUMENTS
-      ================================================= */}
-
-      <View
-        style={{
-          backgroundColor:
-            theme.colors.white,
-
-          borderRadius: 20,
-
-          padding:
-            theme.spacing.lg,
-
-          marginBottom:
-            theme.spacing.lg,
-
-          borderWidth: 1,
-
-          borderColor:
-            "#F0E5DD",
-
-          ...theme.shadows.card,
-        }}
-      >
-
-        <Text
-          style={{
-            color:
-              theme.colors.black,
-
-            fontSize:
-              theme.typography.b1,
-
-            fontFamily:
-              theme.fonts.headingBold,
-
-            marginBottom: 4,
-          }}
-        >
-          Witness Verification
-        </Text>
-
-
-        <Text
-          style={{
-            color:
-              theme.colors.gray500,
-
-            fontSize: 12,
-
-            fontFamily:
-              theme.fonts.regular,
-
-            lineHeight: 18,
-
-            marginBottom:
-              theme.spacing.lg,
-          }}
-        >
-          Upload witness selfie, signature and one
-          identity document.
-        </Text>
-
-
-        {/* =================================================
-            SELFIE
-        ================================================= */}
-
-        {renderUploadCard({
-
-          title:
-            "Witness Selfie",
-
-          subtitle:
-            "Capture witness selfie",
-
-          icon: (
-            <Camera
-              size={21}
-              color={
-                theme.colors.primary500
-              }
-              strokeWidth={2}
-            />
-          ),
-
-          file:
-            selfie,
-
-          type:
-            "selfie",
-
-          required:
-            true,
-
-        })}
-
-
-        {/* =================================================
-            SIGNATURE
-        ================================================= */}
-
-        {renderUploadCard({
-
-          title:
-            "Witness Signature",
-
-          subtitle:
-            "Upload witness signature",
-
-          icon: (
-            <PenLine
-              size={21}
-              color={
-                theme.colors.primary500
-              }
-              strokeWidth={2}
-            />
-          ),
-
-          file:
-            signature,
-
-          type:
-            "signature",
-
-          required:
-            true,
-
-        })}
-
-
-        {/* =================================================
-            ID DOCUMENT
-        ================================================= */}
-
-        {renderUploadCard({
-
-          title:
-            "Identity Document",
-
-          subtitle:
-            idType
-              ? `${idType} • Tap to upload`
-              : "Select ID type and upload document",
-
-          icon: (
-            <FileText
-              size={21}
-              color={
-                theme.colors.primary500
-              }
-              strokeWidth={2}
-            />
-          ),
-
-          file:
-            idDocument,
-
-          type:
-            "idDocument",
-
-          required:
-            true,
-
-          onPress:
-            handleOpenIDDocument,
-
-        })}
-
-      </View>
-
-
-      {/* =================================================
-          CONFIRMATION
-      ================================================= */}
-
-      <TouchableOpacity
-        activeOpacity={0.85}
-
-        onPress={() =>
-          updateField(
-            "witnessConfirmed",
-            !witnessConfirmed
-          )
-        }
-
-        disabled={
-          uploading
-        }
-
-        style={{
-          flexDirection:
-            "row",
-
-          alignItems:
-            "flex-start",
-
-          marginBottom:
-            theme.spacing.lg,
-        }}
-      >
-
-        <View
-          style={{
-            width: 22,
-
-            height: 22,
-
-            borderRadius: 6,
-
-            borderWidth: 1.5,
-
-            borderColor:
-              witnessConfirmed
-                ? theme.colors.primary500
-                : theme.colors.gray300,
-
-            backgroundColor:
-              witnessConfirmed
-                ? theme.colors.primary500
-                : theme.colors.white,
-
-            alignItems:
-              "center",
-
-            justifyContent:
-              "center",
-
-            marginRight:
-              theme.spacing.sm,
-          }}
-        >
-
-          {witnessConfirmed && (
-
-            <Text
-              style={{
-                color:
-                  theme.colors.white,
-
-                fontSize: 14,
-
-                fontFamily:
-                  theme.fonts.semiBold,
-              }}
-            >
-              ✓
-            </Text>
-
-          )}
-
-        </View>
-
-
-        <Text
-          style={{
-            flex: 1,
-
-            color:
-              theme.colors.gray700,
-
-            fontSize: 12,
-
-            lineHeight: 18,
-
-            fontFamily:
-              theme.fonts.regular,
-          }}
-        >
-          I confirm that the witness details and
-          documents provided above are correct.
-        </Text>
-
-      </TouchableOpacity>
-
-
-      {/* =================================================
-          ID DETAILS MODAL
-      ================================================= */}
-
-      <IDDetailsModal
-        visible={
-          idModalVisible
-        }
-
-        initialValues={{
-          idType,
-          idNumber,
-        }}
-
-        onClose={() =>
-          setIdModalVisible(
-            false
-          )
-        }
-
-        onContinue={
-          handleIDDetailsContinue
-        }
-      />
-
-
-      {/* =================================================
-          COMMON UPLOAD BOTTOM SHEET
-      ================================================= */}
-
-      <UploadBottomSheet
-
-        sheetVisible={
-          sheetVisible
-        }
-
-        setSheetVisible={
-          setSheetVisible
-        }
-
-        openCamera={
-          openCamera
-        }
-
-        openGallery={
-          openGallery
-        }
-
-        openDocument={
-          openDocument
-        }
-
-        type={
-          uploadType === "idDocument"
-            ? "document"
-            : "photo"
-        }
-
-      />
-
-    </View>
-
-  );
 
 };
 
 
-export default memo(
-  WitnessDetails
-);
+export default KeyboardAvoidingBottomView;
