@@ -1,12 +1,11 @@
-import React, {
-  memo,
-} from "react";
+import React, { memo } from "react";
 
 import {
   View,
   Text,
   TouchableOpacity,
   Image,
+  ScrollView,
 } from "react-native";
 
 import {
@@ -17,17 +16,9 @@ import {
   MessageSquare,
 } from "lucide-react-native";
 
-import {
-  theme,
-} from "../../../../theme";
-
-import {
-  useGetVisitorReviewQuery,
-} from "../../../../redux/features/visitor/visitorApi.js";
+import { theme } from "../../../../theme";
 
 import ShimmerPlaceholder from "../../../../components/common/Loader/ShimmerPlaceholder.jsx";
-
-import InlineRetry from "../../../../components/common/RetryScreen/InlineRetry.jsx";
 
 
 // =====================================================
@@ -42,23 +33,15 @@ const ReviewCard = ({
   onEdit,
   loading = false,
 }) => {
-
-  const isCompleted =
-    status?.completed === true;
+  const isCompleted = status?.completed === true;
 
   return (
     <View
       style={{
-        backgroundColor:
-          theme.colors.white,
-
+        backgroundColor: theme.colors.white,
         borderRadius: 18,
-
         padding: 18,
-
-        marginBottom:
-          theme.spacing.lg,
-
+        marginBottom: theme.spacing.lg,
         ...theme.shadows.card,
       }}
     >
@@ -70,11 +53,8 @@ const ReviewCard = ({
       <View
         style={{
           flexDirection: "row",
-
           alignItems: "center",
-
-          justifyContent:
-            "space-between",
+          justifyContent: "space-between",
         }}
       >
 
@@ -85,32 +65,21 @@ const ReviewCard = ({
         <View
           style={{
             flexDirection: "row",
-
             alignItems: "center",
-
             flex: 1,
           }}
         >
 
-          {/* =================================================
-              ICON
-          ================================================= */}
+          {/* ICON */}
 
           <View
             style={{
               width: 42,
-
               height: 42,
-
               borderRadius: 10,
-
-              backgroundColor:
-                "#FFE5C7",
-
+              backgroundColor: "#FFE5C7",
               alignItems: "center",
-
               justifyContent: "center",
-
               marginRight: 12,
             }}
           >
@@ -118,9 +87,7 @@ const ReviewCard = ({
           </View>
 
 
-          {/* =================================================
-              TITLE + STATUS
-          ================================================= */}
+          {/* TITLE + STATUS */}
 
           <View
             style={{
@@ -131,12 +98,8 @@ const ReviewCard = ({
             <Text
               style={{
                 fontSize: 15,
-
-                color:
-                  theme.colors.black,
-
-                fontFamily:
-                  theme.fonts.medium,
+                color: theme.colors.black,
+                fontFamily: theme.fonts.medium,
               }}
             >
               {title}
@@ -146,9 +109,7 @@ const ReviewCard = ({
             <View
               style={{
                 flexDirection: "row",
-
                 alignItems: "center",
-
                 marginTop: 5,
               }}
             >
@@ -164,8 +125,6 @@ const ReviewCard = ({
               ) : (
 
                 <>
-                  {/* STATUS ICON */}
-
                   {isCompleted ? (
 
                     <CheckCircle2
@@ -179,16 +138,10 @@ const ReviewCard = ({
                     <View
                       style={{
                         width: 8,
-
                         height: 8,
-
                         borderRadius: 4,
-
-                        backgroundColor:
-                          "#F59E0B",
-
+                        backgroundColor: "#F59E0B",
                         marginLeft: 3,
-
                         marginRight: 3,
                       }}
                     />
@@ -196,31 +149,21 @@ const ReviewCard = ({
                   )}
 
 
-                  {/* STATUS TEXT */}
-
                   <Text
                     style={{
                       marginLeft: 5,
-
                       fontSize: 13,
-
-                      color:
-                        isCompleted
-                          ? "#287C34"
-                          : "#D97706",
-
-                      fontFamily:
-                        theme.fonts.medium,
+                      color: isCompleted
+                        ? "#287C34"
+                        : "#D97706",
+                      fontFamily: theme.fonts.medium,
                     }}
                   >
                     {status?.text ||
-                      (
-                        isCompleted
-                          ? "Completed"
-                          : "Pending"
-                      )}
+                      (isCompleted
+                        ? "Completed"
+                        : "Pending")}
                   </Text>
-
                 </>
 
               )}
@@ -252,20 +195,15 @@ const ReviewCard = ({
               activeOpacity={0.8}
               onPress={onEdit}
             >
-
               <Text
                 style={{
                   fontSize: 14,
-
                   color: "#FF641F",
-
-                  fontFamily:
-                    theme.fonts.semiBold,
+                  fontFamily: theme.fonts.semiBold,
                 }}
               >
                 Edit
               </Text>
-
             </TouchableOpacity>
 
           )
@@ -280,7 +218,6 @@ const ReviewCard = ({
       ================================================= */}
 
       {!!children && (
-
         <View
           style={{
             marginTop: 14,
@@ -288,7 +225,6 @@ const ReviewCard = ({
         >
           {children}
         </View>
-
       )}
 
     </View>
@@ -303,189 +239,80 @@ const ReviewCard = ({
 const ReviewInformation = ({
   job,
   data = {},
+  verificationSummary,
   onEditStep,
+  isLoading = false,
+  isFetching = false,
 }) => {
 
-  const loanId =
-    job?.loanId;
-
-
   // =====================================================
-  // REVIEW API
+  // SUMMARY DATA
   // =====================================================
 
-  const {
-    data: reviewResponse,
-    isLoading,
-    isFetching,
-    isError,
-    refetch,
-  } = useGetVisitorReviewQuery(
-    loanId,
-    {
-      skip: !loanId,
-    }
-  );
-
-
-  const loading =
-    isLoading ||
-    isFetching;
-
-
-  // =====================================================
-  // ERROR
-  // =====================================================
-
-  if (
-    isError &&
-    !reviewResponse
-  ) {
-
-    return (
-
-      <View
-        style={{
-          width: "100%",
-
-          marginTop:
-            theme.spacing.md,
-        }}
-      >
-
-        <InlineRetry
-          title="Unable to load review"
-          description="Something went wrong while loading review information. Please try again."
-          buttonText="Retry"
-          loading={loading}
-          onRetry={refetch}
-        />
-
-      </View>
-
-    );
-  }
-
-
-  // =====================================================
-  // REVIEW DATA
-  // =====================================================
-
-  const reviewData =
-    reviewResponse?.data || {};
-
-
-  // =====================================================
-  // CARDS
-  // =====================================================
-
-  const verificationCard =
-    reviewData?.cards?.verification ||
-    {};
-
-  const investigationCard =
-    reviewData?.cards?.investigation ||
-    {};
-
-  const photosCard =
-    reviewData?.cards?.photos ||
-    {};
-
-  const witnessCard =
-    reviewData?.cards?.witness ||
-    {};
-
-  const remarksCard =
-    reviewData?.cards?.remarks ||
-    {};
-
-
-  // =====================================================
-  // FALLBACK LOCAL DATA
-  // =====================================================
-
-  const verification =
-    data?.verification ||
-    {};
-
-  const investigation =
-    data?.investigation ||
-    {};
-
-  const site =
-    data?.site ||
-    {};
-
-  const witness =
-    data?.witness ||
-    {};
-
-
-  // =====================================================
-  // VERIFICATION
-  // =====================================================
-
-  const verificationCompleted =
-    typeof verificationCard?.completed ===
-      "boolean"
-      ? verificationCard.completed
-      : Boolean(
-          verification?.status ===
-            "COMPLETED"
-        );
+  const summaryData =
+    verificationSummary?.data || {};
 
 
   // =====================================================
   // INVESTIGATION
   // =====================================================
 
+  const investigation =
+    summaryData?.investigationDetails || {};
+
+
+  // =====================================================
+  // SITE DETAILS
+  // =====================================================
+
+  const siteDetails =
+    summaryData?.siteDetails || {};
+
+
+  // =====================================================
+  // WITNESS DETAILS
+  // =====================================================
+
+  const witnessDetails =
+    summaryData?.witnessDetails || {};
+
+
+  // =====================================================
+  // LOADING
+  // =====================================================
+
+  const loading =
+    isLoading || isFetching;
+
+
+  // =====================================================
+  // INVESTIGATION STATUS
+  // =====================================================
+
   const investigationCompleted =
-    typeof investigationCard?.completed ===
-      "boolean"
-      ? investigationCard.completed
-      : Boolean(
-          Object.keys(
-            investigation || {}
-          ).length
-        );
+    investigation?.completed === true ||
+    Boolean(
+      investigation?.description ||
+      investigation?.remarks ||
+      investigation?.location?.address
+    );
 
 
   // =====================================================
   // SITE PHOTOS
-  //
-  // IMPORTANT:
-  // ONLY cards.photos.verification
-  //
-  // This is Site Info photos.
-  //
-  // Do NOT use:
-  // cards.photos.other
-  // cards.photos.witness
-  // witness.data.photos
   // =====================================================
 
   const sitePhotos =
-    Array.isArray(
-      photosCard?.verification
-    )
-      ? photosCard.verification
+    Array.isArray(siteDetails?.photos)
+      ? siteDetails.photos
       : [];
 
-
-  // =====================================================
-  // SITE PHOTO COUNT
-  // =====================================================
 
   const sitePhotoCount =
     sitePhotos.length;
 
 
-  // =====================================================
-  // SITE PHOTO STATUS
-  // =====================================================
-
   const sitePhotosCompleted =
-    photosCard?.completed === true &&
     sitePhotoCount > 0;
 
 
@@ -496,64 +323,13 @@ const ReviewInformation = ({
 
 
   // =====================================================
-  // WITNESS DATA
-  // =====================================================
-
-  const witnessData =
-    witnessCard?.data ||
-    witness;
-
-
-  // =====================================================
   // WITNESS STATUS
   // =====================================================
 
   const witnessCompleted =
-    witnessCard?.completed === true ||
-    Boolean(
-      witnessData?.agreed === true
-    );
+    witnessDetails?.completed === true ||
+    witnessDetails?.agreed === true;
 
-
-  // =====================================================
-  // WITNESS PHOTOS
-  // =====================================================
-
-  const witnessPhotos =
-    Array.isArray(
-      witnessData?.photos
-    )
-      ? witnessData.photos
-      : [];
-
-
-  // =====================================================
-  // WITNESS SIGNATURES
-  // =====================================================
-
-  const witnessSignatures =
-    Array.isArray(
-      witnessData?.signatures
-    )
-      ? witnessData.signatures
-      : [];
-
-
-  // =====================================================
-  // WITNESS DOCUMENTS
-  // =====================================================
-
-  const witnessDocuments =
-    Array.isArray(
-      witnessData?.documents
-    )
-      ? witnessData.documents
-      : [];
-
-
-  // =====================================================
-  // WITNESS STATUS TEXT
-  // =====================================================
 
   const witnessStatusText =
     witnessCompleted
@@ -566,15 +342,10 @@ const ReviewInformation = ({
   // =====================================================
 
   const remarks =
-    remarksCard?.value ||
-    reviewData?.editableData?.remarks ||
-    investigation?.remarks ||
-    site?.remarks ||
-    "";
+    investigation?.remarks || "";
 
 
   const remarksCompleted =
-    remarksCard?.completed === true ||
     Boolean(remarks);
 
 
@@ -585,11 +356,25 @@ const ReviewInformation = ({
 
 
   // =====================================================
+  // IMAGE URL
+  // =====================================================
+
+  const getImageUri = (item) => {
+    return (
+      item?.url ||
+      item?.secure_url ||
+      item?.path ||
+      item?.uri ||
+      ""
+    );
+  };
+
+
+  // =====================================================
   // RENDER
   // =====================================================
 
   return (
-
     <View
       style={{
         width: "100%",
@@ -602,41 +387,28 @@ const ReviewInformation = ({
 
       <View
         style={{
-          marginBottom:
-            theme.spacing.lg,
+          marginBottom: theme.spacing.lg,
         }}
       >
 
         <Text
           style={{
             fontSize: 24,
-
             lineHeight: 30,
-
-            color:
-              theme.colors.black,
-
-            fontFamily:
-              theme.fonts.headingBold,
+            color: theme.colors.black,
+            fontFamily: theme.fonts.semiBold,
           }}
         >
           Review Details
         </Text>
 
-
         <Text
           style={{
             marginTop: 5,
-
             fontSize: 14,
-
             lineHeight: 20,
-
-            color:
-              theme.colors.textSecondary,
-
-            fontFamily:
-              theme.fonts.regular,
+            color: theme.colors.textSecondary,
+            fontFamily: theme.fonts.regular,
           }}
         >
           Please confirm all information is accurate
@@ -647,63 +419,24 @@ const ReviewInformation = ({
 
 
       {/* =================================================
-          VERIFICATION
-      ================================================= */}
-
-      <ReviewCard
-        title="Verification"
-
-        loading={loading}
-
-        status={{
-          completed:
-            verificationCompleted,
-
-          text:
-            verificationCompleted
-              ? "Completed"
-              : "Pending",
-        }}
-
-        icon={
-          <ClipboardCheck
-            size={21}
-            color="#FF641F"
-          />
-        }
-
-        onEdit={() =>
-          onEditStep?.(1)
-        }
-      />
-
-
-      {/* =================================================
           INVESTIGATION
       ================================================= */}
 
       <ReviewCard
         title="Investigation"
-
         loading={loading}
-
         status={{
-          completed:
-            investigationCompleted,
-
-          text:
-            investigationCompleted
-              ? "Completed"
-              : "Pending",
+          completed: investigationCompleted,
+          text: investigationCompleted
+            ? "Completed"
+            : "Pending",
         }}
-
         icon={
           <ClipboardCheck
             size={21}
             color="#FF641F"
           />
         }
-
         onEdit={() =>
           onEditStep?.(2)
         }
@@ -716,121 +449,93 @@ const ReviewInformation = ({
 
       <ReviewCard
         title="Photos ( Site info. )"
-
         loading={loading}
-
         status={{
-          completed:
-            sitePhotosCompleted,
-
-          text:
-            sitePhotosStatusText,
+          completed: sitePhotosCompleted,
+          text: sitePhotosStatusText,
         }}
-
         icon={
           <ImageIcon
             size={21}
             color="#FF641F"
           />
         }
-
         onEdit={() =>
           onEditStep?.(3)
         }
       >
 
-        {/* =================================================
-            PHOTO PREVIEW
-        ================================================= */}
-
         {loading ? (
 
-          <View
-            style={{
+          <ScrollView
+            horizontal
+            showsHorizontalScrollIndicator={false}
+            contentContainerStyle={{
               flexDirection: "row",
             }}
           >
 
             {[1, 2, 3, 4].map(
               (item) => (
-
                 <ShimmerPlaceholder
                   key={item}
                   width={72}
                   height={72}
                   borderRadius={7}
                   style={{
-                    marginRight:
-                      item < 4
-                        ? 7
-                        : 0,
+                    marginRight: 7,
                   }}
                 />
-
               )
             )}
 
-          </View>
+          </ScrollView>
 
         ) : (
 
           sitePhotos.length > 0 && (
 
-            <View
-              style={{
-                flexDirection: "row",
+            <ScrollView
+              horizontal
+              showsHorizontalScrollIndicator={false}
+              contentContainerStyle={{
+                paddingRight: 4,
               }}
             >
 
-              {sitePhotos
-                .slice(0, 4)
-                .map(
-                  (
-                    photo,
-                    index
-                  ) => {
+              {sitePhotos.map(
+                (photo, index) => {
 
-                    const uri =
-                      photo?.url;
+                  const uri =
+                    getImageUri(photo);
 
-                    if (!uri) {
-                      return null;
-                    }
-
-                    return (
-
-                      <Image
-                        key={
-                          photo?.publicId ||
-                          index
-                        }
-
-                        source={{
-                          uri,
-                        }}
-
-                        resizeMode="cover"
-
-                        style={{
-                          width: 72,
-
-                          height: 72,
-
-                          borderRadius: 7,
-
-                          marginRight:
-                            index < 3
-                              ? 7
-                              : 0,
-                        }}
-                      />
-
-                    );
-
+                  if (!uri) {
+                    return null;
                   }
-                )}
 
-            </View>
+                  return (
+                    <Image
+                      key={
+                        photo?.publicId ||
+                        photo?._id ||
+                        `site-photo-${index}`
+                      }
+                      source={{
+                        uri,
+                      }}
+                      resizeMode="cover"
+                      style={{
+                        width: 72,
+                        height: 72,
+                        borderRadius: 7,
+                        marginRight: 7,
+                      }}
+                    />
+                  );
+                }
+              )}
+
+            </ScrollView>
 
           )
 
@@ -841,157 +546,26 @@ const ReviewInformation = ({
 
       {/* =================================================
           WITNESS
+          SIMPLE CARD ONLY
       ================================================= */}
 
       <ReviewCard
         title="Witness"
-
         loading={loading}
-
         status={{
-          completed:
-            witnessCompleted,
-
-          text:
-            witnessStatusText,
+          completed: witnessCompleted,
+          text: witnessStatusText,
         }}
-
         icon={
           <UserRoundCheck
             size={21}
             color="#FF641F"
           />
         }
-
         onEdit={() =>
           onEditStep?.(4)
         }
-      >
-
-        {!loading &&
-          witnessCompleted && (
-
-            <View>
-
-              {/* =================================================
-                  WITNESS NAME
-              ================================================= */}
-
-              {!!witnessData?.fullName && (
-
-                <Text
-                  style={{
-                    fontSize: 13,
-
-                    color:
-                      theme.colors.textSecondary,
-
-                    fontFamily:
-                      theme.fonts.regular,
-
-                    marginBottom: 6,
-                  }}
-                >
-                  {witnessData.fullName}
-                </Text>
-
-              )}
-
-
-              {/* =================================================
-                  WITNESS FILE COUNTS
-              ================================================= */}
-
-              <View
-                style={{
-                  flexDirection: "row",
-
-                  alignItems: "center",
-                }}
-              >
-
-                {/* WITNESS PHOTOS */}
-
-                {witnessPhotos.length > 0 && (
-
-                  <Text
-                    style={{
-                      fontSize: 12,
-
-                      color:
-                        theme.colors.textSecondary,
-
-                      fontFamily:
-                        theme.fonts.medium,
-
-                      marginRight: 12,
-                    }}
-                  >
-                    {witnessPhotos.length} Photo
-                    {witnessPhotos.length > 1
-                      ? "s"
-                      : ""}
-                  </Text>
-
-                )}
-
-
-                {/* SIGNATURES */}
-
-                {witnessSignatures.length > 0 && (
-
-                  <Text
-                    style={{
-                      fontSize: 12,
-
-                      color:
-                        theme.colors.textSecondary,
-
-                      fontFamily:
-                        theme.fonts.medium,
-
-                      marginRight: 12,
-                    }}
-                  >
-                    {witnessSignatures.length} Signature
-                    {witnessSignatures.length > 1
-                      ? "s"
-                      : ""}
-                  </Text>
-
-                )}
-
-
-                {/* DOCUMENTS */}
-
-                {witnessDocuments.length > 0 && (
-
-                  <Text
-                    style={{
-                      fontSize: 12,
-
-                      color:
-                        theme.colors.textSecondary,
-
-                      fontFamily:
-                        theme.fonts.medium,
-                    }}
-                  >
-                    {witnessDocuments.length} Document
-                    {witnessDocuments.length > 1
-                      ? "s"
-                      : ""}
-                  </Text>
-
-                )}
-
-              </View>
-
-            </View>
-
-          )}
-
-      </ReviewCard>
+      />
 
 
       {/* =================================================
@@ -1000,24 +574,17 @@ const ReviewInformation = ({
 
       <ReviewCard
         title="Remarks"
-
         loading={loading}
-
         status={{
-          completed:
-            remarksCompleted,
-
-          text:
-            remarksStatusText,
+          completed: remarksCompleted,
+          text: remarksStatusText,
         }}
-
         icon={
           <MessageSquare
             size={21}
             color="#FF641F"
           />
         }
-
         onEdit={() =>
           onEditStep?.(2)
         }
@@ -1035,20 +602,12 @@ const ReviewInformation = ({
 
           <View
             style={{
-              backgroundColor:
-                "#F5F6F7",
-
+              backgroundColor: "#F5F6F7",
               borderWidth: 1,
-
-              borderColor:
-                "#E0E2E5",
-
+              borderColor: "#E0E2E5",
               borderRadius: 9,
-
               paddingHorizontal: 12,
-
               paddingVertical: 11,
-
               minHeight: 48,
             }}
           >
@@ -1056,16 +615,11 @@ const ReviewInformation = ({
             <Text
               style={{
                 fontSize: 14,
-
                 lineHeight: 20,
-
-                color:
-                  remarks
-                    ? "#42454A"
-                    : "#8E9196",
-
-                fontFamily:
-                  theme.fonts.regular,
+                color: remarks
+                  ? "#42454A"
+                  : "#8E9196",
+                fontFamily: theme.fonts.regular,
               }}
             >
               {remarks
@@ -1083,6 +637,10 @@ const ReviewInformation = ({
   );
 };
 
+
+// =====================================================
+// EXPORT
+// =====================================================
 
 export default memo(
   ReviewInformation

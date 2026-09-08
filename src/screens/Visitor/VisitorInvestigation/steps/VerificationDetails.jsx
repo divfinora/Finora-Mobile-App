@@ -960,6 +960,7 @@ useEffect(() => {
     <View
       style={{
         width: "100%",
+     
       }}
     >
 

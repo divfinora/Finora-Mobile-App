@@ -121,7 +121,7 @@ const getStatusConfig = (
 
 
   switch (
-    normalized
+  normalized
   ) {
 
     // =================================================
@@ -202,6 +202,14 @@ const getStatusConfig = (
 
       };
 
+    case "APPROVED":
+
+      return {
+        label: "Approved",
+        textColor: "#287C45",
+        background: "#DCF7E6",
+        dot: "#27C46D",
+      };
 
     // =================================================
     // REJECTED
@@ -271,17 +279,44 @@ const LoanCard = ({
 
 }) => {
 
-    console.log(item ,"item==")
+  console.log(item, "item==")
 
   // ===================================================
   // STATUS
   // ===================================================
 
-  const status =
-    getStatusConfig(
-      item?.status ||
-      item?.verificationStatus
-    );
+  // ===================================================
+  // JOB STATUS
+  // ===================================================
+
+  const jobStatus = getStatusConfig(
+    item?.status
+  );
+
+
+  // ===================================================
+  // VERIFICATION STATUS
+  // ===================================================
+
+  const verificationStatus = getStatusConfig(
+    item?.verificationStatus
+  );
+
+
+  // ===================================================
+  // VERIFICATION COMPLETED
+  // ===================================================
+
+  const normalizedVerificationStatus =
+    String(
+      item?.verificationStatus || ""
+    )
+      .trim()
+      .toUpperCase();
+
+  const isVerificationCompleted =
+    normalizedVerificationStatus === "SUBMITTED" ||
+    normalizedVerificationStatus === "APPROVED";
 
 
   // ===================================================
@@ -354,7 +389,7 @@ const LoanCard = ({
 
   const address =
     item?.address ||
-    
+
     "—";
 
 
@@ -475,66 +510,90 @@ const LoanCard = ({
             STATUS BADGE
         ================================================= */}
 
+        {/* =================================================
+    JOB + VERIFICATION STATUS
+================================================= */}
+
         <View
           style={{
-
-            minHeight: 31,
-
-            paddingHorizontal: 12,
-
-            borderRadius: 7,
-
-            backgroundColor:
-              status.background,
-
-            flexDirection:
-              "row",
-
-            alignItems:
-              "center",
-
-            justifyContent:
-              "center",
-
+            alignItems: "flex-end",
+            justifyContent: "center",
+            gap: 6,
+            flexShrink: 0,
           }}
         >
+          {/* JOB STATUS */}
 
           <View
             style={{
-
-              width: 7,
-
-              height: 7,
-
-              borderRadius: 4,
-
-              backgroundColor:
-                status.dot,
-
-              marginRight: 6,
-
-            }}
-          />
-
-
-          <Text
-            style={{
-
-              fontSize: 12,
-
-              lineHeight: 16,
-
-              color:
-                status.textColor,
-
-              fontFamily:
-                theme.fonts.semiBold,
-
+              minHeight: 31,
+              paddingHorizontal: 12,
+              borderRadius: 7,
+              backgroundColor: jobStatus.background,
+              flexDirection: "row",
+              alignItems: "center",
+              justifyContent: "center",
             }}
           >
-            {status.label}
-          </Text>
+            <View
+              style={{
+                width: 7,
+                height: 7,
+                borderRadius: 4,
+                backgroundColor: jobStatus.dot,
+                marginRight: 6,
+              }}
+            />
 
+            <Text
+              numberOfLines={1}
+              style={{
+                fontSize: 11,
+                lineHeight: 15,
+                color: jobStatus.textColor,
+                fontFamily: theme.fonts.semiBold,
+              }}
+            >
+              {jobStatus.label}
+            </Text>
+          </View>
+
+          {/* VERIFICATION STATUS */}
+
+          <View
+            style={{
+              minHeight: 31,
+              paddingHorizontal: 10,
+              borderRadius: 7,
+              backgroundColor: verificationStatus.background,
+              flexDirection: "row",
+              alignItems: "center",
+              justifyContent: "center",
+              maxWidth: 155,
+            }}
+          >
+            <View
+              style={{
+                width: 7,
+                height: 7,
+                borderRadius: 4,
+                backgroundColor: verificationStatus.dot,
+                marginRight: 6,
+              }}
+            />
+
+            <Text
+              numberOfLines={1}
+              style={{
+                fontSize: 10,
+                lineHeight: 14,
+                color: verificationStatus.textColor,
+                fontFamily: theme.fonts.semiBold,
+              }}
+            >
+              Verification: {verificationStatus.label}
+            </Text>
+          </View>
         </View>
 
       </View>
@@ -931,32 +990,35 @@ const LoanCard = ({
           activeOpacity={0.85}
 
           disabled={
-            loading
+            loading ||
+            isVerificationCompleted
           }
 
-          onPress={() =>
-            onPress?.(
-              item
-            )
-          }
+          onPress={() => {
+            if (isVerificationCompleted) {
+              return;
+            }
+
+            onPress?.(item);
+          }}
 
           style={{
-
             flex: 1,
-
             height: 46,
-
             borderRadius: 9,
 
             backgroundColor:
-              theme.colors.primary500,
+              isVerificationCompleted
+                ? theme.colors.gray300
+                : theme.colors.primary500,
 
-            alignItems:
-              "center",
+            alignItems: "center",
+            justifyContent: "center",
 
-            justifyContent:
-              "center",
-
+            opacity:
+              isVerificationCompleted
+                ? 0.55
+                : 1,
           }}
         >
 
@@ -967,8 +1029,10 @@ const LoanCard = ({
 
               lineHeight: 20,
 
-              color:
-                theme.colors.white,
+             color:
+  isVerificationCompleted
+    ? theme.colors.gray500
+    : theme.colors.white,
 
               fontFamily:
                 theme.fonts.medium,
@@ -1039,12 +1103,12 @@ const LoanCard = ({
             }}
           >
             {
-              status.label ===
-              "In Progress"
+              jobStatus.label ===
+                "In Progress"
 
                 ? "Edit Info"
 
-                : status.label ===
+                : jobStatus.label ===
                   "Rejected"
 
                   ? "View Reason"

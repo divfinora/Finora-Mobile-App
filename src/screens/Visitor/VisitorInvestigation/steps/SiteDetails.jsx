@@ -42,12 +42,13 @@ import {
 } from "@react-native-documents/picker";
 
 import {
-  useUploadVisitorPhotoMutation,
+  useSaveVisitorSiteDetailsMutation,
+  useUploadSitePhotoMutation,
+  useDeleteLoanFileMutation,
 } from "../../../../redux/features/visitor/visitorApi";
 
 import useHandleMutation from
   "../../../../hooks/useHandleMutation";
-
 
 // =====================================================
 // CONSTANTS
@@ -57,7 +58,6 @@ const MAX_UPLOADS = 10;
 
 const MAX_FILE_SIZE =
   10 * 1024 * 1024;
-
 
 // =====================================================
 // COMPONENT
@@ -70,6 +70,22 @@ const SiteDetails = ({
 }) => {
 
   // ===================================================
+  // DELETE FILE API
+  // ===================================================
+
+  const [
+    deleteLoanFile,
+  ] = useDeleteLoanFileMutation();
+
+  // ===================================================
+  // DELETE LOADING
+  // Only the selected file shows loading
+  // ===================================================
+
+  const [deletingFileKey, setDeletingFileKey] =
+    useState(null);
+
+  // ===================================================
   // DOCUMENT NAME MODAL
   // ===================================================
 
@@ -77,7 +93,6 @@ const SiteDetails = ({
     documentNameVisible,
     setDocumentNameVisible,
   ] = useState(false);
-
 
   // ===================================================
   // UPLOAD SHEET
@@ -88,7 +103,6 @@ const SiteDetails = ({
     setUploadSheetVisible,
   ] = useState(false);
 
-
   // ===================================================
   // DOCUMENT NAME
   // ===================================================
@@ -98,17 +112,6 @@ const SiteDetails = ({
     setDocumentName,
   ] = useState("");
 
-
-  // ===================================================
-  // LOCAL UPLOAD LOADING
-  // ===================================================
-
-  const [
-    uploading,
-    setUploading,
-  ] = useState(false);
-
-
   // ===================================================
   // HANDLE MUTATION
   // ===================================================
@@ -117,23 +120,29 @@ const SiteDetails = ({
     handleMutation,
   } = useHandleMutation();
 
-
   // ===================================================
   // UPLOAD PHOTO API
   // ===================================================
 
   const [
-    uploadVisitorPhoto,
-  ] = useUploadVisitorPhotoMutation();
+    uploadSitePhoto,
+    { isLoading: isUploadLoading },
+  ] = useUploadSitePhotoMutation();
 
+  // ===================================================
+  // SAVE SITE DETAILS API
+  // ===================================================
+
+  const [
+    saveVisitorSiteDetails,
+  ] = useSaveVisitorSiteDetailsMutation();
 
   // ===================================================
   // FINAL UPLOAD LOADING
   // ===================================================
 
   const isDocumentUploading =
-    uploading;
-
+    isUploadLoading;
 
   // ===================================================
   // DOCUMENTS
@@ -146,10 +155,19 @@ const SiteDetails = ({
       ? data.uploadedDocuments
       : [];
 
-
   const uploadedCount =
     uploadedDocuments.length;
 
+  // ===================================================
+  // PREVIOUSLY UPLOADED DOCUMENTS
+  // ===================================================
+
+  const uploadedOldDocuments =
+    Array.isArray(
+      data?.uploadedOldDocuments
+    )
+      ? data.uploadedOldDocuments
+      : [];
 
   // ===================================================
   // PROGRESS
@@ -166,7 +184,6 @@ const SiteDetails = ({
       100
     );
 
-
   // ===================================================
   // OPEN DOCUMENT NAME MODAL
   // ===================================================
@@ -178,12 +195,10 @@ const SiteDetails = ({
         return;
       }
 
-
       if (
         uploadedCount >=
         MAX_UPLOADS
       ) {
-
         Alert.alert(
           "Maximum Documents",
           "Maximum 10 documents can be uploaded."
@@ -192,12 +207,12 @@ const SiteDetails = ({
         return;
       }
 
-
       setDocumentName("");
 
-      setDocumentNameVisible(true);
+      setDocumentNameVisible(
+        true
+      );
     };
-
 
   // ===================================================
   // DOCUMENT NAME SUBMIT
@@ -209,44 +224,24 @@ const SiteDetails = ({
       const trimmedName =
         name?.trim();
 
-
       if (!trimmedName) {
         return;
       }
-
-
-      // -----------------------------------------------
-      // SAVE DOCUMENT NAME
-      // -----------------------------------------------
 
       setDocumentName(
         trimmedName
       );
 
-
-      // -----------------------------------------------
-      // CLOSE NAME MODAL
-      // -----------------------------------------------
-
       setDocumentNameVisible(
         false
       );
 
-
-      // -----------------------------------------------
-      // OPEN FILE PICKER SHEET
-      // -----------------------------------------------
-
       setTimeout(() => {
-
         setUploadSheetVisible(
           true
         );
-
       }, 250);
-
     };
-
 
   // ===================================================
   // SAVE DOCUMENT LOCALLY
@@ -256,26 +251,18 @@ const SiteDetails = ({
     (document) => {
 
       const updatedDocuments = [
-
         document,
-
         ...uploadedDocuments,
-
       ].slice(
         0,
         MAX_UPLOADS
       );
 
-
       onChange?.({
-
         uploadedDocuments:
           updatedDocuments,
-
       });
-
     };
-
 
   // ===================================================
   // VALIDATE FILE
@@ -294,7 +281,6 @@ const SiteDetails = ({
         return false;
       }
 
-
       if (
         file?.size &&
         file.size >
@@ -309,10 +295,8 @@ const SiteDetails = ({
         return false;
       }
 
-
       return true;
     };
-
 
   // ===================================================
   // HANDLE SELECTED FILE
@@ -331,7 +315,6 @@ const SiteDetails = ({
         return;
       }
 
-
       // -----------------------------------------------
       // LOAN ID
       // -----------------------------------------------
@@ -346,14 +329,12 @@ const SiteDetails = ({
         return;
       }
 
-
       // -----------------------------------------------
       // DOCUMENT NAME
       // -----------------------------------------------
 
       const trimmedDocumentName =
         documentName?.trim();
-
 
       if (!trimmedDocumentName) {
 
@@ -365,11 +346,7 @@ const SiteDetails = ({
         return;
       }
 
-
       try {
-
-        setUploading(true);
-
 
         // =============================================
         // FORM DATA
@@ -378,13 +355,12 @@ const SiteDetails = ({
         const formData =
           new FormData();
 
-
         // =============================================
         // PHOTO FILE
         // =============================================
 
         formData.append(
-          "photo",
+          "files",
           {
             uri:
               file?.uri,
@@ -399,32 +375,14 @@ const SiteDetails = ({
           }
         );
 
-
         // =============================================
         // CATEGORY
-        //
-        // BACKEND REQUIREMENT:
-        //
-        // category = CUSTOMER
-        // category = CUSTOMER_SELFIE
-        // category = HOUSE_FRONT
-        // category = HOUSE_INSIDE
-        // category = SHOP
-        // category = OFFICE
-        // category = DOCUMENT
-        // category = WITNESS
-        // category = OTHER
-        //
-        // FOR USER DOCUMENT:
-        //
-        // category = DOCUMENT NAME
         // =============================================
 
         formData.append(
           "category",
           trimmedDocumentName
         );
-
 
         // =============================================
         // CONSOLE PAYLOAD
@@ -458,24 +416,20 @@ const SiteDetails = ({
           }
         );
 
-
         // =============================================
         // API CALL
         // =============================================
 
         const response =
           await handleMutation({
-
             apiFunc:
-              uploadVisitorPhoto,
+              uploadSitePhoto,
 
             params: {
-
               loanId:
                 job?.loanId,
 
               formData,
-
             },
 
             showSuccess:
@@ -491,11 +445,8 @@ const SiteDetails = ({
                   "DOCUMENT UPLOAD RESPONSE:",
                   apiResponse
                 );
-
               },
-
           });
-
 
         // =============================================
         // FAILED
@@ -505,28 +456,13 @@ const SiteDetails = ({
           return;
         }
 
-
         // =============================================
         // SERVER RESPONSE
-        //
-        // Expected:
-        //
-        // {
-        //   success: true,
-        //   message: "...",
-        //   data: {
-        //     category,
-        //     url,
-        //     publicId,
-        //     uploadedBy,
-        //     uploadedAt
-        //   }
-        // }
         // =============================================
 
         const serverData =
-          response?.data ||
-          response;
+          response?.data?.[0] || {}
+
 
 
         // =============================================
@@ -582,18 +518,15 @@ const SiteDetails = ({
           uploadedAt:
             serverData?.uploadedAt ||
             new Date().toISOString(),
-
         };
-
 
         // =============================================
         // ADD TO RECENTLY UPLOADED
         // =============================================
-
+        console.log(uploadedDocument, "uploadedDocument")
         saveDocument(
           uploadedDocument
         );
-
 
         // =============================================
         // CLOSE FILE SHEET
@@ -603,13 +536,11 @@ const SiteDetails = ({
           false
         );
 
-
         // =============================================
         // RESET
         // =============================================
 
         setDocumentName("");
-
 
       } catch (error) {
 
@@ -618,14 +549,8 @@ const SiteDetails = ({
           error
         );
 
-      } finally {
-
-        setUploading(false);
-
       }
-
     };
-
 
   // ===================================================
   // CAMERA
@@ -638,7 +563,6 @@ const SiteDetails = ({
 
         const result =
           await launchCamera({
-
             mediaType:
               "photo",
 
@@ -650,16 +574,13 @@ const SiteDetails = ({
 
             includeBase64:
               false,
-
           });
-
 
         if (
           result?.didCancel
         ) {
           return;
         }
-
 
         if (
           result?.errorCode
@@ -674,18 +595,14 @@ const SiteDetails = ({
           return;
         }
 
-
         const asset =
           result?.assets?.[0];
-
 
         if (!asset?.uri) {
           return;
         }
 
-
         await handleSelectedFile({
-
           uri:
             asset.uri,
 
@@ -700,7 +617,6 @@ const SiteDetails = ({
           size:
             asset.fileSize ||
             0,
-
         });
 
       } catch (error) {
@@ -710,16 +626,12 @@ const SiteDetails = ({
           error
         );
 
-
         Alert.alert(
           "Error",
           "Unable to capture image."
         );
-
       }
-
     };
-
 
   // ===================================================
   // GALLERY
@@ -732,7 +644,6 @@ const SiteDetails = ({
 
         const result =
           await launchImageLibrary({
-
             mediaType:
               "photo",
 
@@ -744,16 +655,13 @@ const SiteDetails = ({
 
             includeBase64:
               false,
-
           });
-
 
         if (
           result?.didCancel
         ) {
           return;
         }
-
 
         if (
           result?.errorCode
@@ -768,18 +676,14 @@ const SiteDetails = ({
           return;
         }
 
-
         const asset =
           result?.assets?.[0];
-
 
         if (!asset?.uri) {
           return;
         }
 
-
         await handleSelectedFile({
-
           uri:
             asset.uri,
 
@@ -794,7 +698,6 @@ const SiteDetails = ({
           size:
             asset.fileSize ||
             0,
-
         });
 
       } catch (error) {
@@ -804,16 +707,12 @@ const SiteDetails = ({
           error
         );
 
-
         Alert.alert(
           "Error",
           "Unable to select image."
         );
-
       }
-
     };
-
 
   // ===================================================
   // DOCUMENT / PDF
@@ -828,28 +727,20 @@ const SiteDetails = ({
           result,
         ] =
           await pick({
-
             type: [
-
               types.images,
-
               types.pdf,
-
             ],
 
             allowMultiSelection:
               false,
-
           });
-
 
         if (!result) {
           return;
         }
 
-
         await handleSelectedFile({
-
           uri:
             result.uri,
 
@@ -864,7 +755,6 @@ const SiteDetails = ({
           size:
             result.size ||
             0,
-
         });
 
       } catch (error) {
@@ -875,73 +765,385 @@ const SiteDetails = ({
           return;
         }
 
-
         console.log(
           "DOCUMENT PICK ERROR:",
           error
         );
 
-
         Alert.alert(
           "Error",
           "Unable to select document."
         );
-
       }
-
     };
+  // =====================================================
+  // COMMON DELETE FILE FUNCTION
+  // =====================================================
+
+  const handleDeleteFile = ({
+    item,
+    index,
+    list,
+    stateKey,
+  }) => {
+    // ============================================
+    // LOCAL FILE
+    // ============================================
+
+    if (!item?.publicId) {
+      const updatedList = list.filter(
+        (_, itemIndex) => itemIndex !== index
+      );
+
+      onChange?.({
+        [stateKey]: updatedList,
+      });
+
+      return;
+    }
+
+    // ============================================
+    // LOAN ID
+    // ============================================
+
+    if (!job?.loanId) {
+      Alert.alert(
+        "Delete Failed",
+        "Loan ID is missing."
+      );
+
+      return;
+    }
+
+    // ============================================
+    // UNIQUE FILE KEY
+    // ============================================
+
+    const fileKey =
+      `${stateKey}:${item?.publicId || item?.id || index}`;
+
+    // ============================================
+    // CONFIRMATION
+    // ============================================
+
+    Alert.alert(
+      "Delete File",
+      "This file will be permanently deleted. Once deleted, it cannot be recovered.",
+      [
+        {
+          text: "Cancel",
+          style: "cancel",
+        },
+        {
+          text: "Delete",
+          style: "destructive",
+
+          onPress: async () => {
+            // ========================================
+            // START LOADING FOR THIS FILE ONLY
+            // ========================================
+
+            setDeletingFileKey(fileKey);
+
+            try {
+              // ========================================
+              // DELETE API
+              // ========================================
+
+              await handleMutation({
+                apiFunc: deleteLoanFile,
+
+                params: {
+                  loanId: job.loanId,
+                  publicId: item.publicId,
+                },
+
+                showSuccess: true,
+
+                customSuccessMsg:
+                  "File deleted successfully",
+
+                // ======================================
+                // ONLY AFTER API SUCCESS
+                // REMOVE FROM UI
+                // ======================================
+
+                onSuccess: () => {
+                  const updatedList =
+                    list.filter(
+                      (file) =>
+                        file?.publicId !==
+                        item.publicId
+                    );
+
+                  onChange?.({
+                    [stateKey]: updatedList,
+                  });
+                },
+              });
+            } catch (error) {
+              console.log(
+                "DELETE FILE ERROR:",
+                error
+              );
+
+              // ======================================
+              // API FAILED
+              // DO NOT REMOVE FROM UI
+              // ======================================
+            } finally {
+              // ======================================
+              // STOP LOADING FOR THIS FILE
+              // ======================================
+
+              setDeletingFileKey(null);
+            }
+          },
+        },
+      ],
+      {
+        cancelable: true,
+      }
+    );
+  };
+
+  // ===================================================
+  // DELETE RECENT DOCUMENT
+  // ===================================================
+
+  const handleDeleteDocument = (
+    documentId,
+    index
+  ) => {
+    const selectedDocument =
+      uploadedDocuments.find(
+        (item) =>
+          item?.id === documentId ||
+          item?.publicId === documentId
+      ) || uploadedDocuments?.[index];
+
+    handleDeleteFile({
+      item: selectedDocument,
+      index,
+      list: uploadedDocuments,
+      stateKey: "uploadedDocuments",
+    });
+  };
+
+  // ===================================================
+  // DELETE PREVIOUSLY UPLOADED DOCUMENT
+  // ===================================================
+
+  const handleDeleteOldDocument = (
+    documentId,
+    index
+  ) => {
+    const selectedDocument =
+      uploadedOldDocuments.find(
+        (item) =>
+          item?.id === documentId ||
+          item?.publicId === documentId
+      ) || uploadedOldDocuments?.[index];
+
+    handleDeleteFile({
+      item: selectedDocument,
+      index,
+      list: uploadedOldDocuments,
+      stateKey: "uploadedOldDocuments",
+    });
+  };
 
 
   // ===================================================
-  // DELETE DOCUMENT
+  // RENDER PREVIOUSLY UPLOADED ITEM
   // ===================================================
 
-  const handleDeleteDocument =
+  const renderOldUploadedItem =
     (
-      documentId,
+      item,
       index
     ) => {
 
-      const updatedDocuments =
-        uploadedDocuments.filter(
+      const imageUri =
+        item?.url ||
+        item?.uri;
 
-          (
-            item,
-            itemIndex
-          ) => {
+      const fileKey =
+        `uploadedOldDocuments:${item?.publicId || item?.id || index}`;
 
-            if (documentId) {
+      const isDeleting =
+        deletingFileKey === fileKey;
 
-              return (
-                item?.id !==
-                documentId
-              );
-
-            }
-
-
-            return (
-              itemIndex !==
-              index
-            );
-
+      return (
+        <View
+          key={
+            item?.id ||
+            item?.publicId ||
+            `${imageUri}-${index}`
           }
+          style={{
+            minHeight: 88,
+            backgroundColor:
+              theme.colors.white,
+            borderRadius: 16,
+            padding:
+              theme.spacing.md,
+            marginBottom:
+              theme.spacing.sm,
+            flexDirection: "row",
+            alignItems: "center",
+            borderWidth: 1,
+            borderColor:
+              "#EEEEEE",
+          }}
+        >
 
-        );
+          {/* PREVIEW */}
 
+          <View
+            style={{
+              width: 54,
+              height: 54,
+              borderRadius: 13,
+              overflow: "hidden",
+              backgroundColor:
+                "#FFF4EA",
+              alignItems: "center",
+              justifyContent:
+                "center",
+            }}
+          >
 
-      onChange?.({
+            {imageUri ? (
+              <Image
+                source={{
+                  uri:
+                    imageUri,
+                }}
+                style={{
+                  width: "100%",
+                  height: "100%",
+                }}
+                resizeMode="cover"
+              />
+            ) : (
+              <FileText
+                size={25}
+                color={
+                  theme.colors.primary500
+                }
+              />
+            )}
 
-        uploadedDocuments:
-          updatedDocuments,
+          </View>
 
-      });
+          {/* DETAILS */}
 
+          <View
+            style={{
+              flex: 1,
+              marginLeft:
+                theme.spacing.md,
+            }}
+          >
+
+            <Text
+              numberOfLines={1}
+              style={{
+                color:
+                  theme.colors.black,
+                fontSize:
+                  theme.typography.b1,
+                fontFamily:
+                  theme.fonts.semiBold,
+              }}
+            >
+              {item?.name ||
+                item?.title ||
+                item?.fileName ||
+                item?.category ||
+                "Site Photo"}
+            </Text>
+
+            <Text
+              style={{
+                marginTop: 3,
+                color:
+                  theme.colors.gray500,
+                fontSize: 12,
+                fontFamily:
+                  theme.fonts.regular,
+              }}
+            >
+              Previously uploaded
+            </Text>
+
+            <Text
+              style={{
+                marginTop: 2,
+                color:
+                  theme.colors.success,
+                fontSize: 11,
+                fontFamily:
+                  theme.fonts.medium,
+              }}
+            >
+              ✓ Available
+            </Text>
+
+          </View>
+
+          {/* DELETE */}
+
+          <TouchableOpacity
+            activeOpacity={0.8}
+            disabled={
+              isDeleting
+            }
+            onPress={() =>
+              handleDeleteOldDocument(
+                item?.id ||
+                item?.publicId,
+                index
+              )
+            }
+            style={{
+              width: 38,
+              height: 38,
+              borderRadius: 12,
+              backgroundColor:
+                "#FFF5F5",
+              alignItems:
+                "center",
+              justifyContent:
+                "center",
+            }}
+          >
+
+            {isDeleting ? (
+              <ActivityIndicator
+                size="small"
+                color={
+                  theme.colors.error
+                }
+              />
+            ) : (
+              <Trash2
+                size={18}
+                color={
+                  theme.colors.error
+                }
+              />
+            )}
+
+          </TouchableOpacity>
+
+        </View>
+      );
     };
 
-
   // ===================================================
-  // RECENT DOCUMENT
+  // RENDER RECENT DOCUMENT
   // ===================================================
 
   const renderUploadedItem =
@@ -957,188 +1159,128 @@ const SiteDetails = ({
             "image/"
           );
 
-
       const imageUri =
         item?.url ||
         item?.uri;
 
+      const fileKey =
+        `uploadedDocuments:${item?.publicId || item?.id || index}`;
+
+      const isDeleting =
+        deletingFileKey === fileKey;
 
       return (
-
         <View
           key={
             item?.id ||
             index
           }
-
           style={{
-
-            minHeight:
-              88,
-
+            minHeight: 88,
             backgroundColor:
               theme.colors.white,
-
-            borderRadius:
-              16,
-
+            borderRadius: 16,
             padding:
               theme.spacing.md,
-
             marginBottom:
               theme.spacing.sm,
-
             flexDirection:
               "row",
-
             alignItems:
               "center",
-
-            borderWidth:
-              1,
-
+            borderWidth: 1,
             borderColor:
               "#EEEEEE",
-
           }}
         >
 
-          {/* =========================================
-              PREVIEW
-          ========================================= */}
+          {/* PREVIEW */}
 
           <View
             style={{
-
               width: 54,
-
               height: 54,
-
               borderRadius: 13,
-
-              overflow:
-                "hidden",
-
+              overflow: "hidden",
               backgroundColor:
                 "#FFF4EA",
-
-              alignItems:
-                "center",
-
+              alignItems: "center",
               justifyContent:
                 "center",
-
             }}
           >
 
             {isImage &&
-            imageUri ? (
-
+              imageUri ? (
               <Image
                 source={{
                   uri:
                     imageUri,
                 }}
-
                 style={{
-                  width:
-                    "100%",
-
-                  height:
-                    "100%",
+                  width: "100%",
+                  height: "100%",
                 }}
-
                 resizeMode="cover"
               />
-
             ) : (
-
               <FileText
                 size={25}
                 color={
                   theme.colors.primary500
                 }
               />
-
             )}
 
           </View>
 
-
-          {/* =========================================
-              DETAILS
-          ========================================= */}
+          {/* DETAILS */}
 
           <View
             style={{
-
               flex: 1,
-
               marginLeft:
                 theme.spacing.md,
-
             }}
           >
 
             <Text
               numberOfLines={1}
-
               style={{
-
                 color:
                   theme.colors.black,
-
                 fontSize:
                   theme.typography.b1,
-
                 fontFamily:
                   theme.fonts.semiBold,
-
               }}
             >
-              {
-                item?.category ||
+              {item?.category ||
                 item?.title ||
                 item?.name ||
-                "Uploaded Document"
-              }
+                "Uploaded Document"}
             </Text>
-
 
             <Text
               style={{
-
                 color:
                   theme.colors.gray500,
-
-                fontSize:
-                  12,
-
+                fontSize: 12,
                 fontFamily:
                   theme.fonts.semiBold,
-
-                 
-
               }}
             >
               Uploaded just now
             </Text>
 
-
             <Text
               style={{
-
                 color:
                   theme.colors.success,
-
-                fontSize:
-                  11,
-
+                fontSize: 11,
                 fontFamily:
                   theme.fonts.medium,
-
                 marginTop: 2,
-
               }}
             >
               ✓ Uploaded
@@ -1146,61 +1288,50 @@ const SiteDetails = ({
 
           </View>
 
-
-          {/* =========================================
-              DELETE
-          ========================================= */}
+          {/* DELETE */}
+          {/* LOCAL DELETE ONLY */}
 
           <TouchableOpacity
             activeOpacity={0.8}
-
             disabled={
-              isDocumentUploading
+              isDeleting
             }
-
             onPress={() =>
               handleDeleteDocument(
                 item?.id,
                 index
               )
             }
-
             style={{
-
               width: 38,
-
               height: 38,
-
               borderRadius: 12,
-
               backgroundColor:
                 "#FFF5F5",
-
               alignItems:
                 "center",
-
               justifyContent:
                 "center",
-
             }}
           >
 
-            <Trash2
-              size={18}
-
-              color={
-                theme.colors.error
-              }
-            />
+            {isDeleting ? (
+              <ActivityIndicator
+                size="small"
+                color={theme.colors.error}
+              />
+            ) : (
+              <Trash2
+                size={18}
+                color={theme.colors.error}
+              />
+            )}
 
           </TouchableOpacity>
 
         </View>
-
       );
-
     };
-
 
   // ===================================================
   // RENDER
@@ -1220,33 +1351,24 @@ const SiteDetails = ({
 
       <View
         style={{
-
           backgroundColor:
             theme.colors.white,
-
           borderRadius:
             theme.radius.xl,
-
           padding:
             theme.spacing.xl,
-
           marginBottom:
             theme.spacing.lg,
-
           ...theme.shadows.card,
-
         }}
       >
 
         <View
           style={{
-
             flexDirection:
               "row",
-
             alignItems:
               "center",
-
           }}
         >
 
@@ -1258,68 +1380,48 @@ const SiteDetails = ({
 
             <Text
               style={{
-
                 color:
                   theme.colors.black,
-
                 fontSize:
                   theme.typography.b2,
-
                 fontFamily:
                   theme.fonts.medium,
-
               }}
             >
               Upload Progress
             </Text>
 
-
             <View
               style={{
-
                 height: 8,
-
                 borderRadius: 999,
-
                 backgroundColor:
                   theme.colors.gray200,
-
                 overflow:
                   "hidden",
-
                 marginTop:
                   theme.spacing.sm,
-
               }}
             >
 
               <LinearGradient
                 colors={[
-
                   theme.colors.primary300,
-
                   theme.colors.primary500,
-
                 ]}
-
                 start={{
                   x: 0,
                   y: 0,
                 }}
-
                 end={{
                   x: 1,
                   y: 0,
                 }}
-
                 style={{
-
                   width:
                     `${uploadPercentage}%`,
-
                   height:
                     "100%",
-
                 }}
               />
 
@@ -1327,49 +1429,37 @@ const SiteDetails = ({
 
           </View>
 
-
           {/* COUNT */}
 
           <View
             style={{
-
               alignItems:
                 "center",
-
               marginHorizontal:
                 theme.spacing.lg,
-
             }}
           >
 
             <Text
               style={{
-
                 color:
                   theme.colors.black,
-
                 fontSize: 24,
-
                 fontFamily:
                   theme.fonts.headingBold,
-
               }}
             >
-              {uploadedCount}/{MAX_UPLOADS}
+              {uploadedCount}/
+              {MAX_UPLOADS}
             </Text>
-
 
             <Text
               style={{
-
                 color:
                   theme.colors.gray500,
-
                 fontSize: 11,
-
                 fontFamily:
                   theme.fonts.regular,
-
               }}
             >
               Uploaded
@@ -1377,43 +1467,30 @@ const SiteDetails = ({
 
           </View>
 
-
           {/* PERCENT */}
 
           <View
             style={{
-
               width: 58,
-
               height: 58,
-
               borderRadius: 29,
-
               borderWidth: 4,
-
               borderColor:
                 theme.colors.primary400,
-
               alignItems:
                 "center",
-
               justifyContent:
                 "center",
-
             }}
           >
 
             <Text
               style={{
-
                 color:
                   theme.colors.black,
-
                 fontSize: 11,
-
                 fontFamily:
                   theme.fonts.bold,
-
               }}
             >
               {uploadPercentage}%
@@ -1425,57 +1502,43 @@ const SiteDetails = ({
 
       </View>
 
-
       {/* =================================================
           DOCUMENT UPLOAD CARD
       ================================================= */}
 
       <TouchableOpacity
         activeOpacity={0.92}
-
         onPress={
           handleOpenDocumentModal
         }
-
         disabled={
           isDocumentUploading ||
           uploadedCount >=
-            MAX_UPLOADS
+          MAX_UPLOADS
         }
-
         style={{
-
           backgroundColor:
             theme.colors.white,
-
           borderRadius:
             20,
-
           marginBottom:
             theme.spacing.lg,
-
-          borderWidth:
-            1,
-
+          borderWidth: 1,
           borderColor:
             isDocumentUploading ||
-            uploadedCount >=
+              uploadedCount >=
               MAX_UPLOADS
               ? theme.colors.gray300
               : "#EAD9CC",
-
           overflow:
             "hidden",
-
           opacity:
             isDocumentUploading ||
-            uploadedCount >=
+              uploadedCount >=
               MAX_UPLOADS
               ? 0.65
               : 1,
-
           ...theme.shadows.card,
-
         }}
       >
 
@@ -1483,101 +1546,71 @@ const SiteDetails = ({
 
         <View
           style={{
-
             paddingHorizontal:
               theme.spacing.lg,
-
             paddingTop:
               theme.spacing.lg,
-
             paddingBottom:
               theme.spacing.md,
-
             flexDirection:
               "row",
-
             alignItems:
               "center",
-
           }}
         >
 
           <View
             style={{
-
               width: 46,
-
               height: 46,
-
               borderRadius: 14,
-
               backgroundColor:
                 "#FFF5EC",
-
               alignItems:
                 "center",
-
               justifyContent:
                 "center",
-
-              borderWidth:
-                1,
-
+              borderWidth: 1,
               borderColor:
                 "#FCE2CF",
-
             }}
           >
 
             {isDocumentUploading ? (
-
               <ActivityIndicator
                 size="small"
                 color={
                   theme.colors.primary500
                 }
               />
-
             ) : (
-
               <FileText
                 size={22}
-
                 color={
                   theme.colors.primary500
                 }
-
                 strokeWidth={2}
               />
-
             )}
 
           </View>
 
-
           <View
             style={{
-
               flex: 1,
-
               marginLeft:
                 theme.spacing.md,
-
             }}
           >
 
             <Text
               style={{
-
                 color:
                   theme.colors.black,
-
                 fontSize:
                   theme.typography.b1,
-
                 fontFamily:
                   theme.fonts.headingBold,
-
               }}
             >
               {isDocumentUploading
@@ -1585,21 +1618,15 @@ const SiteDetails = ({
                 : "Upload Document"}
             </Text>
 
-
             <Text
               style={{
-
                 marginTop: 3,
-
                 color:
                   theme.colors.gray500,
-
                 fontSize:
                   theme.typography.b3,
-
                 fontFamily:
                   theme.fonts.regular,
-
               }}
             >
               {isDocumentUploading
@@ -1611,49 +1638,33 @@ const SiteDetails = ({
 
         </View>
 
-
         {/* UPLOAD AREA */}
 
         <View
           style={{
-
             marginHorizontal:
               theme.spacing.lg,
-
             marginBottom:
               theme.spacing.lg,
-
-            minHeight:
-              150,
-
-            borderRadius:
-              16,
-
-            borderWidth:
-              1.2,
-
+            minHeight: 150,
+            borderRadius: 16,
+            borderWidth: 1.2,
             borderColor:
               isDocumentUploading
                 ? "#F3D6BE"
                 : "#E9CDB8",
-
             borderStyle:
               "dashed",
-
             backgroundColor:
               isDocumentUploading
                 ? "#FFF8F2"
                 : "#FFFCF9",
-
             alignItems:
               "center",
-
             justifyContent:
               "center",
-
             padding:
               theme.spacing.lg,
-
           }}
         >
 
@@ -1661,53 +1672,38 @@ const SiteDetails = ({
 
           <View
             style={{
-
               width: 52,
-
               height: 52,
-
               borderRadius: 18,
-
               backgroundColor:
                 "#FFF1E5",
-
               alignItems:
                 "center",
-
               justifyContent:
                 "center",
-
               marginBottom:
                 theme.spacing.sm,
-
             }}
           >
 
             {isDocumentUploading ? (
-
               <ActivityIndicator
                 size="small"
                 color={
                   theme.colors.primary500
                 }
               />
-
             ) : (
-
               <Upload
                 size={24}
-
                 color={
                   theme.colors.primary500
                 }
-
                 strokeWidth={2}
               />
-
             )}
 
           </View>
-
 
           {/* MAIN TEXT */}
 
@@ -1715,16 +1711,12 @@ const SiteDetails = ({
 
             <View
               style={{
-
                 flexDirection:
                   "row",
-
                 alignItems:
                   "center",
-
                 justifyContent:
                   "center",
-
               }}
             >
 
@@ -1737,22 +1729,16 @@ const SiteDetails = ({
 
               <Text
                 style={{
-
                   marginLeft:
                     theme.spacing.sm,
-
                   color:
                     theme.colors.primary500,
-
                   fontSize:
                     theme.typography.b2,
-
                   fontFamily:
                     theme.fonts.semiBold,
-
                   textAlign:
                     "center",
-
                 }}
               >
                 Uploading document...
@@ -1764,19 +1750,14 @@ const SiteDetails = ({
 
             <Text
               style={{
-
                 color:
                   theme.colors.black,
-
                 fontSize:
                   theme.typography.b2,
-
                 fontFamily:
                   theme.fonts.semiBold,
-
                 textAlign:
                   "center",
-
               }}
             >
               Tap to upload document
@@ -1784,24 +1765,16 @@ const SiteDetails = ({
 
           )}
 
-
           <Text
             style={{
-
               marginTop: 5,
-
               color:
                 theme.colors.gray500,
-
-              fontSize:
-                12,
-
+              fontSize: 12,
               fontFamily:
                 theme.fonts.regular,
-
               textAlign:
                 "center",
-
             }}
           >
             {isDocumentUploading
@@ -1809,27 +1782,19 @@ const SiteDetails = ({
               : "Camera, Gallery or PDF"}
           </Text>
 
-
           {!isDocumentUploading && (
 
             <Text
               style={{
-
                 marginTop:
                   theme.spacing.sm,
-
                 color:
                   theme.colors.gray400,
-
-                fontSize:
-                  10.5,
-
+                fontSize: 10.5,
                 fontFamily:
                   theme.fonts.regular,
-
                 textAlign:
                   "center",
-
               }}
             >
               Maximum file size 10 MB
@@ -1839,45 +1804,32 @@ const SiteDetails = ({
 
         </View>
 
-
         {/* FOOTER */}
 
         <View
           style={{
-
             backgroundColor:
               "#FAF7F4",
-
             paddingHorizontal:
               theme.spacing.lg,
-
             paddingVertical:
               theme.spacing.sm,
-
             flexDirection:
               "row",
-
             alignItems:
               "center",
-
             justifyContent:
               "space-between",
-
           }}
         >
 
           <Text
             style={{
-
               color:
                 theme.colors.gray500,
-
-              fontSize:
-                11,
-
+              fontSize: 11,
               fontFamily:
                 theme.fonts.regular,
-
             }}
           >
             {isDocumentUploading
@@ -1885,28 +1837,22 @@ const SiteDetails = ({
               : "Documents uploaded"}
           </Text>
 
-
           <Text
             style={{
-
               color:
                 theme.colors.primary500,
-
-              fontSize:
-                11,
-
+              fontSize: 11,
               fontFamily:
                 theme.fonts.semiBold,
-
             }}
           >
-            {uploadedCount} / {MAX_UPLOADS}
+            {uploadedCount} /{" "}
+            {MAX_UPLOADS}
           </Text>
 
         </View>
 
       </TouchableOpacity>
-
 
       {/* =================================================
           RECENTLY UPLOADED
@@ -1914,75 +1860,56 @@ const SiteDetails = ({
 
       <View
         style={{
-
           backgroundColor:
             "#F1F2F1",
-
           borderRadius:
             theme.radius.xl,
-
           padding:
             theme.spacing.lg,
-
           marginBottom:
             theme.spacing.xl,
-borderWidth:
-            0.1,
-             borderColor:
+          borderWidth: 0.1,
+          borderColor:
             "#0E0E0E",
         }}
       >
 
         <View
           style={{
-
             flexDirection:
               "row",
-
             alignItems:
               "center",
-
             justifyContent:
               "space-between",
-
             marginBottom:
               theme.spacing.lg,
-
           }}
         >
 
           <Text
             style={{
-
               color:
                 theme.colors.black,
-
               fontSize:
                 theme.typography.b2,
-
               fontFamily:
                 theme.fonts.extraBold,
-
             }}
           >
             RECENTLY UPLOADED
           </Text>
 
-
           {uploadedCount > 0 && (
 
             <Text
               style={{
-
                 color:
                   theme.colors.gray700,
-
                 fontSize:
                   theme.typography.b3,
-
                 fontFamily:
                   theme.fonts.medium,
-
               }}
             >
               {uploadedCount} Uploaded
@@ -1991,7 +1918,6 @@ borderWidth:
           )}
 
         </View>
-
 
         {uploadedCount > 0 ? (
 
@@ -2003,46 +1929,34 @@ borderWidth:
 
           <View
             style={{
-
               backgroundColor:
                 theme.colors.white,
-
               borderRadius:
                 theme.radius.lg,
-
               padding:
                 theme.spacing.xl,
-
               alignItems:
                 "center",
-
             }}
           >
 
             <FileText
               size={30}
-
               color={
                 theme.colors.gray500
               }
             />
 
-
             <Text
               style={{
-
                 marginTop:
                   theme.spacing.sm,
-
                 color:
                   theme.colors.gray500,
-
                 fontSize:
                   theme.typography.b2,
-
                 fontFamily:
                   theme.fonts.medium,
-
               }}
             >
               No documents uploaded yet
@@ -2054,17 +1968,133 @@ borderWidth:
 
       </View>
 
+      {/* =================================================
+          PREVIOUSLY UPLOADED
+      ================================================= */}
+
+      <View
+        style={{
+          backgroundColor:
+            "#F1F2F1",
+          borderRadius:
+            theme.radius.xl,
+          padding:
+            theme.spacing.lg,
+          marginBottom:
+            theme.spacing.xl,
+          borderWidth: 0.1,
+          borderColor:
+            "#0E0E0E",
+        }}
+      >
+
+        <View
+          style={{
+            flexDirection:
+              "row",
+            alignItems:
+              "center",
+            justifyContent:
+              "space-between",
+            marginBottom:
+              theme.spacing.lg,
+          }}
+        >
+
+          <Text
+            style={{
+              color:
+                theme.colors.black,
+              fontSize:
+                theme.typography.b2,
+              fontFamily:
+                theme.fonts.extraBold,
+            }}
+          >
+            PREVIOUSLY UPLOADED
+          </Text>
+
+          {uploadedOldDocuments.length >
+            0 && (
+
+              <Text
+                style={{
+                  color:
+                    theme.colors.gray700,
+                  fontSize:
+                    theme.typography.b3,
+                  fontFamily:
+                    theme.fonts.medium,
+                }}
+              >
+                {uploadedOldDocuments.length}{" "}
+                Uploaded
+              </Text>
+
+            )}
+
+        </View>
+
+        {uploadedOldDocuments.length >
+          0 ? (
+
+          uploadedOldDocuments.map(
+            renderOldUploadedItem
+          )
+
+        ) : (
+
+          <View
+            style={{
+              backgroundColor:
+                theme.colors.white,
+              borderRadius:
+                theme.radius.lg,
+              padding:
+                theme.spacing.xl,
+              alignItems:
+                "center",
+            }}
+          >
+
+            <FileText
+              size={30}
+              color={
+                theme.colors.gray500
+              }
+            />
+
+            <Text
+              style={{
+                marginTop:
+                  theme.spacing.sm,
+                color:
+                  theme.colors.gray500,
+                fontSize:
+                  theme.typography.b2,
+                fontFamily:
+                  theme.fonts.medium,
+                textAlign:
+                  "center",
+              }}
+            >
+              No previously uploaded documents
+            </Text>
+
+          </View>
+
+        )}
+
+      </View>
 
       {/* =================================================
           DOCUMENT NAME MODAL
       ================================================= */}
 
       <DocumentNameModal
-
         visible={
           documentNameVisible
         }
-
         onClose={() => {
 
           setDocumentNameVisible(
@@ -2074,50 +2104,37 @@ borderWidth:
           setDocumentName("");
 
         }}
-
         onContinue={
           handleDocumentNameContinue
         }
-
       />
-
 
       {/* =================================================
           COMMON UPLOAD SHEET
       ================================================= */}
 
       <UploadBottomSheet
-
         sheetVisible={
           uploadSheetVisible
         }
-
         setSheetVisible={
           setUploadSheetVisible
         }
-
         openCamera={
           handleCamera
         }
-
         openGallery={
           handleGallery
         }
-
         openDocument={
           handleDocument
         }
-
         type="photo"
-
       />
 
     </View>
-
   );
-
 };
-
 
 export default memo(
   SiteDetails

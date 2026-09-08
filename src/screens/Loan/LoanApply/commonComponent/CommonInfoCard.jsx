@@ -99,7 +99,7 @@ const CommonInfoCard = () => {
                 theme.typography.h4,
 
               fontFamily:
-                theme.fonts.headingBold,
+                theme.fonts.semiBold,
 
             }}
           >

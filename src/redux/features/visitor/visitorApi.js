@@ -90,21 +90,54 @@ export const visitorApi = baseApi.injectEndpoints({
         method: "PATCH",
         body,
       }),
+      invalidatesTags: ['Get-Verification-Summary']
     }),
 
     // =====================================================
     // PHOTO UPLOAD
     // POST /applyloan/:loanId/upload-photo
     // =====================================================
-    uploadVisitorPhoto: builder.mutation({
+    uploadSitePhoto: builder.mutation({
       query: ({
         loanId,
         formData
       }) => ({
-
+        url: `/applyloan/${loanId}/upload-photo`,
         method: "POST",
         body: formData,
       }),
+    }),
+
+    saveVisitorSiteDetails: builder.mutation({
+      query: ({ loanId, body }) => ({
+        url: `/applyloan/${loanId}/site-details`,
+        method: "PATCH",
+        body,
+      }),
+      invalidatesTags: ['Get-Verification-Summary']
+    }),
+
+    deleteLoanFile: builder.mutation({
+      query: ({ loanId, publicId }) => {
+        const body = {
+          publicId,
+        };
+
+        console.log(
+          "DELETE LOAN FILE REQUEST:",
+          {
+            loanId,
+            body,
+          }
+        );
+
+        return {
+          url: `/applyloan/${loanId}/file`,
+          method: "DELETE",
+          body,
+        };
+      },
+      invalidatesTags: ['Get-Verification-Summary']
     }),
 
     // =====================================================
@@ -134,6 +167,7 @@ export const visitorApi = baseApi.injectEndpoints({
         url: `/applyloan/${loanId}/witness`,
         method: "PATCH",
         body,
+        invalidatesTags: ['Get-Verification-Summary']
       }),
     }),
 
@@ -222,6 +256,7 @@ export const visitorApi = baseApi.injectEndpoints({
         url: `/applyloan/applications/${loanId}/verification-summary`,
         method: "GET",
       }),
+      providesTags: ["Get-Verification-Summary"]
     }),
 
     getVisitorApplicationDetails: builder.query({
@@ -275,7 +310,8 @@ export const {
   useSaveVisitorLocationMutation,
   useSaveVisitorInvestigationMutation,
 
-  useUploadVisitorPhotoMutation,
+
+  useUploadSitePhotoMutation,
   useUploadVisitorDocumentMutation,
 
   useSaveVisitorWitnessMutation,
@@ -291,4 +327,6 @@ export const {
   useGetVisitorVerificationSummaryQuery,
   useGetEmployeeProfileQuery,
   useGetEmployeeNotificationsQuery,
+  useSaveVisitorSiteDetailsMutation,
+  useDeleteLoanFileMutation
 } = visitorApi;

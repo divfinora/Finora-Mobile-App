@@ -158,14 +158,14 @@ const filteredApplications =
         // APPLICATION STATUS
         // =============================================
 
-        const rawStatus =
-          String(
-            item?.status ||
-            item?.verificationStatus ||
-            ""
-          )
-            .trim()
-            .toUpperCase();
+       const rawStatus =
+  String(
+    item?.verificationStatus ||
+    item?.status ||
+    ""
+  )
+    .trim()
+    .toUpperCase();
 
 
         // =============================================

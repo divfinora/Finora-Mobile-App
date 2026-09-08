@@ -21,6 +21,7 @@ import {
   Upload,
   X,
   Plus,
+  Trash2,
 } from "lucide-react-native";
 
 import {
@@ -43,7 +44,9 @@ import IDDetailsModal from
 
 import {
   useUploadWitnessDocumentsMutation,
+  useDeleteLoanFileMutation,
 } from "../../../../redux/features/visitor/visitorApi";
+import useHandleMutation from "../../../../hooks/useHandleMutation";
 
 
 // =====================================================
@@ -75,20 +78,34 @@ const WitnessDetails = ({
   data = {},
   onChange,
   uploading = false,
+  job = {},
 }) => {
 
   // =====================================================
   // API
   // =====================================================
-
+  const { handleMutation } = useHandleMutation();
   const [
     uploadWitnessDocuments,
     {
       isLoading:
-        isUploadingFile,
+      isUploadingFile,
     },
   ] =
     useUploadWitnessDocumentsMutation();
+
+  const [
+    deleteLoanFile,
+    { isLoading: isDeletingFile },
+  ] = useDeleteLoanFileMutation();
+
+  const [deletingFileId, setDeletingFileId] = useState(null);
+  // =================================
+  // Delete Photo 
+  // ====================================
+
+  const loanId = job?.loanId;
+
 
 
   // =====================================================
@@ -1332,66 +1349,207 @@ const WitnessDetails = ({
   // REMOVE PHOTO
   // =====================================================
 
-  const removePhoto = (
-    index
-  ) => {
 
-    const updatedPhotos =
-      photos.filter(
-        (_, itemIndex) =>
-          itemIndex !== index
-      );
+  const confirmDeleteFile = ({
+    item,
+    onConfirm,
+  }) => {
+    if (!item?.publicId) {
+      onConfirm();
+      return;
+    }
 
-
-    updateField(
-      "photos",
-      updatedPhotos
+    Alert.alert(
+      "Delete File?",
+      "This file will be permanently deleted from the server and cloud storage. Once deleted, it cannot be recovered.",
+      [
+        {
+          text: "Cancel",
+          style: "cancel",
+        },
+        {
+          text: "Delete",
+          style: "destructive",
+          onPress: onConfirm,
+        },
+      ],
+      {
+        cancelable: true,
+      }
     );
   };
+
+const removePhoto = async (index) => {
+  const item = photos?.[index];
+
+  if (!item) return;
+
+  confirmDeleteFile({
+    item,
+    onConfirm: async () => {
+      if (!item?.publicId) {
+        updateField(
+          "photos",
+          photos.filter((_, i) => i !== index)
+        );
+        return;
+      }
+
+      if (!loanId) {
+        Alert.alert(
+          "Delete Failed",
+          "Loan ID is missing."
+        );
+        return;
+      }
+
+      try {
+        setDeletingFileId(item.publicId);
+
+        await handleMutation({
+          apiFunc: deleteLoanFile,
+          params: {
+            loanId,
+            publicId: item.publicId,
+          },
+          showSuccess: false,
+
+          onSuccess: () => {
+            updateField(
+              "photos",
+              photos.filter((_, i) => i !== index)
+            );
+          },
+        });
+      } catch (error) {
+        console.log(
+          "DELETE WITNESS PHOTO ERROR:",
+          error
+        );
+      } finally {
+        setDeletingFileId(null);
+      }
+    },
+  });
+};
 
 
   // =====================================================
   // REMOVE SIGNATURE
   // =====================================================
 
-  const removeSignature = (
-    index
-  ) => {
+const removeSignature = async (index) => {
+  const item = signatures?.[index];
 
-    const updatedSignatures =
-      signatures.filter(
-        (_, itemIndex) =>
-          itemIndex !== index
-      );
+  if (!item) return;
 
+  confirmDeleteFile({
+    item,
+    onConfirm: async () => {
+      if (!item?.publicId) {
+        updateField(
+          "signatures",
+          signatures.filter((_, i) => i !== index)
+        );
+        return;
+      }
 
-    updateField(
-      "signatures",
-      updatedSignatures
-    );
-  };
+      if (!loanId) {
+        Alert.alert(
+          "Delete Failed",
+          "Loan ID is missing."
+        );
+        return;
+      }
+
+      try {
+        setDeletingFileId(item.publicId);
+
+        await handleMutation({
+          apiFunc: deleteLoanFile,
+          params: {
+            loanId,
+            publicId: item.publicId,
+          },
+          showSuccess: false,
+
+          onSuccess: () => {
+            updateField(
+              "signatures",
+              signatures.filter((_, i) => i !== index)
+            );
+          },
+        });
+      } catch (error) {
+        console.log(
+          "DELETE WITNESS SIGNATURE ERROR:",
+          error
+        );
+      } finally {
+        setDeletingFileId(null);
+      }
+    },
+  });
+};
 
 
   // =====================================================
   // REMOVE DOCUMENT
   // =====================================================
 
-  const removeDocument = (
-    index
-  ) => {
+  const removeDocument = async (index) => {
+  const item = documents?.[index];
 
-    const updatedDocuments =
-      documents.filter(
-        (_, itemIndex) =>
-          itemIndex !== index
-      );
+  if (!item) return;
 
+  confirmDeleteFile({
+    item,
+    onConfirm: async () => {
+      if (!item?.publicId) {
+        updateField(
+          "documents",
+          documents.filter((_, i) => i !== index)
+        );
+        return;
+      }
 
-    updateField(
-      "documents",
-      updatedDocuments
-    );
-  };
+      if (!loanId) {
+        Alert.alert(
+          "Delete Failed",
+          "Loan ID is missing."
+        );
+        return;
+      }
+
+      try {
+        setDeletingFileId(item.publicId);
+
+        await handleMutation({
+          apiFunc: deleteLoanFile,
+          params: {
+            loanId,
+            publicId: item.publicId,
+          },
+          showSuccess: false,
+
+          onSuccess: () => {
+            updateField(
+              "documents",
+              documents.filter((_, i) => i !== index)
+            );
+          },
+        });
+      } catch (error) {
+        console.log(
+          "DELETE WITNESS DOCUMENT ERROR:",
+          error
+        );
+      } finally {
+        setDeletingFileId(null);
+      }
+    },
+  });
+};
 
 
   // =====================================================
@@ -1483,11 +1641,12 @@ const WitnessDetails = ({
           {/* ========================================
               REMOVE
           ======================================== */}
-
           <TouchableOpacity
             activeOpacity={0.8}
-            onPress={() =>
-              onRemove(index)
+            onPress={() => onRemove(index)}
+            disabled={
+              isDeletingFile &&
+              deletingFileId === item?.publicId
             }
             style={{
               position: "absolute",
@@ -1496,19 +1655,31 @@ const WitnessDetails = ({
               width: 24,
               height: 24,
               borderRadius: 12,
-              backgroundColor:
-                "rgba(0,0,0,0.65)",
+              backgroundColor: "rgba(0,0,0,0.65)",
               alignItems: "center",
               justifyContent: "center",
             }}
           >
-
-            <X
-              size={14}
-              color="#FFFFFF"
-              strokeWidth={2.5}
-            />
-
+            {item?.publicId &&
+              isDeletingFile &&
+              deletingFileId === item.publicId ? (
+              <ActivityIndicator
+                size="small"
+                color="#FFFFFF"
+              />
+            ) : item?.publicId ? (
+              <Trash2
+                size={14}
+                color="#FFFFFF"
+                strokeWidth={2.5}
+              />
+            ) : (
+              <X
+                size={14}
+                color="#FFFFFF"
+                strokeWidth={2.5}
+              />
+            )}
           </TouchableOpacity>
 
         </View>
@@ -1670,7 +1841,7 @@ const WitnessDetails = ({
 
             opacity:
               uploading ||
-              isUploadingFile
+                isUploadingFile
                 ? 0.65
                 : 1,
           }}
@@ -1705,7 +1876,7 @@ const WitnessDetails = ({
           >
 
             {hasFiles &&
-            files?.[0]?.url ? (
+              files?.[0]?.url ? (
 
               <Image
                 source={{
@@ -1815,11 +1986,10 @@ const WitnessDetails = ({
 
               {hasFiles
 
-                ? `${files.length} file${
-                    files.length > 1
-                      ? "s"
-                      : ""
-                  } uploaded`
+                ? `${files.length} file${files.length > 1
+                  ? "s"
+                  : ""
+                } uploaded`
 
                 : subtitle}
 
@@ -2170,58 +2340,58 @@ const WitnessDetails = ({
         {photos.length <
           MAX_PHOTOS && (
 
-          <TouchableOpacity
-            activeOpacity={0.8}
-            onPress={() =>
-              openUploadSheet(
-                "photo"
-              )
-            }
-            disabled={
-              uploading ||
-              isUploadingFile
-            }
-            style={{
-              flexDirection:
-                "row",
-
-              alignItems:
-                "center",
-
-              alignSelf:
-                "flex-start",
-
-              marginBottom:
-                theme.spacing.md,
-            }}
-          >
-
-            <Plus
-              size={17}
-              color={
-                theme.colors.primary500
+            <TouchableOpacity
+              activeOpacity={0.8}
+              onPress={() =>
+                openUploadSheet(
+                  "photo"
+                )
               }
-            />
-
-            <Text
+              disabled={
+                uploading ||
+                isUploadingFile
+              }
               style={{
-                marginLeft: 5,
+                flexDirection:
+                  "row",
 
-                color:
-                  theme.colors.primary500,
+                alignItems:
+                  "center",
 
-                fontSize: 12,
+                alignSelf:
+                  "flex-start",
 
-                fontFamily:
-                  theme.fonts.semiBold,
+                marginBottom:
+                  theme.spacing.md,
               }}
             >
-              Add Witness Photo
-            </Text>
 
-          </TouchableOpacity>
+              <Plus
+                size={17}
+                color={
+                  theme.colors.primary500
+                }
+              />
 
-        )}
+              <Text
+                style={{
+                  marginLeft: 5,
+
+                  color:
+                    theme.colors.primary500,
+
+                  fontSize: 12,
+
+                  fontFamily:
+                    theme.fonts.semiBold,
+                }}
+              >
+                Add Witness Photo
+              </Text>
+
+            </TouchableOpacity>
+
+          )}
 
 
         {/* =================================================
@@ -2283,58 +2453,58 @@ const WitnessDetails = ({
         {signatures.length <
           MAX_SIGNATURES && (
 
-          <TouchableOpacity
-            activeOpacity={0.8}
-            onPress={() =>
-              openUploadSheet(
-                "signature"
-              )
-            }
-            disabled={
-              uploading ||
-              isUploadingFile
-            }
-            style={{
-              flexDirection:
-                "row",
-
-              alignItems:
-                "center",
-
-              alignSelf:
-                "flex-start",
-
-              marginBottom:
-                theme.spacing.md,
-            }}
-          >
-
-            <Plus
-              size={17}
-              color={
-                theme.colors.primary500
+            <TouchableOpacity
+              activeOpacity={0.8}
+              onPress={() =>
+                openUploadSheet(
+                  "signature"
+                )
               }
-            />
-
-            <Text
+              disabled={
+                uploading ||
+                isUploadingFile
+              }
               style={{
-                marginLeft: 5,
+                flexDirection:
+                  "row",
 
-                color:
-                  theme.colors.primary500,
+                alignItems:
+                  "center",
 
-                fontSize: 12,
+                alignSelf:
+                  "flex-start",
 
-                fontFamily:
-                  theme.fonts.semiBold,
+                marginBottom:
+                  theme.spacing.md,
               }}
             >
-              Add Signature
-            </Text>
 
-          </TouchableOpacity>
+              <Plus
+                size={17}
+                color={
+                  theme.colors.primary500
+                }
+              />
 
-        )}
+              <Text
+                style={{
+                  marginLeft: 5,
+
+                  color:
+                    theme.colors.primary500,
+
+                  fontSize: 12,
+
+                  fontFamily:
+                    theme.fonts.semiBold,
+                }}
+              >
+                Add Signature
+              </Text>
+
+            </TouchableOpacity>
+
+          )}
 
 
         {/* =================================================
@@ -2401,55 +2571,55 @@ const WitnessDetails = ({
         {documents.length <
           MAX_DOCUMENTS && (
 
-          <TouchableOpacity
-            activeOpacity={0.8}
-            onPress={
-              handleOpenIDDocument
-            }
-            disabled={
-              uploading ||
-              isUploadingFile
-            }
-            style={{
-              flexDirection:
-                "row",
-
-              alignItems:
-                "center",
-
-              alignSelf:
-                "flex-start",
-
-              marginTop: 2,
-            }}
-          >
-
-            <Plus
-              size={17}
-              color={
-                theme.colors.primary500
+            <TouchableOpacity
+              activeOpacity={0.8}
+              onPress={
+                handleOpenIDDocument
               }
-            />
-
-            <Text
+              disabled={
+                uploading ||
+                isUploadingFile
+              }
               style={{
-                marginLeft: 5,
+                flexDirection:
+                  "row",
 
-                color:
-                  theme.colors.primary500,
+                alignItems:
+                  "center",
 
-                fontSize: 12,
+                alignSelf:
+                  "flex-start",
 
-                fontFamily:
-                  theme.fonts.semiBold,
+                marginTop: 2,
               }}
             >
-              Add Identity Document
-            </Text>
 
-          </TouchableOpacity>
+              <Plus
+                size={17}
+                color={
+                  theme.colors.primary500
+                }
+              />
 
-        )}
+              <Text
+                style={{
+                  marginLeft: 5,
+
+                  color:
+                    theme.colors.primary500,
+
+                  fontSize: 12,
+
+                  fontFamily:
+                    theme.fonts.semiBold,
+                }}
+              >
+                Add Identity Document
+              </Text>
+
+            </TouchableOpacity>
+
+          )}
 
       </View>
 
@@ -2571,9 +2741,9 @@ const WitnessDetails = ({
 
         initialValues={{
 
-          idType:"",
+          idType: "",
 
-          idNumber:"",
+          idNumber: "",
 
         }}
 

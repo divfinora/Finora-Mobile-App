@@ -92,7 +92,7 @@ const KeyboardAvoidingBottomView = ({
     const bottomSpace =
         isKeyboardVisible
             ? keyboardHeight + keyboardSpacing
-            : 10;
+            : 0;
 
 
     return (

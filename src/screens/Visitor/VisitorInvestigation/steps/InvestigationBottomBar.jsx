@@ -5,14 +5,9 @@ import {
 } from "react-native";
 
 import {
-  ChevronLeft,
   ChevronRight,
   Check,
 } from "lucide-react-native";
-
-import {
-  useSafeAreaInsets,
-} from "react-native-safe-area-context";
 
 import {
   theme,
@@ -25,13 +20,12 @@ const InvestigationBottomBar = ({
   currentStep = 1,
   totalSteps = 6,
 
+  onSaveDraft,
   onBack,
   onNext,
 
   loading = false,
 }) => {
-
-  const insets = useSafeAreaInsets();
 
   const isFirstStep =
     currentStep === 1;
@@ -58,7 +52,7 @@ const InvestigationBottomBar = ({
     }
 
     if (currentStep === 3) {
-      return "Witness Verification";
+      return "Save & Continue";
     }
 
     return "Next";
@@ -71,10 +65,12 @@ const InvestigationBottomBar = ({
 
   const getButtonIcon = () => {
 
+    // Loading ke time icon nahi dikhega
     if (loading) {
       return null;
     }
 
+    // Submit icon
     if (isLastStep) {
 
       return (
@@ -87,6 +83,7 @@ const InvestigationBottomBar = ({
 
     }
 
+    // Next icon
     return (
       <ChevronRight
         size={18}
@@ -98,14 +95,116 @@ const InvestigationBottomBar = ({
   };
 
 
+  // =====================================================
+  // BUTTON TEXT STYLE
+  // =====================================================
+
+  const buttonTextStyle = {
+
+    fontFamily:
+      theme.fonts.semiBold,
+
+    fontWeight:
+      "600",
+
+    fontSize:
+      14,
+
+    lineHeight:
+      20,
+
+    letterSpacing:
+      0.14,
+
+    textAlign:
+      "center",
+
+  };
+
+
+  // =====================================================
+  // SUBMIT VERIFICATION
+  // =====================================================
+
+  // Step 6 par sirf Submit button
+  if (isLastStep) {
+
+    return (
+
+      <View
+        style={{
+
+          backgroundColor:
+            theme.colors.white,
+
+          borderTopWidth:
+            1,
+
+          borderTopColor:
+            "#EEEEEE",
+
+          paddingHorizontal:
+            theme.spacing.lg,
+
+          paddingTop:
+            theme.spacing.md,
+
+          paddingBottom:
+            theme.spacing.md,
+
+        }}
+      >
+
+        <CommonButton
+
+          title="Submit Verification"
+
+          onPress={
+            onNext
+          }
+
+          loading={
+            loading
+          }
+
+          disabled={
+            loading
+          }
+
+          textStyle={
+            buttonTextStyle
+          }
+
+          containerStyle={{
+            height: 50,
+          }}
+
+          icon={
+            getButtonIcon()
+          }
+
+        />
+
+      </View>
+
+    );
+  }
+
+
+  // =====================================================
+  // NORMAL STEPS
+  // =====================================================
+
   return (
 
     <View
       style={{
+
         backgroundColor:
           theme.colors.white,
 
-        borderTopWidth: 1,
+        borderTopWidth:
+          1,
 
         borderTopColor:
           "#EEEEEE",
@@ -117,10 +216,7 @@ const InvestigationBottomBar = ({
           theme.spacing.md,
 
         paddingBottom:
-          Math.max(
-            insets.bottom,
-            theme.spacing.md
-          ),
+          theme.spacing.md,
 
         flexDirection:
           "row",
@@ -130,11 +226,12 @@ const InvestigationBottomBar = ({
 
         gap:
           theme.spacing.md,
+
       }}
     >
 
       {/* =================================================
-          BACK
+          SAVE DRAFT
       ================================================= */}
 
       {!isFirstStep && (
@@ -146,31 +243,31 @@ const InvestigationBottomBar = ({
         >
 
           <CommonButton
-            title="Back"
+            title="Save Draft"
 
             variant="outline"
 
-            onPress={onBack}
+            onPress={
+              onSaveDraft
+            }
 
-            disabled={loading}
+            loading={
+              loading
+            }
 
-            loading={false}
+            disabled={
+              loading
+            }
 
-            leftIcon={
-              <ChevronLeft
-                size={18}
-                color={
-                  theme.colors.primary500
-                }
-                strokeWidth={2.2}
-              />
+            textStyle={
+              buttonTextStyle
             }
 
             containerStyle={{
               height: 50,
 
               borderColor:
-                "#FFD0B8",
+                "#FF641F",
 
               backgroundColor:
                 theme.colors.white,
@@ -183,7 +280,7 @@ const InvestigationBottomBar = ({
 
 
       {/* =================================================
-          SAVE / NEXT / SUBMIT
+          NEXT / SAVE & CONTINUE
       ================================================= */}
 
       <View
@@ -196,23 +293,35 @@ const InvestigationBottomBar = ({
       >
 
         <CommonButton
+
           title={
             getButtonTitle()
           }
 
-          onPress={onNext}
+          onPress={
+            onNext
+          }
 
-          loading={loading}
+          loading={
+            loading
+          }
 
-          disabled={loading}
+          disabled={
+            loading
+          }
 
-          rightIcon={
-            getButtonIcon()
+          textStyle={
+            buttonTextStyle
           }
 
           containerStyle={{
             height: 50,
           }}
+
+          icon={
+            getButtonIcon()
+          }
+
         />
 
       </View>
@@ -220,7 +329,6 @@ const InvestigationBottomBar = ({
     </View>
 
   );
-
 };
 
 

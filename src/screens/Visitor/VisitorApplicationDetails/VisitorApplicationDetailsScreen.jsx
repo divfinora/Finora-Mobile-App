@@ -81,7 +81,7 @@ import VisitorApplicationDetailsSkeleton
 import StartInvestigationButton
   from "./components/StartInvestigationButton.jsx";
 
-
+import StatusOverviewCard from './components/StatusOverviewCard.jsx'
 // =====================================================
 // SCREEN
 // =====================================================
@@ -516,7 +516,13 @@ const VisitorApplicationDetailsScreen = () => {
                   loan?.status || "-"
                 }
               />
-
+<StatusOverviewCard
+  verificationStatus={details?.status}
+  loanStatus={loan?.status}
+  loanStage={loan?.stage}
+  approvalStatus={loan?.approval?.status}
+  disbursementStatus={loan?.disbursementStatus}
+/>
 
               {/* =================================================
                   APPLICANT

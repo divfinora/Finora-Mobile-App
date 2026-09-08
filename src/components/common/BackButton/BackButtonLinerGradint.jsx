@@ -57,6 +57,8 @@ const BackButtonLinerGradint = ({
         y: 1,
       }}
       style={{
+    
+
         width: "100%",
       }}
     >
@@ -64,6 +66,7 @@ const BackButtonLinerGradint = ({
       <View
         style={[
           {
+                borderWidth:1,
             flexDirection: "row",
 
             alignItems: "center",

@@ -130,7 +130,7 @@ const VisitorHomeScreenJobCard = ({
 
   const avatarColor =
     avatarColors[
-      avatarIndex
+    avatarIndex
     ];
 
 
@@ -148,175 +148,173 @@ const VisitorHomeScreenJobCard = ({
   // STATUS
   // =====================================================
 
-  const rawStatus =
-    item?.verificationStatus ||
-    item?.status ||
-    "ASSIGNED";
+  // =====================================================
+  // JOB STATUS
+  // =====================================================
 
+  const rawJobStatus =
+    item?.status || "ASSIGNED";
 
-  const status =
-    String(rawStatus)
+  const jobStatus =
+    String(rawJobStatus)
       .trim()
       .toUpperCase();
 
 
   // =====================================================
+  // VERIFICATION STATUS
+  // =====================================================
+
+  const rawVerificationStatus =
+    item?.verificationStatus || "ASSIGNED";
+
+  const verificationStatus =
+    String(rawVerificationStatus)
+      .trim()
+      .toUpperCase();
+
+
+  // =====================================================
+  // VERIFICATION COMPLETED / LOCKED
+  // =====================================================
+
+  const isVerificationCompleted =
+    verificationStatus === "SUBMITTED" ||
+    verificationStatus === "APPROVED";
+
+  // =====================================================
   // STATUS CONFIG
   // =====================================================
 
-  const getStatusConfig = () => {
-
-    switch (status) {
-
-      // ===============================================
-      // ASSIGNED
-      // ===============================================
-
+  const getJobStatusConfig = () => {
+    switch (jobStatus) {
       case "ASSIGNED":
-
       case "VISITOR_ASSIGNED":
-
         return {
           text: "ASSIGNED",
           backgroundColor: "#DCE7FF",
           color: "#1654C7",
         };
 
-
-      // ===============================================
-      // IN PROGRESS
-      // ===============================================
-
       case "IN_PROGRESS":
-
       case "VISITOR_IN_PROGRESS":
-
         return {
           text: "IN PROGRESS",
           backgroundColor: "#E6D900",
           color: "#5C5600",
         };
 
-
-      // ===============================================
-      // SUBMITTED
-      // ===============================================
+      case "UNDER_REVIEW":
+        return {
+          text: "UNDER REVIEW",
+          backgroundColor: "#FFF0C2",
+          color: "#8A5A00",
+        };
 
       case "SUBMITTED":
-
       case "VISITOR_SUBMITTED":
-
         return {
           text: "SUBMITTED",
           backgroundColor: "#D7F3DF",
           color: "#16703A",
         };
 
-
-      // ===============================================
-      // PENDING
-      // ===============================================
-
-      case "PENDING":
-
-      case "VISITOR_PENDING":
-
-        return {
-          text: "PENDING",
-          backgroundColor: "#FFD8D8",
-          color: "#9D3333",
-        };
-
-
-      // ===============================================
-      // COMPLETED
-      // ===============================================
-
       case "COMPLETED":
-
       case "VISITOR_COMPLETED":
-
         return {
           text: "COMPLETED",
           backgroundColor: "#D7F3DF",
           color: "#16703A",
         };
 
-
-      // ===============================================
-      // REJECTED
-      // ===============================================
-
       case "REJECTED":
-
       case "VISITOR_REJECTED":
-
         return {
           text: "REJECTED",
           backgroundColor: "#FFE1E1",
           color: "#B42318",
         };
 
-
-      // ===============================================
-      // CANCELLED
-      // ===============================================
-
       case "CANCELLED":
-
       case "VISITOR_CANCELLED":
-
         return {
           text: "CANCELLED",
           backgroundColor: "#FFE1E1",
           color: "#B42318",
         };
 
-
-      // ===============================================
-      // FAILED
-      // ===============================================
-
       case "FAILED":
-
       case "VISITOR_FAILED":
-
         return {
           text: "FAILED",
           backgroundColor: "#FFE1E1",
           color: "#B42318",
         };
 
-
-      // ===============================================
-      // DEFAULT
-      // ===============================================
-
       default:
-
         return {
-          text: String(rawStatus)
-            .replaceAll("_", " ")
-            .toUpperCase(),
-
-          backgroundColor:
-            theme.colors.gray200 ||
-            "#E5E7EB",
-
-          color:
-            theme.colors.gray700 ||
-            "#4B5563",
+          text: jobStatus.replaceAll("_", " "),
+          backgroundColor: theme.colors.gray200 || "#E5E7EB",
+          color: theme.colors.gray700 || "#4B5563",
         };
-
     }
-
   };
+
+  const jobStatusConfig = getJobStatusConfig();
 
 
   const statusConfig =
-    getStatusConfig();
+    getJobStatusConfig();
 
 
+  const getVerificationStatusConfig = () => {
+    switch (verificationStatus) {
+      case "ASSIGNED":
+        return {
+          text: "VERIFICATION: ASSIGNED",
+          backgroundColor: "#DCE7FF",
+          color: "#1654C7",
+        };
+
+      case "IN_PROGRESS":
+        return {
+          text: "VERIFICATION: IN PROGRESS",
+          backgroundColor: "#FFF0C2",
+          color: "#8A5A00",
+        };
+
+      case "SUBMITTED":
+        return {
+          text: "VERIFICATION: SUBMITTED",
+          backgroundColor: "#D7F3DF",
+          color: "#16703A",
+        };
+
+      case "APPROVED":
+        return {
+          text: "VERIFICATION: APPROVED",
+          backgroundColor: "#D7F3DF",
+          color: "#16703A",
+        };
+
+      case "REJECTED":
+        return {
+          text: "VERIFICATION: REJECTED",
+          backgroundColor: "#FFE1E1",
+          color: "#B42318",
+        };
+
+      default:
+        return {
+          text: `VERIFICATION: ${verificationStatus.replaceAll("_", " ")}`,
+          backgroundColor: theme.colors.gray200 || "#E5E7EB",
+          color: theme.colors.gray700 || "#4B5563",
+        };
+    }
+  };
+
+  const verificationStatusConfig =
+    getVerificationStatusConfig();
   // =====================================================
   // PRIORITY
   // =====================================================
@@ -555,7 +553,7 @@ const VisitorHomeScreenJobCard = ({
         borderColor:
           borderColor,
 
-        ...  theme.shadows?.card     ,
+        ...theme.shadows?.card,
       }}
     >
 
@@ -597,8 +595,8 @@ const VisitorHomeScreenJobCard = ({
           <Text
             style={{
               fontSize:
-                theme.typography.b1  ,
-            
+                theme.typography.b1,
+
 
               color:
                 avatarColor.text,
@@ -609,7 +607,7 @@ const VisitorHomeScreenJobCard = ({
               lineHeight: 18,
             }}
           >
-            {initials} 
+            {initials}
           </Text>
 
         </View>
@@ -656,12 +654,12 @@ const VisitorHomeScreenJobCard = ({
             numberOfLines={1}
             ellipsizeMode="tail"
             style={{
-             
-               
+
+
 
               fontSize:
-                theme.typography.b3  ,
-              
+                theme.typography.b3,
+
 
               color:
                 '#76777D',
@@ -680,49 +678,73 @@ const VisitorHomeScreenJobCard = ({
             STATUS BADGE
         ================================================= */}
 
+        {/* =================================================
+    JOB + VERIFICATION STATUS
+================================================= */}
+
         <View
           style={{
-            maxWidth: 108,
-
-            paddingHorizontal:
-              theme.spacing.sm ||
-              10,
-
-            paddingVertical:
-              theme.spacing.xs ||
-              6,
-
-            borderRadius:
-              theme.radius.full ||
-              14,
-
-            backgroundColor:
-              statusConfig.backgroundColor,
-
+            alignItems: "flex-end",
+            justifyContent: "center",
+            gap: 6,
             flexShrink: 0,
           }}
         >
+          {/* JOB STATUS */}
 
-          <Text
-            numberOfLines={1}
-            ellipsizeMode="tail"
+          <View
             style={{
-              fontSize: 10,
-
-              color:
-                statusConfig.color,
-
-              fontFamily:
-                theme.fonts.bold,
-
-              textAlign: "center",
-
-              letterSpacing: 0.2,
+              paddingHorizontal: theme.spacing.sm || 10,
+              paddingVertical: theme.spacing.xs || 6,
+              borderRadius: theme.radius.full || 14,
+              backgroundColor:
+                jobStatusConfig.backgroundColor,
+              maxWidth: 120,
             }}
           >
-            {statusConfig.text}
-          </Text>
+            <Text
+              numberOfLines={1}
+              ellipsizeMode="tail"
+              style={{
+                fontSize: 9,
+                color: jobStatusConfig.color,
+                fontFamily: theme.fonts.bold,
+                textAlign: "center",
+                letterSpacing: 0.2,
+              }}
+            >
+              {jobStatusConfig.text}
+            </Text>
+          </View>
 
+
+          {/* VERIFICATION STATUS */}
+
+          <View
+            style={{
+              paddingHorizontal: theme.spacing.sm || 10,
+              paddingVertical: theme.spacing.xs || 6,
+              borderRadius: theme.radius.full || 14,
+              backgroundColor:
+                verificationStatusConfig.backgroundColor,
+              maxWidth: 145,
+            }}
+          >
+            <Text
+              numberOfLines={1}
+              ellipsizeMode="tail"
+              style={{
+                fontSize: 8,
+                color:
+                  verificationStatusConfig.color,
+                fontFamily: theme.fonts.bold,
+                textAlign: "center",
+                letterSpacing: 0.1,
+              }}
+            >
+              {verificationStatusConfig.text}
+            </Text>
+          </View>
         </View>
 
       </View>
@@ -870,8 +892,8 @@ const VisitorHomeScreenJobCard = ({
                 minWidth: 0,
 
                 fontSize:
-                  theme.typography.b2   ,
-                  
+                  theme.typography.b2,
+
 
                 color:
                   secondaryTextColor,
@@ -927,8 +949,8 @@ const VisitorHomeScreenJobCard = ({
 
                 minWidth: 0,
 
-                   fontSize:
-                  theme.typography.b2   ,
+                fontSize:
+                  theme.typography.b2,
 
                 color:
                   secondaryTextColor,
@@ -995,8 +1017,8 @@ const VisitorHomeScreenJobCard = ({
 
                 minWidth: 0,
 
-                  fontSize:
-                  theme.typography.b2   ,
+                fontSize:
+                  theme.typography.b2,
 
                 color:
                   secondaryTextColor,
@@ -1051,8 +1073,8 @@ const VisitorHomeScreenJobCard = ({
 
                 minWidth: 0,
 
-                   fontSize:
-                  theme.typography.b2   ,
+                fontSize:
+                  theme.typography.b2,
                 color:
                   secondaryTextColor,
 
@@ -1102,8 +1124,8 @@ const VisitorHomeScreenJobCard = ({
                   theme.spacing.xs ||
                   7,
 
-                  fontSize:
-                  theme.typography.b2     ,
+                fontSize:
+                  theme.typography.b2,
 
                 color:
                   secondaryTextColor,
@@ -1126,48 +1148,57 @@ const VisitorHomeScreenJobCard = ({
           VIEW MORE
       ================================================= */}
 
+      {/* =================================================
+    VIEW MORE
+================================================= */}
+
       <TouchableOpacity
-        activeOpacity={0.8}
+        activeOpacity={isVerificationCompleted ? 1 : 0.8}
+        disabled={isVerificationCompleted}
+        onPress={() => {
+          if (isVerificationCompleted) {
+            return;
+          }
 
-        onPress={() =>
-          onPress?.(item)
-        }
-
+          onPress?.(item);
+        }}
         style={{
-          height:
-            theme.button.height ||
-            46,
+          height: theme.button.height || 46,
 
           marginTop:
-            theme.spacing.lg ||
-            18,
+            theme.spacing.lg || 18,
 
           borderRadius:
-            theme.button.borderRadius ||
-            9,
+            theme.button.borderRadius || 9,
 
           borderWidth: 1,
 
-          borderColor:
-           
-            "#FFB895",
+          borderColor: isVerificationCompleted
+            ? "#D1D5DB"
+            : "#FFB895",
 
           alignItems: "center",
-
           justifyContent: "center",
-
           flexDirection: "row",
+
+          backgroundColor:
+            isVerificationCompleted
+              ? "#F3F4F6"
+              : theme.colors.white,
+
+          opacity:
+            isVerificationCompleted ? 0.55 : 1,
         }}
       >
-
         <Text
           style={{
             fontSize:
-              theme.button.fontSize ||
-              14,
+              theme.button.fontSize || 14,
 
             color:
-              primaryColor,
+              isVerificationCompleted
+                ? "#9CA3AF"
+                : primaryColor,
 
             fontFamily:
               theme.fonts.semiBold,
@@ -1176,21 +1207,18 @@ const VisitorHomeScreenJobCard = ({
           View More
         </Text>
 
-
         <ArrowRight
           size={18}
-
           color={
-            primaryColor
+            isVerificationCompleted
+              ? "#9CA3AF"
+              : primaryColor
           }
-
           style={{
             marginLeft:
-              theme.spacing.sm ||
-              8,
+              theme.spacing.sm || 8,
           }}
         />
-
       </TouchableOpacity>
 
     </View>
