@@ -4,31 +4,27 @@ import {
   createBottomTabNavigator,
 } from "@react-navigation/bottom-tabs";
 
-// Screens
 import HomeScreen from "../screens/Home/HomeScreen.jsx";
 import LoanScreen from "../screens/Loan/LoanScreen.jsx";
 import HistoryScreen from "../screens/History/HistoryScreen.jsx";
 import ProfileScreen from "../screens/Profile/ProfileScreen.jsx";
 import MyLoanScreen from "../screens/GetLoan/MyLoan/MyLoanScreen.jsx";
+
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-import { useSelector } from "react-redux";
-import VisitorHomeScreen from '../screens/Visitor/VisitorHomeScreen/VisitorHomeScreen.jsx'
-import MyApplicationsScreen from '../screens/Visitor/MyApplications/MyApplicationsScreen.jsx'
-import useUserRole from '../hooks/useUserRole.js'
-import VisitorProfileScreen from '../screens/Visitor/Profile/VisitorProfileScreen.jsx'
+
+import VisitorHomeScreen from "../screens/Visitor/VisitorHomeScreen/VisitorHomeScreen.jsx";
+import MyApplicationsScreen from "../screens/Visitor/MyApplications/MyApplicationsScreen.jsx";
+import VisitorProfileScreen from "../screens/Visitor/Profile/VisitorProfileScreen.jsx";
+
+import useUserRole from "../hooks/useUserRole.js";
+
 const Tab = createBottomTabNavigator();
 
-
 const BottomTabNavigator = () => {
-   const insets = useSafeAreaInsets();
-     // ==========================
-const {
-  isVisitor,
-} = useUserRole();
+  const insets = useSafeAreaInsets();
 
-  
- 
-  
+  const { isVisitor } = useUserRole();
+
   return (
     <Tab.Navigator
       initialRouteName="Home"
@@ -39,7 +35,7 @@ const {
         tabBarInactiveTintColor: "#9CA3AF",
 
         tabBarStyle: {
-           height: 65 + insets.bottom,
+          height: 65 + insets.bottom,
           backgroundColor: "#FFFFFF",
           borderTopWidth: 1,
           borderTopColor: "#E5E7EB",
@@ -56,25 +52,27 @@ const {
       {/* HOME */}
       <Tab.Screen
         name="Home"
-        component={ isVisitor ? VisitorHomeScreen:HomeScreen}
+        component={isVisitor ? VisitorHomeScreen : HomeScreen}
       />
 
-      {/* SCANNER */}
-      <Tab.Screen
-        name="Loan"
-        component={LoanScreen}
-      />
+      {/* LOAN - ONLY NORMAL USER */}
+      {!isVisitor && (
+        <Tab.Screen
+          name="Loan"
+          component={LoanScreen}
+        />
+      )}
 
       {/* HISTORY */}
       <Tab.Screen
         name="History"
-        component={ isVisitor ? MyApplicationsScreen: MyLoanScreen}
+        component={isVisitor ? MyApplicationsScreen : MyLoanScreen}
       />
 
       {/* PROFILE */}
       <Tab.Screen
         name="Profile"
-        component={ isVisitor ? VisitorProfileScreen:ProfileScreen}
+        component={isVisitor ? VisitorProfileScreen : ProfileScreen}
       />
     </Tab.Navigator>
   );

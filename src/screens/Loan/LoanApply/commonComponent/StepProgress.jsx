@@ -10,11 +10,12 @@ const StepProgress = ({
   totalSteps,
   progress,
   heading,
+    marginTop = theme.spacing.lg,
 }) => {
   return (
     <View
       style={{
-        paddingTop: theme.spacing.lg,
+        paddingTop: marginTop,
         paddingBottom: theme.spacing.lg,
       }}
     >

@@ -241,16 +241,26 @@ export const visitorApi = baseApi.injectEndpoints({
     // FINAL SUBMIT
     // PATCH /applyloan/:loanId/submit-verification
     // =====================================================
-    submitVisitorVerification: builder.mutation({
-      query: ({
-        loanId,
-        body
-      }) => ({
-        url: `/applyloan/${loanId}/submit-verification`,
-        method: "PATCH",
-        body,
-      }),
-    }),
+ submitVisitorVerification: builder.mutation({
+  query: ({
+    loanId,
+    body
+  }) => ({
+    url: `/applyloan/${loanId}/submit-verification`,
+    method: "PATCH",
+    body,
+  }),
+
+  invalidatesTags: (result, error, { loanId }) => [
+    "VisitorDashboard",
+    "VisitorApplications",
+    {
+      type: "VisitorApplicationDetails",
+      id: loanId,
+    },
+    "Get-Verification-Summary",
+  ],
+}),
     getVisitorVerificationSummary: builder.query({
       query: (loanId) => ({
         url: `/applyloan/applications/${loanId}/verification-summary`,

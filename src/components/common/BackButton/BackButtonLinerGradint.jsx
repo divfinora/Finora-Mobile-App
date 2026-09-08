@@ -66,7 +66,7 @@ const BackButtonLinerGradint = ({
       <View
         style={[
           {
-                borderWidth:1,
+               
             flexDirection: "row",
 
             alignItems: "center",

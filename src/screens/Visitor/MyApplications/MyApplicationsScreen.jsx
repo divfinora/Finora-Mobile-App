@@ -11,6 +11,8 @@ import {
   RefreshControl,
   KeyboardAvoidingView,
   Platform,
+  StatusBar,
+  TouchableOpacity,
 } from "react-native";
 
 import {
@@ -485,58 +487,38 @@ const filteredApplications =
 
       return (
 
-        <BackButtonLinerGradint
-
-          title="Loan Verifier"
-
-          onPress={() =>
-            navigation.goBack()
-          }
-
-          containerStyle={{
-            paddingTop:
-              insets.top,
-
-            paddingHorizontal:
-              theme.spacing.xxl,
-          }}
-
-          rightComponent={
-
-            <View
-              style={{
-                width: 38,
-
-                height: 38,
-
-                borderRadius: 12,
-
-                backgroundColor:
-                  "#FFF0D8",
-
-                alignItems:
-                  "center",
-
-                justifyContent:
-                  "center",
-              }}
-            >
-
-              <Bell
-                size={22}
-
-                color={
-                  theme.colors.primary500
-                }
-
-                strokeWidth={2.2}
-              />
-
-            </View>
-
-          }
-
-        />
+      <BackButtonLinerGradint
+  title="Loan Verifier"
+  onPress={() => navigation.goBack()}
+  containerStyle={{
+    paddingTop: insets.top,
+    paddingHorizontal: theme.spacing.xxl,
+  }}
+  rightComponent={
+    <TouchableOpacity
+      activeOpacity={0.7}
+      onPress={() =>
+        navigation.navigate(
+          "visitor-get-notification-screen"
+        )
+      }
+      style={{
+        width: 38,
+        height: 38,
+        borderRadius: 12,
+        backgroundColor: "#FFF0D8",
+        alignItems: "center",
+        justifyContent: "center",
+      }}
+    >
+      <Bell
+        size={22}
+        color={theme.colors.primary500}
+        strokeWidth={2.2}
+      />
+    </TouchableOpacity>
+  }
+/>
 
       );
     };
@@ -694,6 +676,12 @@ const filteredApplications =
       }}
 
     >
+      <StatusBar
+  translucent={true}
+  backgroundColor="transparent"
+  barStyle="dark-content"
+/>
+
 
       <KeyboardAvoidingView
 

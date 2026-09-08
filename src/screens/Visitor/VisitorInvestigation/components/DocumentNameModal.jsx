@@ -132,7 +132,7 @@ const DocumentNameModal = ({
         behavior={
           Platform.OS === "ios"
             ? "padding"
-            : undefined
+            : 'height'
         }
       >
 

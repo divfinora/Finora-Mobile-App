@@ -360,7 +360,7 @@ const VisitorDashboardScreen = () => {
         onNotificationPress={() => {
 
           navigation.navigate(
-            "VisitorNotifications"
+            "visitor-get-notification-screen"
           );
 
         }}

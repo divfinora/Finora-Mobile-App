@@ -404,16 +404,11 @@ const VisitorApplicationDetailsScreen = () => {
           STATUS BAR
       ================================================= */}
 
-      <StatusBar
-        barStyle={
-          theme.statusBar.dark
-        }
-
-        backgroundColor={
-          theme.colors.background
-        }
-      />
-
+           <StatusBar
+       translucent={true}
+       backgroundColor="transparent"
+       barStyle="dark-content"
+     />
 
       {/* =================================================
           HEADER

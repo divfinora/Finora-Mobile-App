@@ -6,6 +6,10 @@ import {
   TouchableOpacity,
 } from "react-native";
 
+import {
+  useNavigation,
+} from "@react-navigation/native";
+
 import { ArrowLeft } from "lucide-react-native";
 
 import { theme } from "../../../theme";
@@ -28,15 +32,25 @@ const BackButton = ({
   subtitleStyle,
 }) => {
 
-  return (
+  const navigation = useNavigation();
 
+  const handleBack = () => {
+    if (onPress) {
+      onPress();
+      return;
+    }
+
+    navigation.goBack();
+  };
+
+  return (
     <View
       style={[
         {
           flexDirection: "row",
           alignItems: "center",
           justifyContent: "space-between",
- 
+
           paddingTop: theme.spacing.md,
           paddingBottom: theme.spacing.md,
         },
@@ -45,7 +59,6 @@ const BackButton = ({
     >
 
       {/* Left */}
-
       <View
         style={{
           width: 42,
@@ -55,13 +68,11 @@ const BackButton = ({
         {showBack && (
           <TouchableOpacity
             activeOpacity={0.8}
-            onPress={onPress}
+            onPress={handleBack}
             style={{
               width: 42,
               height: 42,
               justifyContent: "center",
-           
-            
             }}
           >
             <ArrowLeft
@@ -74,7 +85,6 @@ const BackButton = ({
       </View>
 
       {/* Center */}
-
       <View
         style={{
           flex: 1,
@@ -116,7 +126,6 @@ const BackButton = ({
       </View>
 
       {/* Right */}
-
       <View
         style={{
           width: 42,
@@ -127,9 +136,7 @@ const BackButton = ({
       </View>
 
     </View>
-
   );
-
 };
 
 export default BackButton;

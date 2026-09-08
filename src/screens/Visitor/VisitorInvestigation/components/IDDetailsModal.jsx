@@ -160,7 +160,7 @@ const IDDetailsModal = ({
                 behavior={
                     Platform.OS === "ios"
                         ? "padding"
-                        : undefined
+                        : "height"
                 }
             >
 
@@ -494,39 +494,7 @@ inputContainerStyle={{
           DROPDOWN
       ===================================================== */}
 
-            <CustomDropdown
-                visible={
-                    dropdownVisible
-                }
-
-                data={
-                    ID_TYPES
-                }
-
-                value={
-                    idType
-                }
-
-                onSelect={
-                    value => {
-
-                        setIdType(
-                            value
-                        );
-
-                        setDropdownVisible(
-                            false
-                        );
-
-                    }
-                }
-
-                onClose={() =>
-                    setDropdownVisible(
-                        false
-                    )
-                }
-            />
+             
 
         </Modal>
 

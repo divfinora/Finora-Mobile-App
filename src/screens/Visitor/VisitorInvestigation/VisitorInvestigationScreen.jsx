@@ -8,10 +8,11 @@ import {
   View,
   Text,
   ScrollView,
-
   Platform,
   TouchableOpacity,
   RefreshControl,
+  BackHandler,
+  StatusBar,
 } from "react-native";
 
 import {
@@ -628,12 +629,7 @@ const VisitorInvestigationScreen = ({
       // CONFIRMATION
       // -----------------------------------------------
 
-      if (!agreed) {
-        showToast.error(
-          "Please confirm witness information."
-        );
-        return;
-      }
+
 
       // -----------------------------------------------
       // REQUIRED SELFIE
@@ -694,6 +690,12 @@ const VisitorInvestigationScreen = ({
       return;
     }
 
+    if (!agreed) {
+      showToast.error(
+        "Please confirm witness information."
+      );
+      return;
+    }
     // ===================================================
     // WITNESS PAYLOAD
     // ===================================================
@@ -1048,26 +1050,58 @@ const VisitorInvestigationScreen = ({
   // Back button
   // =====================================================
 
+  // =====================================================
+  // COMMON BACK BUTTON
+  // =====================================================
+
   const handleBack = () => {
 
-    if (
-      currentStep > 1
-    ) {
+    if (currentStep > 1) {
 
       setCurrentStep(
-        previous =>
-          previous - 1
+        previous => previous - 1
       );
 
-      return;
+      return true;
     }
 
 
     navigation?.goBack?.();
 
+    return true;
   };
 
 
+  // =====================================================
+  // ANDROID HARDWARE BACK
+  // =====================================================
+
+  useEffect(() => {
+
+    if (Platform.OS !== "android") {
+      return;
+    }
+
+
+    const onHardwareBackPress = () => {
+
+      return handleBack();
+
+    };
+
+
+    const subscription =
+      BackHandler.addEventListener(
+        "hardwareBackPress",
+        onHardwareBackPress
+      );
+
+
+    return () => {
+      subscription.remove();
+    };
+
+  }, [currentStep]);
 
   // ===================================
   // on Draft 
@@ -1738,7 +1772,11 @@ const VisitorInvestigationScreen = ({
           "#F6F8F7",
       }}
     >
-
+      <StatusBar
+        translucent={true}
+        backgroundColor="transparent"
+        barStyle="dark-content"
+      />
       <KeyboardAvoidingBottomView
         style={{
           flex: 1,
@@ -1763,62 +1801,36 @@ const VisitorInvestigationScreen = ({
           <View>
 
             <BackButtonLinerGradint
-
-              title={
-                stepTitle
-              }
-
-              onPress={
-                handleBack
-              }
-
+              title={stepTitle}
+              onPress={handleBack}
               containerStyle={{
-                paddingTop:
-                  insets.top,
-
-                paddingHorizontal:
-                  theme.spacing.xxl,
+                paddingTop: insets.top,
+                paddingHorizontal: theme.spacing.xxl,
               }}
-
               rightComponent={
-
                 <TouchableOpacity
                   activeOpacity={0.8}
-
-                  onPress={
-                    handleNotificationPress
-                  }
-
+                  onPress={() => {
+                    navigation.navigate(
+                      "visitor-get-notification-screen"
+                    );
+                  }}
                   style={{
                     width: 38,
-
                     height: 38,
-
                     borderRadius: 12,
-
-                    backgroundColor:
-                      "#FFF0D8",
-
-                    alignItems:
-                      "center",
-
-                    justifyContent:
-                      "center",
+                    backgroundColor: "#FFF0D8",
+                    alignItems: "center",
+                    justifyContent: "center",
                   }}
                 >
-
                   <Bell
                     size={23}
-
                     color="#FF641F"
-
                     strokeWidth={2.2}
                   />
-
                 </TouchableOpacity>
-
               }
-
             />
 
           </View>
@@ -1904,6 +1916,7 @@ const VisitorInvestigationScreen = ({
               progress={
                 progress
               }
+              marginTop={[5, 6].includes(currentStep) ? 0 : theme.spacing.lg}
               heading={STEP_PROGRESS_HEADINGS[currentStep]}
             />
 

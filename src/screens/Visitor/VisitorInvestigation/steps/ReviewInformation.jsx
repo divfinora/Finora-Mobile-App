@@ -388,6 +388,7 @@ const ReviewInformation = ({
       <View
         style={{
           marginBottom: theme.spacing.lg,
+          marginTop:4
         }}
       >
 

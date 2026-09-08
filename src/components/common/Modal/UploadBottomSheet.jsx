@@ -17,7 +17,9 @@ import {
 } from "lucide-react-native";
 
 import { theme } from "../../../theme";
-
+import {
+  useSafeAreaInsets,
+} from "react-native-safe-area-context";
 
 // ======================================================
 // UPLOAD BOTTOM SHEET
@@ -33,7 +35,7 @@ const UploadBottomSheet = ({
 
   type = "photo",
 }) => {
-
+const insets = useSafeAreaInsets();
   // ====================================================
   // CLOSE SHEET
   // ====================================================
@@ -162,8 +164,8 @@ const UploadBottomSheet = ({
             paddingTop:
               theme.spacing.md || 16,
 
-            paddingBottom:
-              theme.spacing.xl || 28,
+          paddingBottom:
+  (theme.spacing.xl || 28) + insets.bottom,
           }}
         >
 
