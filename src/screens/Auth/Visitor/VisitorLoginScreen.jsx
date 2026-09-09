@@ -6,9 +6,6 @@ import {
     View,
     Text,
     TouchableOpacity,
-    KeyboardAvoidingView,
-    Platform,
-    TouchableWithoutFeedback,
     Keyboard,
     ScrollView,
     StatusBar,
@@ -31,6 +28,7 @@ import {
 
 import {
     SafeAreaView,
+    useSafeAreaInsets,
 } from "react-native-safe-area-context";
 
 import {
@@ -41,15 +39,18 @@ import {
     theme,
 } from "../../../theme";
 
-import CommonInput from "../../../components/common/Input/CommonInput";
+import CommonInput
+    from "../../../components/common/Input/CommonInput";
 
-import CommonButton from "../../../components/common/Button/CommonButton";
+import CommonButton
+    from "../../../components/common/Button/CommonButton";
 
 import {
     useVisitorLoginMutation,
 } from "../../../redux/features/visitor/visitorApi.js";
 
-import useHandleMutation from "../../../hooks/useHandleMutation";
+import useHandleMutation
+    from "../../../hooks/useHandleMutation";
 
 import {
     saveAuth,
@@ -59,13 +60,24 @@ import {
     setUser,
 } from "../../../redux/slices/authSlice";
 
-import VisitorPattern from "./assets/visitor-pattern.webp";
-import { syncVisitorProfile } from "../../../utils/syncVisitorProfile.js";
+import VisitorPattern
+    from "./assets/visitor-pattern.webp";
+
+import {
+    syncVisitorProfile,
+} from "../../../utils/syncVisitorProfile.js";
+
+import KeyboardAvoidingBottomView
+    from "../../../components/common/KeyBoard/KeyboardAvoidingBottomView";
 
 
 const VisitorLoginScreen = () => {
 
-    const dispatch = useDispatch();
+    const dispatch =
+        useDispatch();
+
+    const insets =
+        useSafeAreaInsets();
 
     const {
         width,
@@ -91,12 +103,10 @@ const VisitorLoginScreen = () => {
         setEmployeeId,
     ] = useState("");
 
-
     const [
         password,
         setPassword,
     ] = useState("");
-
 
     const [
         showPassword,
@@ -112,7 +122,6 @@ const VisitorLoginScreen = () => {
         employeeIdError,
         setEmployeeIdError,
     ] = useState("");
-
 
     const [
         passwordError,
@@ -139,7 +148,6 @@ const VisitorLoginScreen = () => {
     const isSmall =
         height < 700;
 
-
     const isTablet =
         width >= 768;
 
@@ -163,10 +171,11 @@ const VisitorLoginScreen = () => {
         let valid = true;
 
 
-        // Clear previous errors
+        // =================================================
+        // CLEAR PREVIOUS ERRORS
+        // =================================================
 
         setEmployeeIdError("");
-
         setPasswordError("");
 
 
@@ -215,7 +224,9 @@ const VisitorLoginScreen = () => {
 
     const handleLogin = async () => {
 
-        if (!validate()) {
+        if (
+            !validate()
+        ) {
             return;
         }
 
@@ -273,8 +284,6 @@ const VisitorLoginScreen = () => {
                     async (response) => {
 
 
-
-
                         // =================================
                         // EMPLOYEE DATA
                         // =================================
@@ -310,7 +319,14 @@ const VisitorLoginScreen = () => {
                             response
                         );
 
+
+                        // =================================
+                        // SYNC VISITOR PROFILE
+                        // =================================
+
                         syncVisitorProfile();
+
+
                         // =================================
                         // SAVE USER
                         // =================================
@@ -346,6 +362,16 @@ const VisitorLoginScreen = () => {
 
 
     // =====================================================
+    // BUTTON STATE
+    // =====================================================
+
+    const isLoginDisabled =
+        !employeeId.trim() ||
+        !password.trim() ||
+        isLoading;
+
+
+    // =====================================================
     // SCREEN
     // =====================================================
 
@@ -360,10 +386,12 @@ const VisitorLoginScreen = () => {
             ]}
 
             style={{
+
                 flex: 1,
 
                 backgroundColor:
                     "#FFFDFD",
+
             }}
 
         >
@@ -385,27 +413,23 @@ const VisitorLoginScreen = () => {
             />
 
 
-            <KeyboardAvoidingView
+            {/* =================================================
+                KEYBOARD HANDLER
+            ================================================= */}
 
-                style={{
-                    flex: 1,
-                }}
-
-                behavior={
-                    Platform.OS === "ios"
-                        ? "padding"
-                        : "height"
-                }
-
+            <KeyboardAvoidingBottomView
+                keyboardSpacing={8}
             >
 
-                <TouchableWithoutFeedback
-
-                    onPress={
-                        Keyboard.dismiss
-                    }
-
+                <View
+                    style={{
+                        flex: 1,
+                    }}
                 >
+
+                    {/* =================================================
+                        SCROLLABLE CONTENT
+                    ================================================= */}
 
                     <ScrollView
 
@@ -424,10 +448,12 @@ const VisitorLoginScreen = () => {
                             backgroundColor:
                                 "#FFFDFD",
 
+                            paddingBottom:
+                                24,
+
                         }}
 
                     >
-
 
                         {/* =================================================
                             TOP ORANGE + GRADIENT + PATTERN
@@ -623,7 +649,6 @@ const VisitorLoginScreen = () => {
                             }}
 
                         >
-
 
                             {/* =================================================
                                 TITLE
@@ -1095,171 +1120,219 @@ const VisitorLoginScreen = () => {
                             />
 
 
-                            {/* =================================================
-                                LOGIN BUTTON
-                            ================================================= */}
-
-                            <CommonButton
-
-                                title="Login"
-
-                                loading={
-                                    isLoading
-                                }
-
-                                disabled={
-
-                                    !employeeId.trim() ||
-
-                                    !password.trim()
-
-                                }
-
-                                onPress={
-                                    handleLogin
-                                }
-
-
-                                // =============================================
-                                // ARROW
-                                // =============================================
-
-                                rightIcon={
-
-                                    !isLoading
-
-                                        ? (
-
-                                            <ArrowRight
-
-                                                size={
-                                                    22
-                                                }
-
-                                                color={
-                                                    theme.colors.white
-                                                }
-
-                                            />
-
-                                        )
-
-                                        : null
-
-                                }
-
-
-                                // =============================================
-                                // BUTTON STYLE
-                                // =============================================
-
-                                containerStyle={{
-
-                                    width:
-                                        "100%",
-
-                                    height:
-                                        58,
-
-                                    marginTop:
-
-                                        isSmall
-
-                                            ? 90
-
-                                            : 100,
-
-                                    borderRadius:
-                                        17,
-
-                                    backgroundColor:
-                                        theme.colors.primary500,
-
-                                }}
-
-
-                                textStyle={{
-
-                                    fontSize:
-                                        16,
-
-                                    fontFamily:
-                                        theme.fonts.bold,
-
-                                }}
-
-                            />
-
-
-                            {/* =================================================
-                                NEED HELP
-                            ================================================= */}
-
-                            <TouchableOpacity
-
-                                activeOpacity={
-                                    0.8
-                                }
-
-                                onPress={() => {
-
-                                    // TODO:
-                                    // Visitor Help Flow
-
-                                }}
-
-                                style={{
-
-                                    alignItems:
-                                        "center",
-
-                                    justifyContent:
-                                        "center",
-
-                                    paddingVertical:
-                                        10,
-
-                                    marginTop:
-                                        2,
-
-                                }}
-
-                            >
-
-                                <Text
-
-                                    style={{
-
-                                        fontSize:
-                                            14,
-
-                                        fontFamily:
-                                            theme.fonts.medium,
-
-                                        color:
-                                            "#999999",
-
-                                    }}
-
-                                >
-
-                                    Need Help ?
-
-                                </Text>
-
-                            </TouchableOpacity>
-
-
                         </View>
 
 
                     </ScrollView>
 
 
-                </TouchableWithoutFeedback>
+                    {/* =================================================
+                        FIXED BOTTOM ACTION AREA
+                        BUTTON IS OUTSIDE SCROLLVIEW
+                    ================================================= */}
+
+                    <View
+
+                        style={{
+
+                            paddingHorizontal:
+                                24,
+
+                            paddingTop:
+                                8,
+
+                            backgroundColor:
+                                "#FFFDFD",
+
+                        }}
+
+                    >
+
+                        {/* =================================================
+                            LOGIN BUTTON
+                        ================================================= */}
+
+                        <CommonButton
+
+                            title="Login"
+
+                            loading={
+                                isLoading
+                            }
+
+                            disabled={
+                                isLoginDisabled
+                            }
+
+                            onPress={
+                                handleLogin
+                            }
 
 
-            </KeyboardAvoidingView>
+                            // =============================================
+                            // ARROW
+                            // =============================================
+
+                            rightIcon={
+
+                                !isLoading
+
+                                    ? (
+
+                                        <ArrowRight
+
+                                            size={
+                                                22
+                                            }
+
+                                            color={
+
+                                                isLoginDisabled
+
+                                                    ? theme.button.disabled.textColor
+
+                                                    : theme.button.primary.textColor
+
+                                            }
+
+                                        />
+
+                                    )
+
+                                    : null
+
+                            }
+
+
+                            // =============================================
+                            // BUTTON STYLE
+                            // =============================================
+
+                            containerStyle={{
+
+                                width:
+                                    "100%",
+
+                                height:
+                                    58,
+
+                                marginTop:
+                                    0,
+
+                                borderRadius:
+                                    17,
+
+                                backgroundColor:
+
+                                    isLoginDisabled
+
+                                        ? theme.button.disabled.backgroundColor
+
+                                        : theme.button.primary.backgroundColor,
+
+                                borderColor:
+
+                                    isLoginDisabled
+
+                                        ? theme.button.disabled.borderColor
+
+                                        : theme.button.primary.backgroundColor,
+
+                               
+
+                            }}
+
+
+                            // =============================================
+                            // TEXT STYLE
+                            // =============================================
+
+                            textStyle={{
+
+                                fontSize:
+                                    16,
+
+                                fontFamily:
+                                    theme.fonts.bold,
+
+                                color:
+
+                                    isLoginDisabled
+
+                                        ? theme.button.disabled.textColor
+
+                                        : theme.button.primary.textColor,
+
+                            }}
+
+                        />
+
+
+                        {/* =================================================
+                            NEED HELP
+                        ================================================= */}
+
+                        <TouchableOpacity
+
+                            activeOpacity={
+                                0.8
+                            }
+
+                            onPress={() => {
+
+                                // TODO:
+                                // Visitor Help Flow
+
+                            }}
+
+                            style={{
+
+                                alignItems:
+                                    "center",
+
+                                justifyContent:
+                                    "center",
+
+                                paddingVertical:
+                                    10,
+
+                                marginTop:
+                                    2,
+
+                            }}
+
+                        >
+
+                            <Text
+
+                                style={{
+
+                                    fontSize:
+                                        14,
+
+                                    fontFamily:
+                                        theme.fonts.medium,
+
+                                    color:
+                                        "#999999",
+
+                                }}
+
+                            >
+
+                                Need Help ?
+
+                            </Text>
+
+                        </TouchableOpacity>
+
+
+                    </View>
+
+
+                </View>
+
+            </KeyboardAvoidingBottomView>
 
 
         </SafeAreaView>
