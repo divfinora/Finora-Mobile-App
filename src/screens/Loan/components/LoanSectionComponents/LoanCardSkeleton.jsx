@@ -8,38 +8,68 @@ import { theme } from "../../../../theme";
 
 import ShimmerPlaceholder from "../../../../components/common/Loader/ShimmerPlaceholder";
 
-const LoanCardSkeleton = () => {
-
+const LoanCardSkeleton = ({
+  horizontal = false,
+}) => {
   return (
-
     <View
       style={{
-        width: "48%",
-        backgroundColor: theme.colors.white,
-        borderRadius: theme.radius.xl,
-        padding: theme.spacing.lg,
-        minHeight: 155,
-        justifyContent: "space-between",
+        width:
+          horizontal
+            ? 180
+            : "48%",
+
+        minHeight: 138,
+
+        backgroundColor:
+          theme.colors.white,
+
+        borderRadius: 24,
+
+        borderWidth: 1,
+
+        borderColor:
+          "#FCEDD6",
+
+        paddingHorizontal: 16,
+
+        paddingVertical: 20,
+
+        justifyContent:
+          "space-between",
+
         ...theme.shadows.card,
       }}
     >
-
-      {/* Top */}
+      {/* ======================================
+          TOP
+      ====================================== */}
 
       <View
         style={{
           flexDirection: "row",
-          justifyContent: "space-between",
-          alignItems: "flex-start",
+
+          justifyContent:
+            "space-between",
+
+          alignItems:
+            "flex-start",
         }}
       >
+        {/* ====================================
+            LOAN NAME
+        ==================================== */}
 
         <View
           style={{
             flex: 1,
+
+            marginRight:
+              theme.spacing.sm,
+
+            minWidth: 0,
           }}
         >
-
           <ShimmerPlaceholder
             width="70%"
             height={20}
@@ -51,45 +81,78 @@ const LoanCardSkeleton = () => {
             height={20}
             borderRadius={6}
             style={{
-              marginTop: theme.spacing.xs,
+              marginTop:
+                theme.spacing.xs,
             }}
           />
-
         </View>
 
+        {/* ====================================
+            ICON
+        ==================================== */}
+
         <ShimmerPlaceholder
-          width={42}
-          height={42}
+          width={32}
+          height={32}
           borderRadius={12}
         />
-
       </View>
 
-      {/* Bottom */}
+      {/* ======================================
+          BOTTOM
+      ====================================== */}
 
-      <View>
+      <View
+        style={{
+          flexDirection: "row",
 
-        <ShimmerPlaceholder
-          width="40%"
-          height={12}
-          borderRadius={6}
-        />
+          justifyContent:
+            "space-between",
 
-        <ShimmerPlaceholder
-          width="60%"
-          height={18}
-          borderRadius={6}
+          alignItems:
+            "flex-end",
+        }}
+      >
+        {/* ====================================
+            AMOUNT
+        ==================================== */}
+
+        <View
           style={{
-            marginTop: theme.spacing.sm,
+            flex: 1,
           }}
+        >
+          <ShimmerPlaceholder
+            width="40%"
+            height={14}
+            borderRadius={6}
+          />
+
+          <ShimmerPlaceholder
+            width="60%"
+            height={18}
+            borderRadius={6}
+            style={{
+              marginTop:
+                theme.spacing.xs,
+            }}
+          />
+        </View>
+
+        {/* ====================================
+            ARROW
+        ==================================== */}
+
+        <ShimmerPlaceholder
+          width={24}
+          height={24}
+          borderRadius={12}
         />
-
       </View>
-
     </View>
-
   );
-
 };
 
-export default LoanCardSkeleton;
+export default React.memo(
+  LoanCardSkeleton
+);

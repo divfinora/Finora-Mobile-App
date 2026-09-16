@@ -1,4 +1,9 @@
-import React, { useState } from "react";
+import React, {
+  forwardRef,
+  useImperativeHandle,
+  useRef,
+  useState,
+} from "react";
 
 import {
   View,
@@ -7,207 +12,487 @@ import {
   TouchableOpacity,
 } from "react-native";
 
-import { theme } from "../../../theme";
+import {
+  theme,
+} from "../../../theme";
 
-const CommonInput = ({
-  label,
-  placeholder,
-  value,
-  onChangeText,
 
-  error,
+const CommonInput = forwardRef(
+  (
+    {
+      label,
+      placeholder,
+      value,
+      onChangeText,
 
-  required = false,
+      error,
 
-  editable = true,
+      required = false,
 
-  keyboardType = "default",
+      editable = true,
 
-  autoCapitalize = "none",
+      keyboardType = "default",
 
-  autoCorrect = false,
+      autoCapitalize = "none",
 
-  secureTextEntry = false,
+      autoCorrect = false,
 
-  multiline = false,
+      secureTextEntry = false,
 
-  numberOfLines = 1,
+      multiline = false,
 
-  maxLength,
+      numberOfLines = 1,
 
-  returnKeyType = "done",
+      maxLength,
 
-  onSubmitEditing,
+      returnKeyType = "done",
 
-  onFocus,
+      onSubmitEditing,
 
-  onBlur,
+      onFocus,
 
-  leftIcon,
+      onBlur,
 
-  rightIcon,
+      leftIcon,
 
-  onRightIconPress,
+      rightIcon,
 
-  containerStyle,
+      onRightIconPress,
 
-  labelStyle,
+      containerStyle,
 
-  inputContainerStyle,
+      labelStyle,
 
-  inputStyle,
+      inputContainerStyle,
 
-  errorStyle,
-}) => {
-  const [focused, setFocused] = useState(false);
+      inputStyle,
 
-  const borderColor = error
-    ? theme.colors.error
-    : focused
-      ? theme.colors.primary500
-      : "transparent";
+      errorStyle,
 
-  return (
-    <View
-      style={[
-        {
-          marginBottom: theme.spacing.xl,
+      // =================================================
+      // OPTIONAL FORM SCROLL PROPS
+      //
+      // Existing screens ko koi effect nahi hoga.
+      // =================================================
+
+      fieldName,
+
+      registerFieldPosition,
+
+      scrollContentRef,
+
+      ...rest
+    },
+    ref
+  ) => {
+
+    const [
+      focused,
+      setFocused,
+    ] = useState(false);
+
+
+    // =================================================
+    // TEXT INPUT REF
+    // =================================================
+
+    const inputRef =
+      useRef(null);
+
+
+    // =================================================
+    // CONTAINER REF
+    //
+    // Is ref se field ki exact position
+    // ScrollView content ke according milegi.
+    // =================================================
+
+    const containerRef =
+      useRef(null);
+
+
+    // =================================================
+    // EXPOSE REF METHODS
+    //
+    // Existing behavior break nahi hoga.
+    // =================================================
+
+    useImperativeHandle(
+      ref,
+      () => ({
+        focus: () => {
+          inputRef.current?.focus();
         },
-        containerStyle,
-      ]}
-    >
-      {!!label && (
-        <Text
-          style={[
-            {
-              marginBottom: theme.spacing.sm,
 
-              color: theme.colors.gray700,
+        blur: () => {
+          inputRef.current?.blur();
+        },
 
-              fontSize: theme.typography.b2,
+        measureLayout: (
+          ...args
+        ) => {
+          containerRef.current?.measureLayout(
+            ...args
+          );
+        },
+      }),
+      []
+    );
 
-              fontFamily: theme.fonts.semiBold,
-            },
-            labelStyle,
-          ]}
-        >
-          {label}
 
-          {required && (
-            <Text
-              style={{
-                color: theme.colors.error,
-              }}
-            >
-              {" "}*
-            </Text>
-          )}
-        </Text>
-      )}
+    // =================================================
+    // REGISTER FIELD POSITION
+    //
+    // Ye sirf tab chalega jab:
+    //
+    // fieldName
+    // registerFieldPosition
+    // scrollContentRef
+    //
+    // teeno pass kiye gaye hon.
+    //
+    // Old components par iska koi effect nahi.
+    // =================================================
 
+    const handleLayout = () => {
+      if (
+        !fieldName ||
+        !registerFieldPosition ||
+        !scrollContentRef?.current ||
+        !containerRef.current
+      ) {
+        return;
+      }
+
+      requestAnimationFrame(() => {
+        containerRef.current?.measureLayout(
+          scrollContentRef.current,
+          (_x, y) => {
+            registerFieldPosition(fieldName, y);
+          },
+          () => { }
+        );
+      });
+    };;
+
+
+    // =================================================
+    // FOCUS
+    //
+    // OLD BEHAVIOR SAME
+    // =================================================
+
+    const handleFocus = (
+      event
+    ) => {
+
+      setFocused(true);
+
+      onFocus?.(
+        event
+      );
+    };
+
+
+    // =================================================
+    // BLUR
+    //
+    // OLD BEHAVIOR SAME
+    // =================================================
+
+    const handleBlur = (
+      event
+    ) => {
+
+      setFocused(false);
+
+      onBlur?.(
+        event
+      );
+    };
+
+
+    // =================================================
+    // BORDER COLOR
+    //
+    // OLD LOGIC SAME
+    // =================================================
+
+    const borderColor =
+      error
+        ? theme.colors.error
+        : focused
+          ? theme.colors.primary500
+          : "transparent";
+
+
+    return (
       <View
+        ref={containerRef}
+
+        collapsable={false}
+
+        onLayout={
+          handleLayout
+        }
+
         style={[
           {
-            minHeight: 56,
-
-            flexDirection: "row",
-
-            alignItems: "center",
-
-            backgroundColor: "#F5F5F7",
-
-            borderRadius: 16,
-
-           
-
-            borderColor,
-
-            paddingHorizontal: 16,
+            marginBottom:
+              theme.spacing.xl,
           },
-          inputContainerStyle,
+
+          containerStyle,
         ]}
       >
-        {!!leftIcon && (
-          <View
-            style={{
-              marginRight: 12,
-            }}
+
+        {/* =========================================
+            LABEL
+            OLD STYLE SAME
+        ========================================= */}
+
+        {!!label && (
+          <Text
+            style={[
+              {
+                marginBottom:
+                  theme.spacing.sm,
+
+                color:
+                  theme.colors.gray700,
+
+                fontSize:
+                  theme.typography.b2,
+
+                fontFamily:
+                  theme.fonts.semiBold,
+              },
+
+              labelStyle,
+            ]}
           >
-            {leftIcon}
-          </View>
+
+            {label}
+
+            {required && (
+              <Text
+                style={{
+                  color:
+                    theme.colors.error,
+                }}
+              >
+                {" "}*
+              </Text>
+            )}
+
+          </Text>
         )}
 
-        <TextInput
-          value={value}
-          placeholder={placeholder}
-          placeholderTextColor="#8E8E93"
-          onChangeText={onChangeText}
-          keyboardType={keyboardType}
-          autoCapitalize={autoCapitalize}
-          autoCorrect={autoCorrect}
-          secureTextEntry={secureTextEntry}
-          editable={editable}
-          multiline={multiline}
-          numberOfLines={numberOfLines}
-          maxLength={maxLength}
-          returnKeyType={returnKeyType}
-          onSubmitEditing={onSubmitEditing}
-          onFocus={(e) => {
-            setFocused(true);
-            onFocus?.(e);
-          }}
-          onBlur={(e) => {
-            setFocused(false);
-            onBlur?.(e);
-          }}
+
+        {/* =========================================
+            INPUT CONTAINER
+            OLD STYLE SAME
+        ========================================= */}
+
+        <View
           style={[
             {
-              flex: 1,
-
               minHeight: 56,
 
-              color: theme.colors.black,
+              flexDirection:
+                "row",
 
-              fontSize: 16,
+              alignItems:
+                "center",
 
-              fontFamily: theme.fonts.medium,
+              backgroundColor:
+                "#F5F5F7",
 
-              paddingVertical: 0,
+              borderRadius:
+                16,
+
+              borderWidth:
+                1,
+
+              borderColor,
+
+              paddingHorizontal:
+                16,
             },
-            inputStyle,
-          ]}
-        />
 
-        {!!rightIcon && (
-          <TouchableOpacity
-            activeOpacity={0.8}
-            onPress={onRightIconPress}
-          >
-            {rightIcon}
-          </TouchableOpacity>
-        )}
-      </View>
-
-      {!!error && (
-        <Text
-          style={[
-            {
-              marginTop: theme.spacing.sm,
-
-              color: theme.colors.error,
-
-              fontSize: 12,
-
-              fontFamily: theme.fonts.medium,
-            },
-            errorStyle,
+            inputContainerStyle,
           ]}
         >
-          {error}
-        </Text>
-      )}
-    </View>
-  );
-};
+
+          {/* =======================================
+              LEFT ICON
+          ======================================= */}
+
+          {!!leftIcon && (
+            <View
+              style={{
+                marginRight:
+                  12,
+              }}
+            >
+              {leftIcon}
+            </View>
+          )}
+
+
+          {/* =======================================
+              TEXT INPUT
+          ======================================= */}
+
+          <TextInput
+            ref={inputRef}
+
+            value={
+              value
+            }
+
+            placeholder={
+              placeholder
+            }
+
+            placeholderTextColor={
+              "#8E8E93"
+            }
+
+            onChangeText={
+              onChangeText
+            }
+
+            keyboardType={
+              keyboardType
+            }
+
+            autoCapitalize={
+              autoCapitalize
+            }
+
+            autoCorrect={
+              autoCorrect
+            }
+
+            secureTextEntry={
+              secureTextEntry
+            }
+
+            editable={
+              editable
+            }
+
+            multiline={
+              multiline
+            }
+
+            numberOfLines={
+              numberOfLines
+            }
+
+            maxLength={
+              maxLength
+            }
+
+            returnKeyType={
+              returnKeyType
+            }
+
+            onSubmitEditing={
+              onSubmitEditing
+            }
+
+            onFocus={
+              handleFocus
+            }
+
+            onBlur={
+              handleBlur
+            }
+
+            style={[
+              {
+                flex: 1,
+
+                minHeight:
+                  56,
+
+                color:
+                  theme.colors.black,
+
+                fontSize:
+                  16,
+
+                fontFamily:
+                  theme.fonts.medium,
+
+                paddingVertical:
+                  0,
+              },
+
+              inputStyle,
+            ]}
+
+            {...rest}
+          />
+
+
+          {/* =======================================
+              RIGHT ICON
+              OLD TOUCHABLE BEHAVIOR SAME
+          ======================================= */}
+
+          {!!rightIcon && (
+            <TouchableOpacity
+              activeOpacity={
+                0.8
+              }
+
+              onPress={
+                onRightIconPress
+              }
+            >
+              {rightIcon}
+            </TouchableOpacity>
+          )}
+
+        </View>
+
+
+        {/* =========================================
+            ERROR
+            OLD STYLE SAME
+        ========================================= */}
+
+        {!!error && (
+          <Text
+            style={[
+              {
+                marginTop:
+                  theme.spacing.sm,
+
+                color:
+                  theme.colors.error,
+
+                fontSize:
+                  12,
+
+                fontFamily:
+                  theme.fonts.medium,
+              },
+
+              errorStyle,
+            ]}
+          >
+            {error}
+          </Text>
+        )}
+
+      </View>
+    );
+  }
+);
+
 
 export default CommonInput;

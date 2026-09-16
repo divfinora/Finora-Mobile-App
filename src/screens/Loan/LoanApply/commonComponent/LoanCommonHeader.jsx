@@ -12,6 +12,9 @@ import {
 import { theme } from "../../../../theme";
 
 import BackButton from '../../../../components/common/BackButton/BackButton'
+import BackButtonLinerGradint from "../../../../components/common/BackButton/BackButtonLinerGradint";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
+
 
 const LoanCommonHeader = ({
   onBack,
@@ -19,17 +22,22 @@ const LoanCommonHeader = ({
   title = "Loan requirements"
 }) => {
 
+
+  const insets = useSafeAreaInsets()
   return (
 
     <View
-     style={{     paddingHorizontal: theme.spacing.xxl,}}
+
     >
 
-      <BackButton
+      <BackButtonLinerGradint
 
         onPress={onBack}
         title={title}
-
+        containerStyle={{
+          paddingTop: insets.top,
+          paddingHorizontal: theme.spacing.xxl,
+        }}
 
 
         rightComponent={

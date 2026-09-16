@@ -38,7 +38,7 @@ import VisitorNotificationCard from "./components/VisitorNotificationCard";
 import VisitorNotificationSkeleton from "./components/VisitorNotificationSkeleton";
 import VisitorNotificationEmptyState from "./components/VisitorNotificationEmptyState";
 
-import LinearGradientCommonHeader from "../../../components/common/BackButton/LinearGradientCommonHeader";  
+import LinearGradientCommonHeader from "../../../components/common/BackButton/LinearGradientCommonHeader";
 // =====================================================
 // CONSTANTS
 // =====================================================
@@ -98,7 +98,7 @@ const getDateGroup = (
         todayStart.getTime() -
         dateStart.getTime()
       ) /
-        (1000 * 60 * 60 * 24)
+      (1000 * 60 * 60 * 24)
     );
 
 
@@ -885,7 +885,7 @@ const VisitorNotificationScreen = () => {
   //
   // ===================================================
 
- 
+
   const showSkeleton =
     isLoading ||
     isFetching;
@@ -908,9 +908,9 @@ const VisitorNotificationScreen = () => {
 
   return (
     <SafeAreaView
-    edges={[    'left' ,'right' ,'bottom']}
+      edges={['left', 'right', 'bottom']}
       style={{
-     
+
         flex: 1,
 
         backgroundColor:
@@ -921,11 +921,11 @@ const VisitorNotificationScreen = () => {
       {/* ================================================= */}
       {/* STATUS BAR */}
       {/* ================================================= */}
-<StatusBar
-  translucent={true}
-  backgroundColor="transparent"
-  barStyle="dark-content"
-/>
+      <StatusBar
+        translucent={true}
+        backgroundColor="transparent"
+        barStyle="dark-content"
+      />
 
 
       {/* ================================================= */}
@@ -945,19 +945,19 @@ const VisitorNotificationScreen = () => {
         {/* HEADER */}
         {/* ================================================= */}
 
-      
-<LinearGradientCommonHeader
-  title="Notification"
-  onBackPress={() =>
-    navigation.goBack()
-  }
-  // rightText="Mark all as read" 
-  onRightPress={() => {
-    console.log(
-      "Mark all as read"
-    );
-  }}
-/>
+
+        <LinearGradientCommonHeader
+          title="Notification"
+          onBackPress={() =>
+            navigation.goBack()
+          }
+          // rightText="Mark all as read" 
+          onRightPress={() => {
+            console.log(
+              "Mark all as read"
+            );
+          }}
+        />
 
         {/* ================================================= */}
         {/* FILTER */}
@@ -1139,7 +1139,7 @@ const VisitorNotificationScreen = () => {
 
               flexGrow:
                 groupedNotifications.length ===
-                0
+                  0
                   ? 1
                   : 0,
             }}

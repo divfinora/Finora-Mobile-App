@@ -10,55 +10,61 @@ import {
   Clock3,
 } from "lucide-react-native";
 
-import { theme } from "../../../../theme";
-import LinearGradient from "react-native-linear-gradient";
+import LinearGradient
+  from "react-native-linear-gradient";
 
-const CommonInfoCard = () => {
+import {
+  theme,
+} from "../../../../theme";
+
+
+const CommonInfoCard = ({
+  step,
+  title =
+  "Get Ready Before You Apply",
+  description =
+  "Funds in your account within hours.",
+}) => {
 
   return (
 
-  <LinearGradient
-  colors={[
-    "#0F2027",
-    "#203A43",
-  ]}
-  start={{
-    x: 0.5,
-    y: 0,
-  }}
-  end={{
-    x: 0.5,
-    y: 1,
-  }}
-  style={{
+    <LinearGradient
+      colors={[
+        "#0F2027",
+        "#203A43",
+      ]}
 
-    borderRadius: 20,
+      start={{
+        x: 0.5,
+        y: 0,
+      }}
 
-    padding:
-      theme.spacing.xl,
+      end={{
+        x: 0.5,
+        y: 1,
+      }}
 
-    ...theme.shadows.card,
+      style={{
+        borderRadius:
+          20,
 
-  }}
->
+        padding:
+          theme.spacing.xl,
 
-      {/* Top */}
+        ...theme.shadows.card,
+      }}
+    >
 
       <View
         style={{
-
-          flexDirection: "row",
-
-          
-
+          flexDirection:
+            "row",
         }}
       >
 
         <View
           style={{
-
             width: 40,
-
             height: 40,
 
             borderRadius: 12,
@@ -66,22 +72,26 @@ const CommonInfoCard = () => {
             backgroundColor:
               "rgba(255,255,255,0.15)",
 
-            justifyContent: "center",
+            justifyContent:
+              "center",
 
-            alignItems: "center",
+            alignItems:
+              "center",
 
             marginRight:
               theme.spacing.lg,
-
           }}
         >
 
           <FileText
             size={24}
-            color={theme.colors.white}
+            color={
+              theme.colors.white
+            }
           />
 
         </View>
+
 
         <View
           style={{
@@ -91,7 +101,6 @@ const CommonInfoCard = () => {
 
           <Text
             style={{
-
               color:
                 theme.colors.white,
 
@@ -100,15 +109,15 @@ const CommonInfoCard = () => {
 
               fontFamily:
                 theme.fonts.semiBold,
-
             }}
           >
-            Get Ready Before You Apply
+            {step ? `${step}. ` : ""}
+            {title}
           </Text>
+
 
           <Text
             style={{
-
               marginTop: 4,
 
               color:
@@ -122,18 +131,16 @@ const CommonInfoCard = () => {
 
             }}
           >
-            Funds in your account within hours.
+            {description}
           </Text>
 
         </View>
 
       </View>
 
-      {/* Divider */}
 
       <View
         style={{
-
           height: 1,
 
           backgroundColor:
@@ -141,30 +148,28 @@ const CommonInfoCard = () => {
 
           marginVertical:
             theme.spacing.lg,
-
         }}
       />
 
-      {/* Bottom */}
 
       <View
         style={{
+          flexDirection:
+            "row",
 
-          flexDirection: "row",
-
-          alignItems: "center",
-
+          alignItems:
+            "center",
         }}
       >
 
         <Clock3
           size={18}
-          color="rgba(255,255,255,0.85)"
+          color=
+          "rgba(255,255,255,0.85)"
         />
 
         <Text
           style={{
-
             marginLeft:
               theme.spacing.md,
 
@@ -176,7 +181,6 @@ const CommonInfoCard = () => {
 
             fontFamily:
               theme.fonts.medium,
-
           }}
         >
           Takes about 5–10 minutes
@@ -184,12 +188,9 @@ const CommonInfoCard = () => {
 
       </View>
 
-  </LinearGradient>
-
+    </LinearGradient>
   );
-
 };
 
-export default CommonInfoCard;
 
- 
+export default CommonInfoCard;

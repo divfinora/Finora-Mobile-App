@@ -8,126 +8,202 @@ import {
 } from "react-native";
 
 import { Bell } from "lucide-react-native";
-import { theme } from "../../../theme";
+import LinearGradient from "react-native-linear-gradient";
 
- 
+import { theme } from "../../../theme";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 const HeaderCard = ({
   userName = "Parth Sarthi Singh",
-  profileImage = "https://api.dicebear.com/9.x/adventurer/png?seed=Parth",
+  profileImage =
+    "https://api.dicebear.com/9.x/adventurer/png?seed=Parth",
   onNotificationPress = () => {},
 }) => {
+  const insets = useSafeAreaInsets();
 
   return (
-
-    <View
+    <LinearGradient
+      colors={[
+        "#FFFFFF",
+        "#FCEDD6",
+      ]}
+      start={{
+        x: 0,
+        y: 0,
+      }}
+      end={{
+        x: 0,
+        y: 1,
+      }}
       style={{
-        flexDirection: "row",
-        alignItems: "center",
-        justifyContent: "space-between",
+        // ==========================================
+        // FULL WIDTH HEADER
+        // ==========================================
 
-        marginTop: theme.spacing.md,
-        marginBottom: theme.spacing.xxl,
+        marginHorizontal:
+          -theme.screen.horizontalPadding,
+
+        paddingHorizontal:
+          theme.screen.horizontalPadding,
+
+        // ==========================================
+        // SAFE AREA
+        // ==========================================
+
+        paddingTop:
+          theme.spacing.md +
+          insets.top,
+
+        // ==========================================
+        // SPACE FOR FLOATING KYC BANNER
+        // ==========================================
+
+      paddingBottom: 90,
       }}
     >
-
-      {/* Left */}
-
       <View
         style={{
           flexDirection: "row",
           alignItems: "center",
-          flex: 1,
+          justifyContent: "space-between",
         }}
       >
-
-        <Image
-          source={{
-            uri: profileImage,
-          }}
-          style={{
-            width: theme.avatar.lg,
-            height: theme.avatar.lg,
-            borderRadius: theme.avatar.lg / 2,
-
-            backgroundColor: theme.colors.primary100,
-          }}
-        />
+        {/* ==========================================
+            LEFT SECTION
+        ========================================== */}
 
         <View
           style={{
-            marginLeft: theme.spacing.md,
+            flexDirection: "row",
+            alignItems: "center",
             flex: 1,
           }}
         >
+          {/* ========================================
+              PROFILE IMAGE
+          ======================================== */}
 
-          <Text
+          <Image
+            source={{
+              uri: profileImage,
+            }}
             style={{
-              color: theme.colors.textLight,
+              width:
+       52,
 
-              fontSize: theme.typography.b2,
+              height:
+                  52 ,
 
-              lineHeight: theme.lineHeight.b1,
+              borderRadius:
+                theme.avatar.lg / 2,
 
-              fontFamily: theme.fonts.regular,
+              backgroundColor:
+                theme.colors.primary100,
+            }}
+          />
+
+          {/* ========================================
+              USER DETAILS
+          ======================================== */}
+
+          <View
+            style={{
+              marginLeft:
+                theme.spacing.md,
+
+              flex: 1,
             }}
           >
-            Welcome back
-          </Text>
+            {/* Welcome */}
 
-          <Text
-            numberOfLines={1}
-            style={{
-              marginTop: 2,
+            <Text
+              style={{
+                color:
+                  theme.colors.textLight,
 
-              color: theme.colors.text,
+                fontSize:
+                  theme.typography.b2,
 
-              fontSize: theme.typography.b1,
+                lineHeight:
+                  theme.lineHeight.b1,
 
-              lineHeight: theme.lineHeight.b1,
+                fontFamily:
+                  theme.fonts.regular,
+              }}
+            >
+              Welcome back
+            </Text>
 
-              fontFamily: theme.fonts.headingBold,
-            }}
-          >
-            {userName}
-          </Text>
+            {/* User Name */}
 
+            <Text
+              numberOfLines={1}
+              style={{
+                marginTop: 2,
+
+                color:
+                  theme.colors.text,
+
+                fontSize:
+                  theme.typography.b1,
+
+                lineHeight:
+                  theme.lineHeight.b1,
+
+                fontFamily:
+                  theme.fonts.bold,
+              }}
+            >
+              {userName}
+            </Text>
+          </View>
         </View>
 
+        {/* ==========================================
+            NOTIFICATION
+        ========================================== */}
+
+        <TouchableOpacity
+          activeOpacity={0.8}
+          onPress={
+            onNotificationPress
+          }
+          style={{
+            width: 34,
+            height: 34,
+
+            borderRadius:
+              theme.radius.md,
+
+            backgroundColor:
+               '#FCEDD6',
+
+            justifyContent:
+              "center",
+
+            alignItems:
+              "center",
+
+            ...theme.shadows.card,
+          }}
+        >
+          <Bell
+            size={
+              theme.iconSize.sm
+            }
+            color={
+              '#E2570E'
+            }
+            fill={
+             '#E2570E'
+            }
+          />
+        </TouchableOpacity>
       </View>
-
-      {/* Notification */}
-
-      <TouchableOpacity
-        activeOpacity={0.8}
-        onPress={onNotificationPress}
-        style={{
-          width: 42,
-          height: 42,
-
-          borderRadius: theme.radius.md,
-
-          backgroundColor: theme.colors.primary100,
-
-          justifyContent: "center",
-          alignItems: "center",
-
-          ...theme.shadows.card,
-        }}
-      >
-
-        <Bell
-          size={theme.iconSize.sm}
-          color={theme.colors.primary500}
-          fill={theme.colors.primary500}
-        />
-
-      </TouchableOpacity>
-
-    </View>
-
+    </LinearGradient>
   );
-
 };
 
-export default memo(HeaderCard);
+export default memo(
+  HeaderCard
+);

@@ -17,6 +17,7 @@ import { theme } from "../../../../theme";
 const LoanCard = ({
   loan,
   onPress,
+  horizontal = false,
 }) => {
 
   // ==========================================
@@ -86,10 +87,13 @@ const LoanCard = ({
       onPress={() => onPress?.(loan)}
 
       style={{
-        width: "48%",
+        flex: horizontal ? 1 : null,
 
-        minHeight: 138,
+        width: horizontal ? 180 : "48%",
+   
 
+
+     minHeight: horizontal?null: 138 ,
         backgroundColor:
           theme.colors.white,
 
@@ -99,9 +103,11 @@ const LoanCard = ({
 
         borderColor:
           "#FCEDD6",
+        paddingHorizontal: 16,
+        paddingVertical: 20,
 
-        padding:
-          theme.spacing.lg,
+        // padding:
+        //   theme.spacing.lg,
 
         justifyContent:
           "space-between",
@@ -123,6 +129,7 @@ const LoanCard = ({
 
           alignItems:
             "flex-start",
+
         }}
       >
 
@@ -138,6 +145,7 @@ const LoanCard = ({
               theme.spacing.sm,
 
             minWidth: 0,
+            
           }}
         >
 
@@ -175,7 +183,7 @@ const LoanCard = ({
               LOAN COUNT
           ================================== */}
 
-          <View
+          {/* <View
             style={{
               alignSelf:
                 "flex-start",
@@ -210,7 +218,7 @@ const LoanCard = ({
                 : "Loans"}
             </Text>
 
-          </View>
+          </View> */}
 
         </View>
 
@@ -253,8 +261,7 @@ const LoanCard = ({
           alignItems:
             "flex-end",
 
-          marginTop:
-            theme.spacing.md,
+
         }}
       >
 
@@ -265,6 +272,8 @@ const LoanCard = ({
         <View
           style={{
             flex: 1,
+
+            marginTop: 8
           }}
         >
 
@@ -290,7 +299,7 @@ const LoanCard = ({
 
           <Text
             style={{
-              marginTop: 2,
+
 
               color:
                 theme.colors.black,

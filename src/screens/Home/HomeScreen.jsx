@@ -1,52 +1,37 @@
- 
-
 import React, { memo } from "react";
 
 import {
-  
   StatusBar,
 } from "react-native";
 
- 
-
 import HomeComponent from "./HomeComponent";
-import { SafeAreaView } from "react-native-safe-area-context";
-import { theme } from "../../theme";
-import { useGetVisitorDashboardQuery } from "../../redux/features/visitor/visitorApi";
+
+import {
+  SafeAreaView,
+} from "react-native-safe-area-context";
 
 const HomeScreen = () => {
-
-//   const {
-//   data,
-//   isLoading,
-//   isFetching,
-//   isError,
-//   error,
-//   refetch,
-// } = useGetVisitorDashboardQuery();
-  // console.log(data ,"data=======")
   return (
-
     <SafeAreaView
-   
+      edges={[
+      
+        "left",
+        "right",
+      ]}
       style={{
         flex: 1,
-         backgroundColor:'white',
+        backgroundColor: "#F6F8F7",
       }}
     >
-
       <StatusBar
-        translucent={false}
-        backgroundColor={theme.screen.background}
-        barStyle={theme.statusBar.dark}
+        translucent={true}
+        backgroundColor="transparent"
+        barStyle="dark-content"
       />
 
       <HomeComponent />
-
     </SafeAreaView>
-
   );
-
 };
 
 export default memo(HomeScreen);

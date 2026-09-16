@@ -18,6 +18,7 @@ import UpiCard from './components/UpiCard.jsx'
 import HowItWorks from './components/HowItWorks.jsx'
 import OffersJustForYou from './components/OffersJustForYou.jsx'
 import { useGetAllLoanQuery } from "../../redux/features/customer/customerApi.js";
+import LoanBannerCard from "../Home/components/LoanBannerCard.jsx";
 
 const LoanScreen = () => {
     const {
@@ -47,7 +48,7 @@ const LoanScreen = () => {
     return (
 
         <SafeAreaView
-            edges={["left",   'right']}
+            edges={["left", 'right']}
             style={{
 
                 flex: 1,
@@ -112,6 +113,12 @@ const LoanScreen = () => {
 
                     <>
                         <LoanHeader />
+
+
+                        <LoanBannerCard
+                        MarginTop={theme.spacing.lg}
+                        ContainerPaddingHorizontal={theme.spacing.xl}
+                            ContainerPaddingVertical={theme.spacing.xl} />
                         <LoanSection />
 
 

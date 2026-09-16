@@ -20,7 +20,7 @@ import {
 import { useNavigation } from '@react-navigation/native'
 import { theme } from "../../../theme";
 
- 
+
 
 const LoanSection = () => {
     const navigation = useNavigation()
@@ -43,7 +43,7 @@ const LoanSection = () => {
     // Fallback to FAKE_LOANS if API data is empty
     const apiLoans = data?.data || [];
     //   const loans = apiLoans.length > 0 ? apiLoans : FAKE_LOANS;
-      const loans =  apiLoans;
+    const loans = apiLoans;
     //   const loans = FAKE_LOANS;
 
     const loading =
@@ -67,8 +67,8 @@ const LoanSection = () => {
 
                 return (
                     <LoanCard
-                       onPress={() => handleLoanPress(item)}
-                         
+                        onPress={() => handleLoanPress(item)}
+
                         loan={item}
                     />
                 );
@@ -93,198 +93,219 @@ const LoanSection = () => {
 
 
 
- const handleLoanPress = (item) => {
-    console.log("LOAN API ITEM:", item);
+    const handleLoanPress = (item) => {
+        console.log("LOAN API ITEM:", item);
 
-    // ==========================================
-    // 1. MULTIPLE LOANS
-    // ==========================================
+        // ==========================================
+        // 1. MULTIPLE LOANS
+        // ==========================================
 
-    const loanCount =
-        item?.loanCount ??
-        item?.types?.reduce(
-            (total, type) =>
-                total + (type?.loanCount || 0),
-            0
-        );
+        const loanCount =
+            item?.loanCount ??
+            item?.types?.reduce(
+                (total, type) =>
+                    total + (type?.loanCount || 0),
+                0
+            );
 
-    if (loanCount > 1) {
+        if (loanCount > 1) {
 
-        navigation.navigate(
-        "loan-category-screen",
-        {
-            category: item?.category,
-            categoryName: item?.name,
+            navigation.navigate(
+                "loan-category-screen",
+                {
+                    category: item?.category,
+                    categoryName: item?.name,
+                }
+            );
+
+            return;
         }
-    );
 
-        return;
-    }
+        // ==========================================
+        // 2. SINGLE LOAN
+        // ==========================================
 
-    // ==========================================
-    // 2. SINGLE LOAN
-    // ==========================================
+        const loan = item?.loan;
 
-    const loan = item?.loan;
+        if (!loan) {
+            Alert.alert(
+                "Loan Unavailable",
+                "Loan details are not available."
+            );
+            return;
+        }
 
-    if (!loan) {
-        Alert.alert(
-            "Loan Unavailable",
-            "Loan details are not available."
-        );
-        return;
-    }
+        // ==========================================
+        // DYNAMIC DOCUMENTS
+        // ==========================================
 
-    // ==========================================
-    // 3. PROCESSING TYPE
-    // ==========================================
+        const documents = Array.isArray(loan?.documents)
+            ? loan.documents
+            : [];
 
-    if (loan.processingType === "INSTANT") {
+        console.log("LOAN DOCUMENTS:", documents);
 
-        navigation.navigate(
-            "apply-instant-loan",
-            {
-                product: loan,
-            }
-        );
+        // ==========================================
+        // 3. PROCESSING TYPE
+        // ==========================================
 
-        return;
-    }
+        if (loan.processingType === "INSTANT") {
 
-    // ==========================================
-    // 4. MANUAL LOAN
-    // ==========================================
+            navigation.navigate(
+                "apply-instant-loan",
+                {
+                    product: loan,
+                    productId: loan?._id,
+                    documents: documents,
+                }
+            );
 
-    const category = loan?.category;
+            return;
+        }
 
-   switch (category) {
+        // ==========================================
+        // 4. MANUAL LOAN
+        // ==========================================
 
-  case "GOLD":
+        const category = loan?.category;
 
-    navigation.navigate(
-      "apply-gold-loan",
-      {
-        product: loan,
-        productId: loan?._id,
-      }
-    );
+        switch (category) {
 
-    break;
+            case "GOLD":
 
+                navigation.navigate(
+                    "apply-gold-loan",
+                    {
+                        product: loan,
+                        productId: loan?._id,
+                        documents: documents,
+                    }
+                );
 
-  case "PROPERTY":
-
-    navigation.navigate(
-      "apply-property-loan",
-      {
-        product: loan,
-        productId: loan?._id,
-      }
-    );
-
-    break;
+                break;
 
 
-  case "VEHICLE":
+            case "PROPERTY":
 
-    navigation.navigate(
-      "apply-vechicle-loan",
-      {
-        product: loan,
-        productId: loan?._id,
-      }
-    );
+                navigation.navigate(
+                    "apply-property-loan",
+                    {
+                        product: loan,
+                        productId: loan?._id,
+                        documents: documents,
+                    }
+                );
 
-    break;
-
-
-  case "AGRICULTURE":
-
-    navigation.navigate(
-      "apply-agriculture-loan",
-      {
-        product: loan,
-        productId: loan?._id,
-      }
-    );
-
-    break;
+                break;
 
 
-  case "RENOVATION":
+            case "VEHICLE":
 
-    navigation.navigate(
-      "apply-renovation-loan",
-      {
-        product: loan,
-        productId: loan?._id,
-      }
-    );
+                navigation.navigate(
+                    "apply-vechicle-loan",
+                    {
+                        product: loan,
+                        productId: loan?._id,
+                        documents: documents,
+                    }
+                );
 
-    break;
-
-
-  case "COMMERCIAL":
-
-    navigation.navigate(
-      "apply-commercial-loan",
-      {
-        product: loan,
-        productId: loan?._id,
-      }
-    );
-
-    break;
+                break;
 
 
-  case "PERSONAL":
+            case "AGRICULTURE":
 
-    navigation.navigate(
-      "apply-personal-loan",
-      {
-        product: loan,
-        productId: loan?._id,
-      }
-    );
+                navigation.navigate(
+                    "apply-agriculture-loan",
+                    {
+                        product: loan,
+                        productId: loan?._id,
+                        documents: documents,
+                    }
+                );
 
-    break;
-
-
-  case "EDUCATION":
-
-    navigation.navigate(
-      "apply-education-loan",
-      {
-        product: loan,
-        productId: loan?._id,
-      }
-    );
-
-    break;
+                break;
 
 
-  case "HOME":
+            case "RENOVATION":
 
-    navigation.navigate(
-      "apply-home-loan",
-      {
-        product: loan,
-        productId: loan?._id,
-      }
-    );
+                navigation.navigate(
+                    "apply-renovation-loan",
+                    {
+                        product: loan,
+                        productId: loan?._id,
+                        documents: documents,
+                    }
+                );
 
-    break;
+                break;
 
 
-  default:
+            case "COMMERCIAL":
 
-    Alert.alert(
-      "Loan Unavailable",
-      "This loan is currently not available."
-    );
+                navigation.navigate(
+                    "apply-commercial-loan",
+                    {
+                        product: loan,
+                        productId: loan?._id,
+                        documents: documents,
+                    }
+                );
 
-}
-};
+                break;
+
+
+            case "PERSONAL":
+
+                navigation.navigate(
+                    "apply-personal-loan",
+                    {
+                        product: loan,
+                        productId: loan?._id,
+                        documents: documents,
+                    }
+                );
+
+                break;
+
+
+            case "EDUCATION":
+
+                navigation.navigate(
+                    "apply-education-loan",
+                    {
+                        product: loan,
+                        productId: loan?._id,
+                        documents: documents,
+                    }
+                );
+
+                break;
+
+
+            case "HOME":
+
+                navigation.navigate(
+                    "apply-home-loan",
+                    {
+                        product: loan,
+                        productId: loan?._id,
+                        documents: documents,
+                    }
+                );
+
+                break;
+
+
+            default:
+
+                Alert.alert(
+                    "Loan Unavailable",
+                    "This loan is currently not available."
+                );
+
+        }
+    };
 
     return (
 
@@ -292,8 +313,8 @@ const LoanSection = () => {
             style={{
                 marginTop:
                     theme.spacing.xxxl,
-                
-                    
+
+
             }}
         >
 
@@ -433,9 +454,9 @@ const LoanSection = () => {
                         width: 'auto',
                         marginHorizontal:
                             theme.spacing.xl,
-                         borderWidth:0.1 ,
+                        borderWidth: 0.1,
 
-                                  ...theme.shadows.card,
+                        ...theme.shadows.card,
 
                     }}
 

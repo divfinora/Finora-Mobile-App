@@ -26,6 +26,8 @@ import ApplyCommercialLoan from '../screens/Loan/LoanApply/CommercialLoan/ApplyC
 import ApplyVehicleLoan from '../screens/Loan/LoanApply/VehicleLoan/ApplyVehicleLoan.jsx'
 import ApplyAgricultureLoan from '../screens/Loan/LoanApply/AgricultureLoan/ApplyAgricultureLoan.jsx'
 import ApplyRenovationLoan from '../screens/Loan/LoanApply/RenovationLoan/ApplyRenovationLoan.jsx'
+import ApplyEducationLoan from '../screens/Loan/LoanApply/EducationLoan/EducationLoan.jsx'
+
 import SingleLoanDetailsScreen from '../screens/GetLoan/SingleLoanDetails/SingleLoanDetailsScreen.jsx'
 import NotificationPreferencesScreen from '../screens/Notification/NotificationPreferencesScreen/NotificationPreferencesScreen.jsx'
 import GetNotificationScreen from '../screens/Notification/GetNotification/GetNotificationScreen.jsx';
@@ -155,6 +157,10 @@ const AppStack = () => {
       <Stack.Screen
         name="apply-renovation-loan"
         component={ApplyRenovationLoan}
+      />
+        <Stack.Screen
+        name="apply-education-loan"
+        component={ApplyEducationLoan}
       />
       <Stack.Screen
         name="get-single-loan-detail"
