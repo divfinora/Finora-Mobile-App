@@ -1,9 +1,12 @@
-import React from "react";
+import React, {
+  useState,
+} from "react";
 
 import {
   View,
   StatusBar,
   ScrollView,
+  RefreshControl,
 } from "react-native";
 
 import { SafeAreaView } from "react-native-safe-area-context";
@@ -11,12 +14,16 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { theme } from "../../theme";
 
 // Components
-import KYCHeader from "./components/KYCHeader";
 import KYCHeroCard from "./components/KYCHeroCard.jsx";
-import KYCSecurityCard from "./components/KYCSecurityCard"
+import KYCSecurityCard from "./components/KYCSecurityCard";
 import KYCStepList from "./components/KYCStepList.jsx";
-import KYCFooter from "./components/KYCFooter.jsx";
 import { useNavigation } from "@react-navigation/native";
+import BackButton from "../../components/common/BackButton/BackButton.jsx";
+
+import {
+  useGetCustomerKYCdetailsQuery,
+} from "../../redux/features/customer/customerApi.js";
+
 
 const kycSteps = [
   {
@@ -24,138 +31,252 @@ const kycSteps = [
     type: "aadhaar",
     title: "Aadhaar Verification",
     subtitle: "Verify your Aadhaar",
-    screen: "aadhaar-verification-enter-mobile-number-screen",
+    screen:
+      "aadhaar-verification-enter-mobile-number-screen",
   },
   {
     id: 2,
     type: "pan",
     title: "PAN Verification",
     subtitle: "Verify your PAN",
-    screen: "pan-verification-enter-mobile-number-screen",
+    screen:
+      "pan-verification-enter-mobile-number-screen",
   },
   {
     id: 3,
     type: "address",
     title: "Address Verification",
     subtitle: "Verify your Address",
-    screen: "address-verification-screen",
+    screen:
+      "personal-details-verification-screen",
   },
   {
     id: 4,
     type: "bank",
     title: "Bank Verification",
     subtitle: "Verify your Bank",
-    screen: "bank-verification-screen",
+    screen:
+      "bank-verification-screen",
   },
 ];
 
-const CompleteKYCScreen = ({   }) => {
+
+const CompleteKYCScreen = () => {
+
   const navigation = useNavigation();
 
-  const onStepPress = (item) => {
-     
 
-    switch (item.type) {
-      case "aadhaar":
-        // navigation.navigate("AadhaarVerification");
-        break;
+  // =========================================================
+  // KYC API
+  // =========================================================
 
-      case "pan":
-        // navigation.navigate("PanVerification");
-        break;
+  const {
+    data,
+    isLoading,
+    isFetching,
+    refetch,
+  } = useGetCustomerKYCdetailsQuery();
 
-      case "address":
-        // navigation.navigate("PersonalDetails");
-        break;
 
-      case "bank":
-        // navigation.navigate("BankAccount");
-        break;
+  const kyc = data?.data;
 
-      default:
-        break;
+
+  // =========================================================
+  // PULL TO REFRESH
+  // =========================================================
+
+  const [
+    refreshing,
+    setRefreshing,
+  ] = useState(false);
+
+
+  const onRefresh = async () => {
+
+    try {
+
+      setRefreshing(true);
+
+      await refetch();
+
+    } catch (error) {
+
+      console.log(
+        "Complete KYC refresh error:",
+        error
+      );
+
+    } finally {
+
+      setRefreshing(false);
+
     }
   };
 
-  const onStart = () => {
-    onStepPress(steps[0]);
+
+  // =========================================================
+  // KYC STATUS
+  // =========================================================
+
+  const getStepVerificationStatus = (
+    type
+  ) => {
+
+    switch (type) {
+
+      case "aadhaar":
+        return (
+          kyc?.aadhaarVerified === true
+        );
+
+      case "pan":
+        return (
+          kyc?.panVerified === true
+        );
+
+      case "address":
+        return (
+          kyc?.personalDetailsCompleted === true
+        );
+
+      case "bank":
+        return (
+          kyc?.bankStatus === "VERIFIED"
+        );
+
+      default:
+        return false;
+    }
   };
 
-  const onSkip = () => {
-    navigation.goBack();
+
+  // =========================================================
+  // STEP PRESS
+  // =========================================================
+
+  const onStepPress = (item) => {
+
+    const isVerified =
+      getStepVerificationStatus(
+        item.type
+      );
+
+
+    // Already verified
+    // Don't open verification screen
+    if (isVerified) {
+      return;
+    }
+
+
+    navigation.navigate(
+      item.screen
+    );
   };
+
 
   return (
+
     <SafeAreaView
       style={{
         flex: 1,
-        backgroundColor: theme.colors.white,
+        backgroundColor:
+          theme.colors.white,
       }}
     >
+
       <StatusBar
-        barStyle={theme.statusBar.dark}
-        backgroundColor={theme.colors.white}
+        barStyle={
+          theme.statusBar.dark
+        }
+        backgroundColor={
+          theme.colors.white
+        }
       />
+
 
       <View
         style={{
           flex: 1,
-          paddingHorizontal: theme.spacing.xl,
+          paddingHorizontal:
+            theme.spacing.xl,
         }}
       >
-        <KYCHeader
+
+        <BackButton
           title="Complete KYC"
-          onBack={() => navigation.goBack()}
+          onPress={() =>
+            navigation.goBack()
+          }
         />
 
+
         <ScrollView
-          showsVerticalScrollIndicator={false}
+          showsVerticalScrollIndicator={
+            false
+          }
+
+          refreshControl={
+            <RefreshControl
+              refreshing={
+                refreshing
+              }
+
+              onRefresh={
+                onRefresh
+              }
+
+              colors={[
+                theme.colors.primary500,
+              ]}
+
+              tintColor={
+                theme.colors.primary500
+              }
+            />
+          }
+
           contentContainerStyle={{
-            paddingTop: theme.spacing.md,
-            paddingBottom: theme.spacing.xxl,
+            paddingTop:
+              theme.spacing.md,
+
+            paddingBottom:
+              theme.spacing.xxl,
           }}
         >
+
           <KYCHeroCard />
+
 
           <KYCSecurityCard />
 
+
           <KYCStepList
-            data={kycSteps}
-         onPress={(item) => {
+            data={
+              kycSteps
+            }
 
-    switch (item.type) {
+            loading={
+              isLoading ||
+              isFetching
+            }
 
-      case "aadhaar":
-        navigation.navigate("aadhaar-verification-enter-mobile-number-screen");
-        break;
+            getStepVerificationStatus={
+              getStepVerificationStatus
+            }
 
-      case "pan":
-        navigation.navigate("pan-verification-enter-mobile-number-screen");
-        break;
-
-      case "address":
-        navigation.navigate("personal-details-verification-screen");
-        break;
-
-      case "bank":
-        navigation.navigate("bank-verification-screen");
-        break;
-
-      default:
-        break;
-    }
-
-  }}
+            onPress={
+              onStepPress
+            }
           />
+
         </ScrollView>
 
-        <KYCFooter
-          onContinue={onStart}
-          onSkip={onSkip}
-        />
       </View>
+
     </SafeAreaView>
   );
 };
+
 
 export default CompleteKYCScreen;

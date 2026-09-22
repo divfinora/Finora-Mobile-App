@@ -156,7 +156,7 @@ const PersonalInfoScreen = () => {
         <View
           style={{
             paddingHorizontal: theme.spacing.xxl,
-            paddingTop: theme.spacing.md,
+         
             backgroundColor: theme.colors.white,
           }}
         >

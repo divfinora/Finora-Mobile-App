@@ -166,6 +166,7 @@ const LinearGradientCommonHeader = ({
             numberOfLines={1}
             style={[
               {
+              
                 fontSize:
                   theme.typography.h3,
 

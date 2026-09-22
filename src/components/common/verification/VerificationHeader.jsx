@@ -100,20 +100,29 @@ import { View, Text, TouchableOpacity } from 'react-native'
 import React from 'react'
 import BackButton from '../BackButton/BackButton'
 import { useNavigation } from '@react-navigation/native'
+import { theme } from '../../../theme'
 
 const VerificationHeader = () => {
     const navigation = useNavigation();
     return (
         <>
+
             <BackButton
                 onPress={() => navigation.goBack()}
                 title="Quick KYC"
                 subtitle="Step 2 of 4"
-            // rightComponent={
-            //     <TouchableOpacity>
-            //         <Text>Skip</Text>
-            //     </TouchableOpacity>
-            // }
+                titleStyle={{
+                    fontFamily: theme.fonts.headingSemiBold,
+                    fontSize: 16,
+                    lineHeight: 18,
+                    letterSpacing: -0.45,
+                }}
+                subtitleStyle={{
+                    fontFamily: theme.fonts.semiBold,
+                    fontSize: 12,
+                    lineHeight: 16,
+                    letterSpacing: theme.letterSpacing.none,
+                }}
             />
         </>
     )

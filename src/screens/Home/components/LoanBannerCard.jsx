@@ -48,6 +48,7 @@ const LoanBannerCard = ({
         paddingHorizontal:ContainerPaddingHorizontal ,
         paddingVertical:ContainerPaddingVertical ,
         width: "100%",
+       
         
       }}
     >

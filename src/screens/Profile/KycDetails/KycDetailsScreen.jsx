@@ -81,7 +81,7 @@ const KycDetailsScreen = () => {
       subtitle: kyc?.bankDetails?.accountNumber || "Not Linked",
       icon: Landmark,
       // verified: kyc?.bankVerified,
-      verified: kyc?.bankStatus ==="VERIFIED",
+      verified: kyc?.bankStatus === "VERIFIED",
       screen: "bank-verification-screen",
     },
   ], [kyc]);
@@ -104,9 +104,9 @@ const KycDetailsScreen = () => {
   //  Pull to Refress 
 
   const completedCount = useMemo(() => {
-  return documents.filter(item => item?.verified)?.length;
-}, [documents]);
-const totalCount = documents?.length;
+    return documents.filter(item => item?.verified)?.length;
+  }, [documents]);
+  const totalCount = documents?.length;
 
   const renderItem = ({ item }) => {
 
@@ -191,10 +191,10 @@ const totalCount = documents?.length;
                   }
                 />
 
-             <SectionHeader
-  title="IDENTITY DOCUMENTS"
-  rightText={`${completedCount}/${totalCount} COMPLETED`}
-/>
+                <SectionHeader
+                  title="IDENTITY DOCUMENTS"
+                  rightText={`${completedCount}/${totalCount} COMPLETED`}
+                />
               </>
             )
           }

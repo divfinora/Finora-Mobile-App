@@ -52,7 +52,7 @@ const BackButton = ({
           justifyContent: "space-between",
 
           paddingTop: theme.spacing.md,
-          paddingBottom: theme.spacing.md,
+          paddingBottom: theme.spacing.sm,
         },
         containerStyle,
       ]}
@@ -88,17 +88,27 @@ const BackButton = ({
       <View
         style={{
           flex: 1,
+          minWidth: 0,
           alignItems: "center",
         }}
       >
         {!!title && (
           <Text
+            numberOfLines={1}
+            ellipsizeMode="tail"
             style={[
               {
+                paddingBottom: 10,
+
                 color: theme.colors.black,
-                fontSize: theme.typography.b1,
-                lineHeight: theme.lineHeight.h3,
-                fontFamily: theme.fonts.headingBold,
+
+                fontFamily: theme.fonts.semiBold,
+                fontSize: theme.typography.h3,
+                lineHeight: theme.typography.h3,
+                letterSpacing: theme.letterSpacing.none,
+
+                textAlign: "center",
+                flexShrink: 1,
               },
               titleStyle,
             ]}
@@ -109,13 +119,19 @@ const BackButton = ({
 
         {!!subtitle && (
           <Text
+            numberOfLines={1}
+            ellipsizeMode="tail"
             style={[
               {
-                marginTop: 2,
+              
+
                 color: theme.colors.textSecondary,
+
                 fontSize: theme.typography.b3,
                 lineHeight: theme.lineHeight.b3,
                 fontFamily: theme.fonts.regular,
+
+                flexShrink: 1,
               },
               subtitleStyle,
             ]}

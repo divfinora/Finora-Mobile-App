@@ -11,7 +11,7 @@ import {
 } from "react-native";
 
 import HeaderCard from "./components/HeaderCard";
-import KycBannerCard from "./components/KycBannerCard";
+import NotKycBannerCard from "./components/NotKycBannerCard";
 import HomeScreenLoanSection from "./components/HomeScreenLoanSection";
 import NoticeCard from "./components/NoticeCard";
 import CategorySection from "./components/CategorySection";
@@ -30,6 +30,7 @@ import {
 import {
   useSelector,
 } from "react-redux";
+import useKYCVerificationDoneAndNotDone from "../../hooks/useKYCVerificationDoneAndNotDone";
 
 const HomeComponent = () => {
 
@@ -39,7 +40,10 @@ const HomeComponent = () => {
 
   const navigation =
     useNavigation();
-
+  const {
+    refetch: refetchVerification,
+  } =
+    useKYCVerificationDoneAndNotDone();
   // =====================================================
   // USER
   // =====================================================
@@ -119,9 +123,13 @@ const HomeComponent = () => {
 
           setRefreshing(true);
 
-          if (refreshLoans) {
-            await refreshLoans();
-          }
+          await Promise.all([
+            refreshLoans
+              ? refreshLoans()
+              : Promise.resolve(),
+
+            refetchVerification(),
+          ]);
 
         } catch (error) {
 
@@ -137,7 +145,10 @@ const HomeComponent = () => {
         }
 
       },
-      [refreshLoans]
+      [
+        refreshLoans,
+        refetchVerification,
+      ]
     );
 
   // =====================================================
@@ -164,12 +175,12 @@ const HomeComponent = () => {
           // FINANCE
           // ---------------------------------------------
 
-       
+
           // ---------------------------------------------
           // OFFERS
           // ---------------------------------------------
 
-         
+
           // ---------------------------------------------
           // LOAN PICKER
           // ---------------------------------------------
@@ -184,13 +195,13 @@ const HomeComponent = () => {
           // REFER
           // ---------------------------------------------
 
-        
+
 
           // ---------------------------------------------
           // BOTTOM
           // ---------------------------------------------
 
-          
+
 
           default:
 
@@ -264,8 +275,9 @@ const HomeComponent = () => {
                 }}
               >
 
-                <KycBannerCard
+                <NotKycBannerCard
                   onPress={() => {
+                     
 
                     navigation.navigate(
                       "complete-kyc-screen"

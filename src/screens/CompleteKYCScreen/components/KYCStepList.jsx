@@ -17,88 +17,153 @@ import { theme } from "../../../theme";
 
 import KYCStepCard from "./KYCStepCard";
 
+
 const KYCStepList = ({
   data,
   onPress,
+  loading = false,
+  getStepVerificationStatus,
 }) => {
+
+
+  // =========================================================
+  // ICON
+  // =========================================================
+
   const getIcon = (type) => {
+
     switch (type) {
+
       case "aadhaar":
+
         return (
           <Wallet
             size={24}
             strokeWidth={2}
-            color="#000"
+            color={theme.colors.black}
           />
         );
 
+
       case "pan":
+
         return (
           <ScanLine
             size={24}
             strokeWidth={2}
-            color="#000"
+            color={theme.colors.black}
           />
         );
 
+
       case "address":
+
         return (
           <BadgeCheck
             size={24}
             strokeWidth={2}
-            color="#000"
+            color={theme.colors.black}
           />
         );
 
+
       case "bank":
+
         return (
           <Landmark
             size={24}
             strokeWidth={2}
-            color="#000"
+            color={theme.colors.black}
           />
         );
+
 
       default:
         return null;
     }
   };
 
+
   return (
+
     <LinearGradient
       colors={[
-        
         "#FFE2D4",
-         "#ffe2d4b5",
+        "#ffe2d4b5",
         "#FFFFFF",
       ]}
-      locations={[0, 0.45, 1]}
+
+      locations={[
+        0,
+        0.45,
+        1,
+      ]}
+
       start={{
         x: 0,
         y: 0,
       }}
+
       end={{
         x: 0,
         y: 1,
       }}
+
       style={{
         borderRadius: 20,
-    
 
         padding: 18,
       }}
     >
-      {data?.map((item) => (
-        <KYCStepCard
-          key={item.id}
-          icon={getIcon(item.type)}
-          title={item.title}
-          subtitle={item.subtitle}
-          onPress={() => onPress(item)}
-        />
-      ))}
+
+      {data?.map((item) => {
+
+        const verified =
+          getStepVerificationStatus
+            ? getStepVerificationStatus(
+                item.type
+              )
+            : false;
+
+
+        return (
+
+          <KYCStepCard
+            key={item.id}
+
+            loading={
+              loading
+            }
+
+            icon={
+              getIcon(
+                item.type
+              )
+            }
+
+            title={
+              item.title
+            }
+
+            subtitle={
+              item.subtitle
+            }
+
+            verified={
+              verified
+            }
+
+            onPress={() =>
+              onPress(item)
+            }
+          />
+
+        );
+      })}
+
     </LinearGradient>
   );
 };
+
 
 export default KYCStepList;

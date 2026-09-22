@@ -38,7 +38,7 @@ import VisitorInvestigationScreen from '../screens/Visitor/VisitorInvestigation/
 import VisitorApplicationDetailsScreen from '../screens/Visitor/VisitorApplicationDetails/VisitorApplicationDetailsScreen.jsx';
 import VisitorPersonalInfoScreen from '../screens/Visitor/VisitorProfileInfoScreen/VisitorPersonalInfoScreen.jsx';
 import VisitorGetNotificationScreen from '../screens/Visitor/Notification/VisitorNotificationScreen.jsx'
-
+import EMICalculator from '../screens/EMICalculator/EMICalculator.jsx'
 const Stack = createNativeStackNavigator();
 
 const AppStack = () => {
@@ -227,6 +227,13 @@ const AppStack = () => {
         <Stack.Screen
         name="visitor-get-notification-screen"
         component={VisitorGetNotificationScreen}
+        options={{
+          headerShown: false,
+        }}
+      />
+        <Stack.Screen
+        name="emi-calculator"
+        component={EMICalculator}
         options={{
           headerShown: false,
         }}

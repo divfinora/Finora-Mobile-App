@@ -438,7 +438,7 @@ const LoanSection = () => {
 
             {/* Error */}
 
-            {error && apiLoans.length === 0 ? (
+            {error && !loading ? (
 
                 <InlineRetry
 

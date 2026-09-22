@@ -7,7 +7,7 @@ import {
 
 import { theme } from "../../../theme";
 
-const KycBannerCard = ({
+const CompleteKycBannerCard = ({
   onPress,
 }) => {
   return (
@@ -38,4 +38,6 @@ const KycBannerCard = ({
   );
 };
 
-export default memo(KycBannerCard);
+export default memo(CompleteKycBannerCard);
+ 
+ 

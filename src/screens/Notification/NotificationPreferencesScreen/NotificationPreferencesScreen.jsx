@@ -290,6 +290,9 @@ const NotificationPreferencesScreen = ({ navigation }) => {
           style={{
             flexDirection: "row",
             alignItems: "center",
+            justifyContent: 'flex-start',
+
+          
           }}
         >
           {/* BACK */}
@@ -315,38 +318,42 @@ const NotificationPreferencesScreen = ({ navigation }) => {
 
           {/* TITLE */}
 
-          <View
-            style={{
-              marginLeft: 34,
-            }}
-          >
-            <Text
+          <View style={{ flex: 1, flexDirection: "row", justifyContent: 'center' }}>
+            <View
               style={{
-                fontSize: 20,
-                fontFamily:
-                  theme.fonts.semiBold,
-                color:
-                  theme.colors.gray900,
-                lineHeight: 24,
-              }}
-            >
-              Notification Preferences
-            </Text>
 
-            <Text
-              style={{
-                fontSize:
-                  theme.typography.b3,
-                fontFamily:
-                  theme.fonts.medium,
-                color:
-                  theme.colors.gray500,
-                marginTop: 3,
-                lineHeight: 16,
+
+
               }}
             >
-              Manage your alerts and notifications
-            </Text>
+              <Text
+                style={{
+                  fontSize: 20,
+                  fontFamily:
+                    theme.fonts.semiBold,
+                  color:
+                    theme.colors.gray900,
+                  lineHeight: 24,
+                }}
+              >
+                Notification Preferences
+              </Text>
+
+              <Text
+                style={{
+                  fontSize:
+                    theme.typography.b3,
+                  fontFamily:
+                    theme.fonts.medium,
+                  color:
+                    theme.colors.gray500,
+                  marginTop: 3,
+                  lineHeight: 16,
+                }}
+              >
+                Manage your alerts and notifications
+              </Text>
+            </View>
           </View>
         </View>
 

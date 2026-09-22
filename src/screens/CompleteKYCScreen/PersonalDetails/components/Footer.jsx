@@ -14,8 +14,8 @@ const Footer = ({
   return (
     <View
       style={{
-        marginTop: theme.spacing.xxxl,
-        marginBottom: theme.spacing.xl,
+        marginTop: theme.spacing.lg,
+        marginBottom: theme.spacing.lg,
       }}
     >
       <CommonButton

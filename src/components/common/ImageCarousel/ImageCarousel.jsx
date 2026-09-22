@@ -152,9 +152,11 @@ const ImageCarousel = ({
                     }}
                 >
                     <Image
+
                         source={item?.bannerImage}
                         resizeMode={resizeMode}
                         style={{
+                            borderWidth:1,
                             width: "100%",
                             height: "100%",
                         }}

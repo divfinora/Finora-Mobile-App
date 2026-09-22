@@ -19,7 +19,7 @@ const Footer = ({
   return (
     <View
       style={{
-        marginTop: theme.spacing.xxxl,
+        marginTop: theme.spacing.lg,
         marginBottom: theme.spacing.lg,
       }}
     >

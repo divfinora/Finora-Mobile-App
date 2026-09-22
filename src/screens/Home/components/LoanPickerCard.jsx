@@ -33,7 +33,7 @@ const LoanPickerCard = () => {
     <TouchableOpacity
       activeOpacity={0.9}
       onPress={() =>
-        navigation.navigate("loan-picker-screen")
+        navigation.navigate("emi-calculator")
       }
       style={{
         marginTop:theme.spacing.xxl,

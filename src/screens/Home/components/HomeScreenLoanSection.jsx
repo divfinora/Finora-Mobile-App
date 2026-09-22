@@ -536,8 +536,8 @@ const HomeScreenLoanSection = ({
           ERROR
       ================================= */}
 
-      {error &&
-      apiLoans.length === 0 ? (
+      {error && !loading
+      ? (
 
         <InlineRetry
           title="Unable to load loans"

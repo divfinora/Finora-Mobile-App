@@ -6,11 +6,11 @@ import {
 } from "react-native";
 
 import {
-  UserRound,
+  User,
 } from "lucide-react-native";
 import { theme } from "../../../../theme";
 
- 
+ import UserFilled from '../../../../components/common/UserFilled.jsx'
 
 const HeroSection = () => {
   return (
@@ -29,16 +29,15 @@ const HeroSection = () => {
           width: 92,
           height: 92,
           borderRadius: 46,
-          backgroundColor: theme.colors.primary100,
+          backgroundColor: '#FCEDD6',
           justifyContent: "center",
           alignItems: "center",
         }}
       >
-        <UserRound
-          size={42}
-          color={theme.colors.primary700}
-          strokeWidth={2}
-        />
+       <UserFilled
+    size={42}
+    color={theme.colors.primary700}
+  />
       </View>
 
       {/* Title */}
@@ -55,7 +54,7 @@ const HeroSection = () => {
         
                   lineHeight: theme.lineHeight.h3,
         
-                  fontFamily: theme.fonts.headingBold,
+                  fontFamily: theme.fonts.bold,
 
          
 
@@ -74,9 +73,9 @@ const HeroSection = () => {
        
                  color: theme.colors.textSecondary,
        
-                 fontSize: theme.typography.b1,
+                 fontSize: theme.typography.b2,
        
-                 lineHeight: 22,
+                 lineHeight: theme.typography.b2,
        
                  fontFamily: theme.fonts.regular,
        

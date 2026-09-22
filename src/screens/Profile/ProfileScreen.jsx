@@ -108,6 +108,12 @@ const {
 
           <BackButton
             title="Settings"
+              titleStyle={{
+                fontFamily: theme.fonts.bold,
+                fontSize: 20,
+                lineHeight: 20,
+                textAlign: "center",
+              }}
           />
 
 

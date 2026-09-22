@@ -112,6 +112,7 @@ const VerificationLayout = ({
               />
 
               <VerificationInput
+              
                 label={inputLabel}
                 placeholder={placeholder}
                 value={value}
