@@ -360,8 +360,9 @@ const Step1ApplyLoanPersonalDetailPersonalDetailsSection = ({
                 }
 
                 rightIcon={
-                    <MaterialIcons
-                        name="qr-code-scanner"
+                    
+                    <Lucide
+                        name="scan-line"
                         size={19}
                         color={
                             theme.colors.primary400
