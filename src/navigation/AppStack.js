@@ -39,6 +39,7 @@ import VisitorApplicationDetailsScreen from '../screens/Visitor/VisitorApplicati
 import VisitorPersonalInfoScreen from '../screens/Visitor/VisitorProfileInfoScreen/VisitorPersonalInfoScreen.jsx';
 import VisitorGetNotificationScreen from '../screens/Visitor/Notification/VisitorNotificationScreen.jsx'
 import EMICalculator from '../screens/EMICalculator/EMICalculator.jsx'
+ import Step1ApplyLoanPersonalDetail from '../screens/Loan/LoanApply/Step1ApplyLoanPersonalDetail/Step1ApplyLoanPersonalDetail.jsx'
 const Stack = createNativeStackNavigator();
 
 const AppStack = () => {
@@ -240,6 +241,15 @@ const AppStack = () => {
       />
 
       {/* Visitory Flow ----------  end */}
+
+
+      {/* Step One Apply Loan  */}
+      <Stack.Screen
+    name="step1-apply-loan-personal-detail"
+    component={
+        Step1ApplyLoanPersonalDetail
+    }
+/>
 
     </Stack.Navigator>
   );

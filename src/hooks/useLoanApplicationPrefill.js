@@ -1,4 +1,8 @@
-import { useGetLoanApplicationPrefillQuery } from "../api/customerApi";
+
+
+
+
+import { useGetLoanApplicationPrefillQuery } from "../redux/features/customer/customerApi";
 
 export const useLoanApplicationPrefill = () => {
   const {
@@ -16,21 +20,27 @@ export const useLoanApplicationPrefill = () => {
   return {
     prefill,
 
-    // Sections
-    personalDetails: prefill?.personalDetails || {},
-    kycDetails: prefill?.kycDetails || {},
-    addressDetails: prefill?.addressDetails || {},
-    employmentDetails: prefill?.employmentDetails || {},
-    bankDetails: prefill?.bankDetails || null,
+    personalDetails:
+      prefill?.personalDetails || {},
 
-    // States
+    kycDetails:
+      prefill?.kycDetails || {},
+
+    addressDetails:
+      prefill?.addressDetails || {},
+
+    employmentDetails:
+      prefill?.employmentDetails || {},
+
+    bankDetails:
+      prefill?.bankDetails || null,
+
     isLoading,
     isFetching,
     isSuccess,
     isError,
     error,
 
-    // Manually refresh
     refetch,
   };
 };

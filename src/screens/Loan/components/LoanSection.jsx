@@ -163,148 +163,160 @@ const LoanSection = () => {
             return;
         }
 
+         
         // ==========================================
         // 4. MANUAL LOAN
         // ==========================================
+ else{
+    // step1-apply-loan-personal-detail"
+      navigation.navigate(
+               "step1-apply-loan-personal-detail",
+        {
+               loan: loan,
+                 loanId: loan?._id,
+                    //    documents: documents,
+                      }
+              );
+ }
 
         const category = loan?.category;
 
-        switch (category) {
+        // switch (category) {
 
-            case "GOLD":
+        //     case "GOLD":
 
-                navigation.navigate(
-                    "apply-gold-loan",
-                    {
-                        product: loan,
-                        productId: loan?._id,
-                        documents: documents,
-                    }
-                );
+        //         navigation.navigate(
+        //             "apply-gold-loan",
+        //             {
+        //                 product: loan,
+        //                 productId: loan?._id,
+        //                 documents: documents,
+        //             }
+        //         );
 
-                break;
-
-
-            case "PROPERTY":
-
-                navigation.navigate(
-                    "apply-property-loan",
-                    {
-                        product: loan,
-                        productId: loan?._id,
-                        documents: documents,
-                    }
-                );
-
-                break;
+        //         break;
 
 
-            case "VEHICLE":
+        //     case "PROPERTY":
 
-                navigation.navigate(
-                    "apply-vechicle-loan",
-                    {
-                        product: loan,
-                        productId: loan?._id,
-                        documents: documents,
-                    }
-                );
+        //         navigation.navigate(
+        //             "apply-property-loan",
+        //             {
+        //                 product: loan,
+        //                 productId: loan?._id,
+        //                 documents: documents,
+        //             }
+        //         );
 
-                break;
-
-
-            case "AGRICULTURE":
-
-                navigation.navigate(
-                    "apply-agriculture-loan",
-                    {
-                        product: loan,
-                        productId: loan?._id,
-                        documents: documents,
-                    }
-                );
-
-                break;
+        //         break;
 
 
-            case "RENOVATION":
+        //     case "VEHICLE":
 
-                navigation.navigate(
-                    "apply-renovation-loan",
-                    {
-                        product: loan,
-                        productId: loan?._id,
-                        documents: documents,
-                    }
-                );
+        //         navigation.navigate(
+        //             "apply-vechicle-loan",
+        //             {
+        //                 product: loan,
+        //                 productId: loan?._id,
+        //                 documents: documents,
+        //             }
+        //         );
 
-                break;
-
-
-            case "COMMERCIAL":
-
-                navigation.navigate(
-                    "apply-commercial-loan",
-                    {
-                        product: loan,
-                        productId: loan?._id,
-                        documents: documents,
-                    }
-                );
-
-                break;
+        //         break;
 
 
-            case "PERSONAL":
+        //     case "AGRICULTURE":
 
-                navigation.navigate(
-                    "apply-personal-loan",
-                    {
-                        product: loan,
-                        productId: loan?._id,
-                        documents: documents,
-                    }
-                );
+        //         navigation.navigate(
+        //             "apply-agriculture-loan",
+        //             {
+        //                 product: loan,
+        //                 productId: loan?._id,
+        //                 documents: documents,
+        //             }
+        //         );
 
-                break;
-
-
-            case "EDUCATION":
-
-                navigation.navigate(
-                    "apply-education-loan",
-                    {
-                        product: loan,
-                        productId: loan?._id,
-                        documents: documents,
-                    }
-                );
-
-                break;
+        //         break;
 
 
-            case "HOME":
+        //     case "RENOVATION":
 
-                navigation.navigate(
-                    "apply-home-loan",
-                    {
-                        product: loan,
-                        productId: loan?._id,
-                        documents: documents,
-                    }
-                );
+        //         navigation.navigate(
+        //             "apply-renovation-loan",
+        //             {
+        //                 product: loan,
+        //                 productId: loan?._id,
+        //                 documents: documents,
+        //             }
+        //         );
 
-                break;
+        //         break;
 
 
-            default:
+        //     case "COMMERCIAL":
 
-                Alert.alert(
-                    "Loan Unavailable",
-                    "This loan is currently not available."
-                );
+        //         navigation.navigate(
+        //             "apply-commercial-loan",
+        //             {
+        //                 product: loan,
+        //                 productId: loan?._id,
+        //                 documents: documents,
+        //             }
+        //         );
 
-        }
+        //         break;
+
+
+        //     case "PERSONAL":
+
+        //         navigation.navigate(
+        //             "apply-personal-loan",
+        //             {
+        //                 product: loan,
+        //                 productId: loan?._id,
+        //                 documents: documents,
+        //             }
+        //         );
+
+        //         break;
+
+
+        //     case "EDUCATION":
+
+        //         navigation.navigate(
+        //             "apply-education-loan",
+        //             {
+        //                 product: loan,
+        //                 productId: loan?._id,
+        //                 documents: documents,
+        //             }
+        //         );
+
+        //         break;
+
+
+        //     case "HOME":
+
+        //         navigation.navigate(
+        //             "apply-home-loan",
+        //             {
+        //                 product: loan,
+        //                 productId: loan?._id,
+        //                 documents: documents,
+        //             }
+        //         );
+
+        //         break;
+
+
+        //     default:
+
+        //         Alert.alert(
+        //             "Loan Unavailable",
+        //             "This loan is currently not available."
+        //         );
+
+        // }
     };
 
     return (

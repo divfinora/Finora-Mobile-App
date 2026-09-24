@@ -53,11 +53,41 @@ const CommonInput = forwardRef(
 
       onBlur,
 
+      // =================================================
+      // ICONS
+      // =================================================
+
       leftIcon,
 
       rightIcon,
 
       onRightIconPress,
+
+      // =================================================
+      // ICON SPACING / STYLES
+      //
+      // Default values existing design ke same hain.
+      // =================================================
+
+      leftIconSpacing = 12,
+
+      rightIconSpacing = 0,
+
+      leftIconContainerStyle,
+
+      rightIconContainerStyle,
+
+      // =================================================
+      // INPUT PADDING
+      //
+      // Existing design = 16
+      // =================================================
+
+      inputHorizontalPadding = 16,
+
+      // =================================================
+      // EXISTING STYLES
+      // =================================================
 
       containerStyle,
 
@@ -102,9 +132,6 @@ const CommonInput = forwardRef(
 
     // =================================================
     // CONTAINER REF
-    //
-    // Is ref se field ki exact position
-    // ScrollView content ke according milegi.
     // =================================================
 
     const containerRef =
@@ -113,8 +140,6 @@ const CommonInput = forwardRef(
 
     // =================================================
     // EXPOSE REF METHODS
-    //
-    // Existing behavior break nahi hoga.
     // =================================================
 
     useImperativeHandle(
@@ -142,16 +167,6 @@ const CommonInput = forwardRef(
 
     // =================================================
     // REGISTER FIELD POSITION
-    //
-    // Ye sirf tab chalega jab:
-    //
-    // fieldName
-    // registerFieldPosition
-    // scrollContentRef
-    //
-    // teeno pass kiye gaye hon.
-    //
-    // Old components par iska koi effect nahi.
     // =================================================
 
     const handleLayout = () => {
@@ -168,18 +183,19 @@ const CommonInput = forwardRef(
         containerRef.current?.measureLayout(
           scrollContentRef.current,
           (_x, y) => {
-            registerFieldPosition(fieldName, y);
+            registerFieldPosition(
+              fieldName,
+              y
+            );
           },
-          () => { }
+          () => {}
         );
       });
-    };;
+    };
 
 
     // =================================================
     // FOCUS
-    //
-    // OLD BEHAVIOR SAME
     // =================================================
 
     const handleFocus = (
@@ -196,8 +212,6 @@ const CommonInput = forwardRef(
 
     // =================================================
     // BLUR
-    //
-    // OLD BEHAVIOR SAME
     // =================================================
 
     const handleBlur = (
@@ -214,8 +228,6 @@ const CommonInput = forwardRef(
 
     // =================================================
     // BORDER COLOR
-    //
-    // OLD LOGIC SAME
     // =================================================
 
     const borderColor =
@@ -248,7 +260,6 @@ const CommonInput = forwardRef(
 
         {/* =========================================
             LABEL
-            OLD STYLE SAME
         ========================================= */}
 
         {!!label && (
@@ -291,7 +302,6 @@ const CommonInput = forwardRef(
 
         {/* =========================================
             INPUT CONTAINER
-            OLD STYLE SAME
         ========================================= */}
 
         <View
@@ -317,7 +327,7 @@ const CommonInput = forwardRef(
               borderColor,
 
               paddingHorizontal:
-                16,
+                inputHorizontalPadding,
             },
 
             inputContainerStyle,
@@ -330,10 +340,14 @@ const CommonInput = forwardRef(
 
           {!!leftIcon && (
             <View
-              style={{
-                marginRight:
-                  12,
-              }}
+              style={[
+                {
+                  marginRight:
+                    leftIconSpacing,
+                },
+
+                leftIconContainerStyle,
+              ]}
             >
               {leftIcon}
             </View>
@@ -440,7 +454,6 @@ const CommonInput = forwardRef(
 
           {/* =======================================
               RIGHT ICON
-              OLD TOUCHABLE BEHAVIOR SAME
           ======================================= */}
 
           {!!rightIcon && (
@@ -452,6 +465,15 @@ const CommonInput = forwardRef(
               onPress={
                 onRightIconPress
               }
+
+              style={[
+                {
+                  marginLeft:
+                    rightIconSpacing,
+                },
+
+                rightIconContainerStyle,
+              ]}
             >
               {rightIcon}
             </TouchableOpacity>
@@ -462,7 +484,6 @@ const CommonInput = forwardRef(
 
         {/* =========================================
             ERROR
-            OLD STYLE SAME
         ========================================= */}
 
         {!!error && (

@@ -118,12 +118,12 @@ export const customerApi = baseApi.injectEndpoints({
       providesTags: ["MyLoans"],
     }),
 
-    getLoanApplicationPrefill: builder.query({
-      query: () => ({
+getLoanApplicationPrefill: builder.query({
+    query: () => ({
         url: "/applyloan/application/prefill",
         method: "GET",
-      }),
     }),
+}),
 
     getSingleLoanDetails: builder.query({
       query: (loanId) => ({
