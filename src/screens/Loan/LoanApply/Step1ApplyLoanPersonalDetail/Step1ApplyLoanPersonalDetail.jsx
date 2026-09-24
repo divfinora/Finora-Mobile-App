@@ -48,6 +48,8 @@ import Step1ApplyLoanPersonalDetailBasicDetailsBenefits
 
 import Step1ApplyLoanPersonalDetailPersonalDetailsSection
     from "./components/Step1ApplyLoanPersonalDetailPersonalDetailsSection";
+import Step1ApplyLoanAmountSelection
+    from "./components/Step1ApplyLoanAmountSelection";
 
 import { SafeAreaView } from "react-native-safe-area-context";
 
@@ -953,6 +955,16 @@ const handleRefresh = async () => {
 
                     />
 
+                     <Step1ApplyLoanAmountSelection
+                        selectedAmount={form.loanAmount}
+                        onSelectAmount={(amount) => {
+                            setForm(previous => ({
+                                ...previous,
+                                loanAmount: amount,
+                            }));
+                        }}
+                    />
+
                 </ScrollView>
 
 
@@ -1029,50 +1041,7 @@ const handleRefresh = async () => {
                     PREFILL API ERROR
                 ================================================= */}
 
-                {/* {prefillError && (
-
-                <View
-                    style={{
-                        position:
-                            "absolute",
-
-                        top: 85,
-
-                        left: 20,
-
-                        right: 20,
-
-                        padding: 10,
-
-                        borderRadius: 8,
-
-                        backgroundColor:
-                            "#FEE2E2",
-                    }}
-                >
-
-                    <Text
-                        style={{
-                            fontSize: 12,
-
-                            color:
-                                "#B91C1C",
-
-                            textAlign:
-                                "center",
-
-                            fontFamily:
-                                theme.fonts.medium,
-                        }}
-                    >
-                        Unable to load your saved
-                        details. You can enter them
-                        manually.
-                    </Text>
-
-                </View>
-
-            )} */}
+ 
 
             </KeyboardAvoidingBottomView>
 
