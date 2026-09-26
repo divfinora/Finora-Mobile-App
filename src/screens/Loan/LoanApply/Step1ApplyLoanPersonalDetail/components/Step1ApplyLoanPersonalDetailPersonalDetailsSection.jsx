@@ -25,6 +25,7 @@ const Step1ApplyLoanPersonalDetailPersonalDetailsSection = ({
     form,
     errors,
     onChange,
+    onBlur,
     kycCompleted,
     lockedFields = {},
 
@@ -188,6 +189,19 @@ const Step1ApplyLoanPersonalDetailPersonalDetailsSection = ({
 
                 fieldName="fullName"
 
+
+                onBlur={
+
+                    () =>
+
+                        onBlur(
+
+                            "fullName"
+
+                        )
+
+                }
+
                 registerFieldPosition={
                     registerFieldPosition
                 }
@@ -253,6 +267,19 @@ const Step1ApplyLoanPersonalDetailPersonalDetailsSection = ({
 
                 fieldName="panNumber"
 
+
+                onBlur={
+
+                    () =>
+
+                        onBlur(
+
+                            "panNumber"
+
+                        )
+
+                }
+
                 registerFieldPosition={
                     registerFieldPosition
                 }
@@ -306,6 +333,19 @@ const Step1ApplyLoanPersonalDetailPersonalDetailsSection = ({
                 }
 
                 fieldName="accountNumber"
+
+
+                onBlur={
+
+                    () =>
+
+                        onBlur(
+
+                            "accountNumber"
+
+                        )
+
+                }
 
                 registerFieldPosition={
                     registerFieldPosition
@@ -372,6 +412,19 @@ const Step1ApplyLoanPersonalDetailPersonalDetailsSection = ({
 
                 fieldName="aadhaarNumber"
 
+
+                onBlur={
+
+                    () =>
+
+                        onBlur(
+
+                            "aadhaarNumber"
+
+                        )
+
+                }
+
                 registerFieldPosition={
                     registerFieldPosition
                 }
@@ -423,6 +476,19 @@ const Step1ApplyLoanPersonalDetailPersonalDetailsSection = ({
                 }
 
                 fieldName="addressLine1"
+
+
+                onBlur={
+
+                    () =>
+
+                        onBlur(
+
+                            "addressLine1"
+
+                        )
+
+                }
 
                 registerFieldPosition={
                     registerFieldPosition
@@ -491,6 +557,19 @@ const Step1ApplyLoanPersonalDetailPersonalDetailsSection = ({
 
                         fieldName="city"
 
+
+                        onBlur={
+
+                            () =>
+
+                                onBlur(
+
+                                    "city"
+
+                                )
+
+                        }
+
                         registerFieldPosition={
                             registerFieldPosition
                         }
@@ -546,6 +625,19 @@ const Step1ApplyLoanPersonalDetailPersonalDetailsSection = ({
                         }
 
                         fieldName="state"
+
+
+                        onBlur={
+
+                            () =>
+
+                                onBlur(
+
+                                    "state"
+
+                                )
+
+                        }
 
                         registerFieldPosition={
                             registerFieldPosition
@@ -604,6 +696,19 @@ const Step1ApplyLoanPersonalDetailPersonalDetailsSection = ({
                 }
 
                 fieldName="pincode"
+
+
+                onBlur={
+
+                    () =>
+
+                        onBlur(
+
+                            "pincode"
+
+                        )
+
+                }
 
                 registerFieldPosition={
                     registerFieldPosition

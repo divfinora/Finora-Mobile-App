@@ -8,8 +8,8 @@ import {
 
 import MaterialIcons from "@react-native-vector-icons/material-icons";
 import { theme } from "../../../../../theme";
- 
- 
+
+
 
 
 // =====================================================
@@ -88,8 +88,11 @@ const LOAN_AMOUNT_OPTIONS = [
 
 const Step1ApplyLoanAmountSelection = ({
     selectedAmount = null,
+    error = "",
     onSelectAmount,
+    onGetHelp
 }) => {
+
 
     return (
 
@@ -105,9 +108,9 @@ const Step1ApplyLoanAmountSelection = ({
 
             <View
                 style={{
-                    marginTop:16,
+                    marginTop: 16,
                     marginHorizontal: 16,
-                   
+
 
                     paddingHorizontal: 16,
                     paddingTop: 18,
@@ -116,6 +119,13 @@ const Step1ApplyLoanAmountSelection = ({
                     borderRadius: 16,
 
                     backgroundColor: "#FFFFFF",
+
+                    borderWidth: error ? 1 : 0,
+
+                    borderColor:
+                        error
+                            ? theme.colors.error
+                            : "transparent",
                 }}
             >
 
@@ -129,11 +139,11 @@ const Step1ApplyLoanAmountSelection = ({
                         lineHeight: 23,
 
                         fontFamily:
-                            theme.fonts.semiBold,
+                            theme.fonts.extraBold,
 
                         color: "#0D1526",
 
-                        marginBottom: 18,
+                        marginBottom: 16,
                     }}
                 >
                     Select Loan Amount
@@ -326,10 +336,10 @@ const Step1ApplyLoanAmountSelection = ({
                                             lineHeight: 18,
 
                                             fontFamily:
-                                                theme.fonts.semiBold,
+                                                theme.fonts.extraBold,
 
                                             color:
-                                                "#111827",
+                                                "#0D1526",
 
                                             textAlign:
                                                 "center",
@@ -354,10 +364,34 @@ const Step1ApplyLoanAmountSelection = ({
 
             </View>
 
+            {/* =================================================
+                LOAN AMOUNT ERROR
+            ================================================= */}
+
+            {!!error && (
+
+                <Text
+                    style={{
+                        marginTop: 6,
+                        marginHorizontal: 18,
+                        fontSize: 12,
+                        lineHeight: 16,
+                        fontFamily:
+                            theme.fonts.medium,
+                        color:
+                            theme.colors.error,
+                    }}
+                >
+                    {error}
+                </Text>
+
+            )}
+
+
 
             {/* =================================================
-                FINANCIAL SUPPORT CARD
-            ================================================= */}
+    LOAN ASSISTANCE CARD
+================================================= */}
 
             <View
                 style={{
@@ -369,37 +403,54 @@ const Step1ApplyLoanAmountSelection = ({
 
                     borderRadius: 16,
 
-                    paddingHorizontal: 16,
-                    paddingVertical: 14,
+                    paddingHorizontal: 14,
+                    paddingVertical: 9,
 
-                    backgroundColor:
-                        "#E5F7EE",
+                    backgroundColor: "#E5F7EE",
 
                     borderWidth: 1,
+                    borderColor: "#C6EBDD",
 
-                    borderColor:
-                        "#C6EBDD",
+                    flexDirection: "row",
 
-                    flexDirection:
-                        "row",
+                    alignItems: "center",
 
-                    alignItems:
-                        "center",
-
-                    justifyContent:
-                        "space-between",
+                    justifyContent: "space-between",
                 }}
             >
 
                 {/* =================================================
-                    SUPPORT TEXT
-                ================================================= */}
+        HEADSET ICON
+    ================================================= */}
+
+                <View
+                    style={{
+                        width: 38,
+                        height: 38,
+
+                        alignItems: "center",
+                        justifyContent: "center",
+
+                        marginRight: 8,
+                    }}
+                >
+                    <MaterialIcons
+                        name="headset-mic"
+                        size={27}
+                        color="#075B40"
+                    />
+                </View>
+
+
+                {/* =================================================
+        TEXT
+    ================================================= */}
 
                 <View
                     style={{
                         flex: 1,
 
-                        paddingRight: 10,
+                        paddingRight: 8,
                     }}
                 >
 
@@ -407,68 +458,58 @@ const Step1ApplyLoanAmountSelection = ({
                         style={{
                             fontSize: 13,
 
-                            lineHeight: 18,
+                            lineHeight: 16,
 
-                            fontFamily:
-                                theme.fonts.semiBold,
+                            fontFamily: theme.fonts.bold,
 
-                            color:
-                                "#17212B",
+                            color: "#17212B",
 
-                            marginBottom: 3,
+                            marginBottom: 1,
                         }}
                     >
-                        Financial support
+                        Loan Assistance
                     </Text>
-
 
                     <Text
                         style={{
                             fontSize: 12,
 
-                            lineHeight: 17,
+                            lineHeight: 15,
 
-                            fontFamily:
-                                theme.fonts.regular,
+                            fontFamily: theme.fonts.regular,
 
-                            color:
-                                "#52616B",
+                            color: "#52616B",
                         }}
+                        numberOfLines={2}
                     >
-                        for every step of your journey.
+                        Need help with your loan application?
                     </Text>
 
                 </View>
 
 
                 {/* =================================================
-                    KNOW MORE BUTTON
-                ================================================= */}
+        GET HELP BUTTON
+    ================================================= */}
 
                 <Pressable
-                    onPress={() => {
-                        // Add navigation/action later
-                    }}
-
+                    onPress={onGetHelp}
                     style={{
-                        minWidth: 103,
                         height: 34,
 
-                        paddingHorizontal: 13,
+                        minWidth: 89,
+
+                        paddingHorizontal: 11,
 
                         borderRadius: 999,
 
-                        backgroundColor:
-                            "#075B40",
+                        backgroundColor: "#075B40",
 
-                        flexDirection:
-                            "row",
+                        flexDirection: "row",
 
-                        alignItems:
-                            "center",
+                        alignItems: "center",
 
-                        justifyContent:
-                            "center",
+                        justifyContent: "center",
                     }}
                 >
 
@@ -478,18 +519,15 @@ const Step1ApplyLoanAmountSelection = ({
 
                             lineHeight: 16,
 
-                            fontFamily:
-                                theme.fonts.medium,
+                            fontFamily: theme.fonts.medium,
 
-                            color:
-                                "#FFFFFF",
+                            color: "#FFFFFF",
 
-                            marginRight: 5,
+                            marginRight: 4,
                         }}
                     >
-                        Know More
+                        Get Help
                     </Text>
-
 
                     <MaterialIcons
                         name="arrow-forward"
@@ -501,6 +539,9 @@ const Step1ApplyLoanAmountSelection = ({
 
             </View>
 
+
+
+
         </View>
     );
 };
@@ -508,4 +549,3 @@ const Step1ApplyLoanAmountSelection = ({
 
 export default Step1ApplyLoanAmountSelection;
 
- 

@@ -32,6 +32,8 @@ const Step1ApplyLoanPersonalDetailBasicDetailsField = ({
 
     onRightIconPress,
 
+    onBlur,
+
 
     // =====================================================
     // ONLY FOR ERROR SCROLL
@@ -70,6 +72,10 @@ const Step1ApplyLoanPersonalDetailBasicDetailsField = ({
                     onChangeText
                 }
 
+                onBlur={
+                    onBlur
+                }
+
                 required={
                     required
                 }
@@ -94,16 +100,10 @@ const Step1ApplyLoanPersonalDetailBasicDetailsField = ({
                 leftIcon={
                     leftIcon
                 }
- 
+
                 leftIconContainerStyle={{
                     marginLeft: 0,
                     marginRight: 8,
-
-                
-
-               
-
-                 
                 }}
 
 
@@ -115,20 +115,9 @@ const Step1ApplyLoanPersonalDetailBasicDetailsField = ({
                     rightIcon
                 }
 
-                // rightIconSpacing={
-                //     0
-                // }
-
                 rightIconContainerStyle={{
                     marginLeft: 8,
-
                     marginRight: 0,
-
-               
-
-               
-
-               
                 }}
 
                 onRightIconPress={
@@ -147,7 +136,7 @@ const Step1ApplyLoanPersonalDetailBasicDetailsField = ({
 
                 // =================================================
                 // ONLY FOR ERROR SCROLL
-                // =================================================
+                // =====================================================
 
                 fieldName={
                     fieldName
@@ -253,8 +242,8 @@ const Step1ApplyLoanPersonalDetailBasicDetailsField = ({
 
             {/* =================================================
                 ERROR
-            ================================================= */}
-
+            ================================================= */ }
+ 
             {!!error && (
                 <Text
                     style={{

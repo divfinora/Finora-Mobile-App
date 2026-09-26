@@ -4,30 +4,10 @@ import {
     View,
     Text,
 } from "react-native";
+import { theme } from "../../../../../theme";
 
 
-const Step1ApplyLoanPersonalDetailBasicDetailsBenefits = () => {
-
-    const items = [
-        {
-            icon: "⏱",
-            title: "Quick",
-            subtitle: "Approval",
-        },
-
-        {
-            icon: "🛡",
-            title: "100%",
-            subtitle: "Secure",
-        },
-
-        {
-            icon: "📄",
-            title: "Minimal",
-            subtitle: "Documents",
-        },
-    ];
-
+const Step1ApplyLoanPersonalDetailBasicDetailsBenefits = ({items}) => {
 
     return (
         <View
@@ -73,18 +53,20 @@ const Step1ApplyLoanPersonalDetailBasicDetailsBenefits = () => {
                             justifyContent: "center",
 
                             minWidth: 0,
+
+                            paddingHorizontal: 6,
                         }}
                     >
 
                         {/* =================================
-                            EMOJI ICON
+                            VECTOR ICON
                         ================================= */}
 
                         <View
                             style={{
-                                width: 38,
+                                width: 30,
 
-                                height: 38,
+                                height: 30,
 
                                 borderRadius: 999,
 
@@ -98,15 +80,7 @@ const Step1ApplyLoanPersonalDetailBasicDetailsBenefits = () => {
                             }}
                         >
 
-                            <Text
-                                style={{
-                                    fontSize: 20,
-
-                                    includeFontPadding: false,
-                                }}
-                            >
-                                {item.icon}
-                            </Text>
+                            {item.icon}
 
                         </View>
 
@@ -122,18 +96,21 @@ const Step1ApplyLoanPersonalDetailBasicDetailsBenefits = () => {
                                 flexShrink: 1,
 
                                 justifyContent: "center",
+
+                                minWidth: 0,
                             }}
                         >
 
                             <Text
-                                numberOfLines={1}
+                                numberOfLines={2}
+                                ellipsizeMode="tail"
                                 style={{
                                     fontSize: 12,
 
                                     lineHeight: 15,
 
-                                    fontFamily:
-                                        "Manrope-SemiBold",
+                                    fontFamily: theme.fonts.bold,
+                                         
 
                                     color: "#1F2937",
                                 }}
@@ -142,8 +119,9 @@ const Step1ApplyLoanPersonalDetailBasicDetailsBenefits = () => {
                             </Text>
 
 
-                            <Text
+                            {/* <Text
                                 numberOfLines={1}
+                                ellipsizeMode="tail"
                                 style={{
                                     fontSize: 12,
 
@@ -156,7 +134,7 @@ const Step1ApplyLoanPersonalDetailBasicDetailsBenefits = () => {
                                 }}
                             >
                                 {item.subtitle}
-                            </Text>
+                            </Text> */}
 
                         </View>
 
@@ -179,6 +157,8 @@ const Step1ApplyLoanPersonalDetailBasicDetailsBenefits = () => {
                                     "#E5E7EB",
 
                                 flexShrink: 0,
+
+                                marginHorizontal: 2,
                             }}
                         />
                     )}

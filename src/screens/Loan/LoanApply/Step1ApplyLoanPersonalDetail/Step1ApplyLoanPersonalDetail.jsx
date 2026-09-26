@@ -28,7 +28,6 @@ import CommonButton from "../../../../components/common/Button/CommonButton";
 
 import {
     useCustomerKYCVerificationDoneAndNotDoneQuery,
-
 } from "../../../../redux/features/customer/customerApi";
 
 import {
@@ -48,11 +47,28 @@ import Step1ApplyLoanPersonalDetailBasicDetailsBenefits
 
 import Step1ApplyLoanPersonalDetailPersonalDetailsSection
     from "./components/Step1ApplyLoanPersonalDetailPersonalDetailsSection";
+
 import Step1ApplyLoanAmountSelection
     from "./components/Step1ApplyLoanAmountSelection";
 
-import { SafeAreaView } from "react-native-safe-area-context";
+import {
+    SafeAreaView,
+} from "react-native-safe-area-context";
 
+import HelpTicketBottomSheet
+    from "./components/HelpTicketBottomSheet";
+import MaterialIcons from "@react-native-vector-icons/material-icons";
+
+import LoanApplicationSuccessBottomSheet
+    from "./components/LoanApplicationSuccessBottomSheet";
+import { resetToTab } from "../../../../navigation/navigationReset";
+
+ 
+
+
+// =====================================================
+// COMPONENT
+// =====================================================
 
 const Step1ApplyLoanPersonalDetail = ({
     route,
@@ -61,8 +77,50 @@ const Step1ApplyLoanPersonalDetail = ({
     const navigation =
         useNavigation();
 
+    const [
+        helpSheetVisible,
+        setHelpSheetVisible,
+    ] = useState(false);
 
-    const [lockedFields, setLockedFields] = useState({
+
+    // =====================================================
+    // SUCCESS SHEET
+    // =====================================================
+
+    const [
+        successSheetVisible,
+        setSuccessSheetVisible,
+    ] = useState(false);
+
+
+    // =====================================================
+    // CURRENT STEP
+    // =====================================================
+
+    const [
+        currentStep,
+        setCurrentStep,
+    ] = useState(1);
+
+
+    // =====================================================
+    // HEADER TITLE
+    // =====================================================
+
+    const headerTitle =
+        currentStep === 1
+            ? "Basic Details"
+            : "Loan Amt. Req.";
+
+
+    // =====================================================
+    // LOCKED FIELDS
+    // =====================================================
+
+    const [
+        lockedFields,
+        setLockedFields,
+    ] = useState({
         panNumber: false,
         accountNumber: false,
         aadhaarNumber: false,
@@ -86,7 +144,9 @@ const Step1ApplyLoanPersonalDetail = ({
     // PREFILL API
     // =====================================================
 
-    const loanId = route?.params?.loanId;
+    const loanId =
+        route?.params?.loanId;
+
 
     const {
         prefill,
@@ -102,7 +162,6 @@ const Step1ApplyLoanPersonalDetail = ({
     } = useLoanApplicationPrefill();
 
 
-
     // =====================================================
     // FORM
     // =====================================================
@@ -112,21 +171,18 @@ const Step1ApplyLoanPersonalDetail = ({
         setForm,
     ] = useState({
 
+        // STEP 1
         fullName: "",
-
         panNumber: "",
-
         accountNumber: "",
-
         aadhaarNumber: "",
-
         addressLine1: "",
-
         city: "",
-
         state: "",
-
         pincode: "",
+
+        // STEP 2
+        loanAmount: null,
 
     });
 
@@ -142,11 +198,12 @@ const Step1ApplyLoanPersonalDetail = ({
 
 
     // =====================================================
-    // ONLY FOR ERROR SCROLL
+    // ONLY FOR STEP 1 ERROR SCROLL
     // =====================================================
 
     const scrollViewRef =
         useRef(null);
+
 
     const fieldPositions =
         useRef({});
@@ -231,67 +288,91 @@ const Step1ApplyLoanPersonalDetail = ({
 
 
     // =====================================================
-    // PULL TO REFRESS 
+    // PULL TO REFRESH
     // =====================================================
 
-    const [refreshing, setRefreshing] = useState(false);
+    const [
+        refreshing,
+        setRefreshing,
+    ] = useState(false);
 
-    const [refreshSuccess, setRefreshSuccess] = useState(false);
-   const loading =
+
+    const [
+        refreshSuccess,
+        setRefreshSuccess,
+    ] = useState(false);
+
+
+    const loading =
         verificationLoading ||
         verificationFetching ||
         prefillLoading ||
         prefillFetching;
- 
-const handleRefresh = async () => {
 
-    // Already refresh chal raha hai
-    if (refreshing ||loading) {
-        return;
-    }
 
-    try {
+    const handleRefresh =
+        async () => {
 
-        setRefreshing(true);
+            // Already refresh running
+            if (
+                refreshing ||
+                loading
+            ) {
+                return;
+            }
 
-        setRefreshSuccess(false);
 
-        await Promise.all([
-            refetchVerification(),
-            refetchPrefill(),
-        ]);
+            try {
 
-        setRefreshSuccess(true);
+                setRefreshing(true);
 
-        setTimeout(() => {
+                setRefreshSuccess(false);
 
-            setRefreshSuccess(false);
 
-        }, 1800);
+                await Promise.all([
+                    refetchVerification(),
+                    refetchPrefill(),
+                ]);
 
-    } catch (error) {
 
-        console.log(
-            "Refresh error:",
-            error
-        );
+                setRefreshSuccess(true);
 
-    } finally {
 
-        setRefreshing(false);
+                setTimeout(() => {
 
-    }
+                    setRefreshSuccess(false);
 
-};
-  useEffect(() => {
+                }, 1800);
 
-    if (loading) {
 
-        setRefreshing(false);
+            } catch (error) {
 
-    }
+                console.log(
+                    "Refresh error:",
+                    error
+                );
 
-}, [loading]);
+            } finally {
+
+                setRefreshing(false);
+
+            }
+
+        };
+
+
+    useEffect(() => {
+
+        if (loading) {
+
+            setRefreshing(false);
+
+        }
+
+    }, [
+        loading,
+    ]);
+
 
     // =====================================================
     // KYC STATUS
@@ -314,102 +395,171 @@ const handleRefresh = async () => {
     );
 
 
-    // =====================================================
-    // PREFILL FORM
-    // =====================================================
 
     useEffect(() => {
 
-        if (
-            prefillLoading ||
-            prefillFetching ||
-            prefillError
-        ) {
-
-            return;
-
-        }
-
-
-        if (!prefill) {
-
-            return;
-
-        }
-
-
-        const panNumber =
-            kycDetails?.panNumber || "";
-
-
-        const accountNumber =
-            bankDetails?.accountNumber || "";
-
-
-        const aadhaarNumber =
-            kycDetails?.aadhaarNumber || "";
-
-
+        // Fake prefilled data
         setForm({
+            // STEP 1
+            fullName: "Amit Kumar",
+            panNumber: "ABCDE1234F",
+            accountNumber: "123456789012",
+            aadhaarNumber: "123456789012",
+            addressLine1: "Sector 12, Dwarka",
+            city: "New Delhi",
+            state: "Delhi",
+            pincode: "110075",
 
-            fullName:
-                personalDetails?.fullName || "",
-
-            panNumber,
-
-            accountNumber,
-
-            aadhaarNumber,
-
-            addressLine1:
-                addressDetails?.addressLine1 || "",
-
-            city:
-                addressDetails?.city || "",
-
-            state:
-                addressDetails?.state || "",
-
-            pincode:
-                addressDetails?.pincode || "",
-
+            // STEP 2
+            loanAmount: null,
         });
 
-
-        // Lock only those fields
-        // which already have saved values
-
+        // Fake saved KYC fields
         setLockedFields({
-
-            panNumber:
-                Boolean(
-                    panNumber?.trim()
-                ),
-
-
-            accountNumber:
-                Boolean(
-                    accountNumber?.trim()
-                ),
-
-
-            aadhaarNumber:
-                Boolean(
-                    aadhaarNumber?.trim()
-                ),
-
+            panNumber: true,
+            accountNumber: true,
+            aadhaarNumber: true,
         });
 
-
-    }, [
-        prefill,
-        prefillError,
-    ]);
+    }, []);
 
 
     // =====================================================
     // CHANGE FIELD
     // =====================================================
+
+
+    //     useEffect(() => {
+
+    //     if (
+    //         prefillLoading ||
+    //         prefillFetching ||
+    //         prefillError
+    //     ) {
+
+    //         return;
+
+    //     }
+
+
+    //     if (!prefill) {
+
+    //         return;
+
+    //     }
+
+
+    //     const panNumber =
+    //         kycDetails?.panNumber || "";
+
+
+    //     const accountNumber =
+    //         bankDetails?.accountNumber || "";
+
+
+    //     const aadhaarNumber =
+    //         kycDetails?.aadhaarNumber || "";
+
+
+    //     setForm({
+
+    //         fullName:
+    //             personalDetails?.fullName || "",
+
+    //         panNumber,
+
+    //         accountNumber,
+
+    //         aadhaarNumber,
+
+    //         addressLine1:
+    //             addressDetails?.addressLine1 || "",
+
+    //         city:
+    //             addressDetails?.city || "",
+
+    //         state:
+    //             addressDetails?.state || "",
+
+    //         pincode:
+    //             addressDetails?.pincode || "",
+
+    //     });
+
+
+    //     // Lock only those fields
+    //     // which already have saved values
+
+    //     setLockedFields({
+
+    //         panNumber:
+    //             Boolean(
+    //                 panNumber?.trim()
+    //             ),
+
+
+    //         accountNumber:
+    //             Boolean(
+    //                 accountNumber?.trim()
+    //             ),
+
+
+    //         aadhaarNumber:
+    //             Boolean(
+    //                 aadhaarNumber?.trim()
+    //             ),
+
+    //     });
+
+
+    //     setErrors(
+    //         previous => {
+
+    //             const updated = {
+    //                 ...previous,
+    //             };
+
+    //             if (personalDetails?.fullName?.trim()) {
+    //                 delete updated.fullName;
+    //             }
+
+    //             if (panNumber?.trim()) {
+    //                 delete updated.panNumber;
+    //             }
+
+    //             if (accountNumber?.trim()) {
+    //                 delete updated.accountNumber;
+    //             }
+
+    //             if (aadhaarNumber?.trim()) {
+    //                 delete updated.aadhaarNumber;
+    //             }
+
+    //             if (addressDetails?.addressLine1?.trim()) {
+    //                 delete updated.addressLine1;
+    //             }
+
+    //             if (addressDetails?.city?.trim()) {
+    //                 delete updated.city;
+    //             }
+
+    //             if (addressDetails?.state?.trim()) {
+    //                 delete updated.state;
+    //             }
+
+    //             if (addressDetails?.pincode?.trim()) {
+    //                 delete updated.pincode;
+    //             }
+
+    //             return updated;
+    //         }
+    //     );
+
+
+    // }, [
+    //     prefill,
+    //     prefillError,
+    // ]);
 
     const handleChange = (
         field,
@@ -427,7 +577,7 @@ const handleRefresh = async () => {
 
 
         // Remove field error
-        // while user is typing.
+        // while user is typing
 
         if (
             errors[field]
@@ -457,167 +607,271 @@ const handleRefresh = async () => {
 
 
     // =====================================================
-    // VALIDATION
+    // FIELD BLUR
     // =====================================================
 
-    const validate = () => {
+    const handleBlur = (
+        fieldName
+    ) => {
+
+        validateStep1(
+            fieldName
+        );
+
+    };
+
+
+    // =====================================================
+    // STEP 1 VALIDATION
+    // =====================================================
+
+    const validateStep1 = (fieldName = null) => {
+
+        const fields =
+            fieldName
+                ? [fieldName]
+                : [
+                    "fullName",
+                    "panNumber",
+                    "accountNumber",
+                    "aadhaarNumber",
+                    "addressLine1",
+                    "city",
+                    "state",
+                    "pincode",
+                ];
+
+
+        const newErrors = {};
+
+
+        fields.forEach(
+            field => {
+
+                // Skip fields already filled/locked from KYC
+                if (lockedFields[field]) {
+                    return;
+                }
+
+                const value = form[field] || "";
+
+                const trimmedValue =
+                    typeof value === "string"
+                        ? value.trim()
+                        : value;
+
+
+                // =================================================
+                // FULL NAME
+                // =================================================
+
+                if (
+                    field === "fullName" &&
+                    !trimmedValue
+                ) {
+                    newErrors.fullName =
+                        "Please enter your full name";
+                }
+
+
+                // =================================================
+                // PAN
+                // =================================================
+
+                if (
+                    field === "panNumber"
+                ) {
+
+                    if (!trimmedValue) {
+                        newErrors.panNumber =
+                            "Please enter your PAN number";
+                    } else if (
+                        !/^[A-Z]{5}[0-9]{4}[A-Z]$/i.test(
+                            trimmedValue
+                        )
+                    ) {
+                        newErrors.panNumber =
+                            "Please enter a valid PAN number";
+                    }
+
+                }
+
+
+                // =================================================
+                // BANK ACCOUNT
+                // =================================================
+
+                if (
+                    field === "accountNumber" &&
+                    !trimmedValue
+                ) {
+                    newErrors.accountNumber =
+                        "Please enter your bank account number";
+                }
+
+
+                // =================================================
+                // AADHAAR
+                // =================================================
+
+                if (
+                    field === "aadhaarNumber"
+                ) {
+
+                    if (!trimmedValue) {
+                        newErrors.aadhaarNumber =
+                            "Please enter your Aadhaar number";
+                    } else if (
+                        !/^[0-9]{12}$/.test(
+                            trimmedValue
+                        )
+                    ) {
+                        newErrors.aadhaarNumber =
+                            "Please enter a valid 12 digit Aadhaar number";
+                    }
+
+                }
+
+
+                // =================================================
+                // ADDRESS
+                // =================================================
+
+                if (
+                    field === "addressLine1" &&
+                    !trimmedValue
+                ) {
+                    newErrors.addressLine1 =
+                        "Please enter your address";
+                }
+
+
+                // =================================================
+                // CITY
+                // =================================================
+
+                if (
+                    field === "city" &&
+                    !trimmedValue
+                ) {
+                    newErrors.city =
+                        "Please enter your city";
+                }
+
+
+                // =================================================
+                // STATE
+                // =================================================
+
+                if (
+                    field === "state" &&
+                    !trimmedValue
+                ) {
+                    newErrors.state =
+                        "Please enter your state";
+                }
+
+
+                // =================================================
+                // PINCODE
+                // =================================================
+
+                if (
+                    field === "pincode"
+                ) {
+
+                    if (!trimmedValue) {
+                        newErrors.pincode =
+                            "Please enter your pincode";
+                    } else if (
+                        !/^[0-9]{6}$/.test(
+                            trimmedValue
+                        )
+                    ) {
+                        newErrors.pincode =
+                            "Please enter a valid 6 digit pincode";
+                    }
+
+                }
+
+            }
+        );
+
+
+        // =====================================================
+        // FIELD BLUR
+        // =====================================================
+
+        if (fieldName) {
+
+            setErrors(
+                previous => {
+
+                    const updated = {
+                        ...previous,
+                    };
+
+                    if (newErrors[fieldName]) {
+                        updated[fieldName] =
+                            newErrors[fieldName];
+                    } else {
+                        delete updated[fieldName];
+                    }
+
+                    return updated;
+                }
+            );
+
+            return (
+                Object.keys(newErrors).length === 0
+            );
+        }
+
+
+        // =====================================================
+        // CONTINUE
+        // =====================================================
+
+        setErrors(
+            newErrors
+        );
+
+
+        if (
+            Object.keys(newErrors).length > 0
+        ) {
+            scrollToFirstError(
+                newErrors
+            );
+        }
+
+
+        return (
+            Object.keys(newErrors).length === 0
+        );
+
+    };
+
+
+    // =====================================================
+    // STEP 2 VALIDATION
+    // =====================================================
+
+    const validateStep2 = () => {
 
         const newErrors = {};
 
 
         // =================================================
-        // FULL NAME
+        // LOAN AMOUNT
         // =================================================
 
         if (
-            !form.fullName.trim()
+            !form.loanAmount
         ) {
 
-            newErrors.fullName =
-                "Please enter your full name";
-
-        }
-
-
-        // =================================================
-        // PAN
-        // =================================================
-
-        if (
-            !lockedFields.panNumber
-        ) {
-
-            if (
-                !form.panNumber.trim()
-            ) {
-
-                newErrors.panNumber =
-                    "Please enter your PAN number";
-
-            } else if (
-                !/^[A-Z]{5}[0-9]{4}[A-Z]$/i.test(
-                    form.panNumber.trim()
-                )
-            ) {
-
-                newErrors.panNumber =
-                    "Please enter a valid PAN number";
-
-            }
-
-        }
-
-
-        // =================================================
-        // BANK ACCOUNT
-        // =================================================
-
-        if (
-            !lockedFields.accountNumber
-        ) {
-
-            if (
-                !form.accountNumber.trim()
-            ) {
-
-                newErrors.accountNumber =
-                    "Please enter your bank account number";
-
-            }
-
-        }
-
-
-        // =================================================
-        // AADHAAR
-        // =================================================
-
-        if (
-            !lockedFields.aadhaarNumber
-        ) {
-
-            if (
-                !form.aadhaarNumber.trim()
-            ) {
-
-                newErrors.aadhaarNumber =
-                    "Please enter your Aadhaar number";
-
-            } else if (
-                !/^[0-9]{12}$/.test(
-                    form.aadhaarNumber.trim()
-                )
-            ) {
-
-                newErrors.aadhaarNumber =
-                    "Please enter a valid 12 digit Aadhaar number";
-
-            }
-
-        }
-
-
-        // =================================================
-        // ADDRESS
-        // =================================================
-
-        if (
-            !form.addressLine1.trim()
-        ) {
-
-            newErrors.addressLine1 =
-                "Please enter your address";
-
-        }
-
-
-        // =================================================
-        // CITY
-        // =================================================
-
-        if (
-            !form.city.trim()
-        ) {
-
-            newErrors.city =
-                "Please enter your city";
-
-        }
-
-
-        // =================================================
-        // STATE
-        // =================================================
-
-        if (
-            !form.state.trim()
-        ) {
-
-            newErrors.state =
-                "Please enter your state";
-
-        }
-
-
-        // =================================================
-        // PINCODE
-        // =================================================
-
-        if (
-            !form.pincode.trim()
-        ) {
-
-            newErrors.pincode =
-                "Please enter your pincode";
-
-        } else if (
-            !/^[0-9]{6}$/.test(
-                form.pincode.trim()
-            )
-        ) {
-
-            newErrors.pincode =
-                "Please enter a valid 6 digit pincode";
+            newErrors.loanAmount =
+                "Please select a loan amount";
 
         }
 
@@ -629,23 +883,6 @@ const handleRefresh = async () => {
         setErrors(
             newErrors
         );
-
-
-        // =================================================
-        // ONLY ERROR SCROLL
-        // =================================================
-
-        if (
-            Object.keys(
-                newErrors
-            ).length > 0
-        ) {
-
-            scrollToFirstError(
-                newErrors
-            );
-
-        }
 
 
         // =================================================
@@ -662,13 +899,13 @@ const handleRefresh = async () => {
 
 
     // =====================================================
-    // CONTINUE
+    // STEP 1 CONTINUE
     // =====================================================
 
-    const handleContinue = () => {
+    const handleStep1Continue = () => {
 
         const isValid =
-            validate();
+            validateStep1();
 
 
         if (!isValid) {
@@ -676,47 +913,240 @@ const handleRefresh = async () => {
         }
 
 
-        navigation.navigate(
-            "apply-personal-loan",
-            {
+        // Clear old errors
 
-                basicDetails:
-                    form,
+        setErrors({});
 
-                kycCompleted:
-                    kycCompleted,
 
-            }
+        // Move to STEP 2
+
+        setCurrentStep(2);
+
+
+        // Scroll Step 2 to top
+
+        requestAnimationFrame(() => {
+
+            scrollViewRef.current?.scrollTo({
+                y: 0,
+                animated: false,
+            });
+
+        });
+
+    };
+
+
+    // =====================================================
+    // STEP 2 CONTINUE
+    // =====================================================
+
+    const handleStep2Continue = () => {
+
+        const isValid =
+            validateStep2();
+
+
+        if (!isValid) {
+            return;
+        }
+
+
+        // =================================================
+        // FINAL PAYLOAD
+        // =================================================
+
+        const finalForm = {
+            ...form,
+        };
+
+
+        console.log(
+            "Final Loan Application Data:",
+            finalForm
+        );
+
+
+        // =================================================
+        // SUCCESS SHEET
+        // =================================================
+
+        setSuccessSheetVisible(
+            true
         );
 
     };
 
 
     // =====================================================
-    // LOADING
+    // SUCCESS SHEET CLOSE
     // =====================================================
 
- 
+    const handleSuccessSheetClose = () => {
+
+        setSuccessSheetVisible(false);
+
+        // resetToTab(
+        //     navigation,
+        //     "Home"
+        // );
+
+    };
 
 
     // =====================================================
-    // BANNER
+    // SUCCESS SHEET - GO TO DASHBOARD
     // =====================================================
 
-    const bannerSource =
-        route?.params?.bannerSource ||
-        null;
+    const handleSuccessGoToDashboard = () => {
+
+        setSuccessSheetVisible(false);
+
+        resetToTab(
+            navigation,
+            "History"
+        );
+
+    };
+
+
+    // =====================================================
+    // HEADER BACK
+    // =====================================================
+
+    const handleBack = () => {
+
+        // -----------------------------------------------
+        // STEP 2 -> STEP 1
+        // -----------------------------------------------
+
+        if (
+            currentStep === 2
+        ) {
+
+            setErrors({});
+
+            setCurrentStep(1);
+
+
+            requestAnimationFrame(() => {
+
+                scrollViewRef.current?.scrollTo({
+                    y: 0,
+                    animated: false,
+                });
+
+            });
+
+
+            return;
+
+        }
+
+
+        // -----------------------------------------------
+        // STEP 1 -> PREVIOUS SCREEN
+        // -----------------------------------------------
+
+        navigation.goBack();
+
+    };
 
 
     // =====================================================
     // SCREEN
     // =====================================================
 
+
+
+
+
+
+    const BasicDetailItems = [
+        {
+            icon: (
+                <MaterialIcons
+                    name="bolt"
+                    size={20}
+                    color="#F97316"
+                />
+            ),
+            title: "Quick Approval",
+
+        },
+
+        {
+            icon: (
+                <MaterialIcons
+                    name="verified-user"
+                    size={20}
+                    color="#F97316"
+                />
+            ),
+            title: "100% Secure",
+            // subtitle: "Secure",
+        },
+
+        {
+            icon: (
+                <MaterialIcons
+                    name="description"
+                    size={20}
+                    color="#F97316"
+                />
+            ),
+            title: "Minimal Documents",
+            // subtitle: "Documents",
+        },
+    ];
+    const LoanAmoutItems = [
+        {
+            icon: (
+                <MaterialIcons
+                    name="bolt"
+                    size={20}
+                    color="#F97316"
+                />
+            ),
+            title: "Quick Process",
+         
+        },
+
+        {
+            icon: (
+                <MaterialIcons
+                    name="verified-user"
+                    size={20}
+                    color="#F97316"
+                />
+            ),
+            title: "100% Secure",
+          
+        },
+
+        {
+            icon: (
+                <MaterialIcons
+                    name="lock"
+                    size={20}
+                    color="#F97316"
+                />
+            ),
+            title: "Your data is safe.",
+            
+        },
+    ];
     return (
 
         <SafeAreaView
-            edges={['left', 'right', 'bottom']}
-            style={{ flex: 1 }}
+            edges={[
+                "left",
+                "right",
+                "bottom",
+            ]}
+            style={{
+                flex: 1,
+            }}
         >
 
             <KeyboardAvoidingBottomView
@@ -734,16 +1164,20 @@ const handleRefresh = async () => {
 
                 <NewFlowCommonHeader
 
-                    title="Basic Details"
+                    title={
+                        headerTitle
+                    }
 
-                    onBack={() => {
-                        navigation.goBack();
-                    }}
+                    onBack={
+                        handleBack
+                    }
 
                     onNotificationPress={() => {
+
                         navigation.navigate(
                             "get-notification-screen"
                         );
+
                     }}
 
                 />
@@ -753,7 +1187,6 @@ const handleRefresh = async () => {
                     MAIN CONTENT
                 ================================================= */}
 
-
                 {(refreshing || loading) && (
 
                     <View
@@ -761,12 +1194,21 @@ const handleRefresh = async () => {
                             marginHorizontal: 16,
                             marginTop: 8,
                             marginBottom: 4,
+
                             minHeight: 42,
+
                             paddingHorizontal: 14,
+
                             borderRadius: 12,
-                            backgroundColor: "#FFFFFF",
-                            flexDirection: "row",
-                            alignItems: "center",
+
+                            backgroundColor:
+                                "#FFFFFF",
+
+                            flexDirection:
+                                "row",
+
+                            alignItems:
+                                "center",
                         }}
                     >
 
@@ -777,12 +1219,16 @@ const handleRefresh = async () => {
                             }
                         />
 
+
                         <Text
                             style={{
                                 marginLeft: 10,
+
                                 fontSize: 13,
+
                                 fontFamily:
                                     theme.fonts.medium,
+
                                 color:
                                     theme.colors.gray700,
                             }}
@@ -795,63 +1241,92 @@ const handleRefresh = async () => {
                 )}
 
 
-                {refreshSuccess && !refreshing && (
-
-                    <View
-                        style={{
-                            marginHorizontal: 16,
-                            marginTop: 8,
-                            marginBottom: 4,
-                            minHeight: 42,
-                            paddingHorizontal: 14,
-                            borderRadius: 12,
-                            backgroundColor: "#F0FDF4",
-                            flexDirection: "row",
-                            alignItems: "center",
-                        }}
-                    >
+                {refreshSuccess &&
+                    !refreshing && (
 
                         <View
                             style={{
-                                width: 22,
-                                height: 22,
-                                borderRadius: 999,
-                                backgroundColor: "#DCFCE7",
-                                alignItems: "center",
-                                justifyContent: "center",
+                                marginHorizontal: 16,
+                                marginTop: 8,
+                                marginBottom: 4,
+
+                                minHeight: 42,
+
+                                paddingHorizontal: 14,
+
+                                borderRadius: 12,
+
+                                backgroundColor:
+                                    "#F0FDF4",
+
+                                flexDirection:
+                                    "row",
+
+                                alignItems:
+                                    "center",
                             }}
                         >
 
-                            <Text
+                            <View
                                 style={{
-                                    fontSize: 13,
-                                    color: "#16A34A",
-                                    fontFamily:
-                                        theme.fonts.bold,
+                                    width: 22,
+                                    height: 22,
+
+                                    borderRadius:
+                                        999,
+
+                                    backgroundColor:
+                                        "#DCFCE7",
+
+                                    alignItems:
+                                        "center",
+
+                                    justifyContent:
+                                        "center",
                                 }}
                             >
-                                ✓
+
+                                <Text
+                                    style={{
+                                        fontSize: 13,
+
+                                        color:
+                                            "#16A34A",
+
+                                        fontFamily:
+                                            theme.fonts.bold,
+                                    }}
+                                >
+                                    ✓
+                                </Text>
+
+                            </View>
+
+
+                            <Text
+                                style={{
+                                    marginLeft: 10,
+
+                                    fontSize: 13,
+
+                                    fontFamily:
+                                        theme.fonts.medium,
+
+                                    color:
+                                        "#166534",
+                                }}
+                            >
+                                Your details are up to date
                             </Text>
 
                         </View>
 
+                    )}
 
-                        <Text
-                            style={{
-                                marginLeft: 10,
-                                fontSize: 13,
-                                fontFamily:
-                                    theme.fonts.medium,
-                                color: "#166534",
-                            }}
-                        >
-                            Your details are up to date
-                        </Text>
 
-                    </View>
-
-                )}
-
+                {/* =================================================
+                    SCROLL CONTENT
+                ================================================= */}
 
                 <ScrollView
 
@@ -863,9 +1338,13 @@ const handleRefresh = async () => {
                         flex: 1,
                     }}
 
-                    showsVerticalScrollIndicator={false}
+                    showsVerticalScrollIndicator={
+                        false
+                    }
 
-                    keyboardShouldPersistTaps="handled"
+                    keyboardShouldPersistTaps={
+                        "handled"
+                    }
 
                     contentContainerStyle={{
                         paddingBottom: 20,
@@ -875,7 +1354,10 @@ const handleRefresh = async () => {
 
                         <RefreshControl
 
-                             refreshing={refreshing && !loading}
+                            refreshing={
+                                refreshing &&
+                                !loading
+                            }
 
                             onRefresh={
                                 handleRefresh
@@ -886,10 +1368,12 @@ const handleRefresh = async () => {
                             }
 
                             colors={[
-                                theme.colors.primary500
+                                theme.colors.primary500,
                             ]}
 
-                            progressBackgroundColor="#FFFFFF"
+                            progressBackgroundColor={
+                                "#FFFFFF"
+                            }
 
                         />
 
@@ -897,80 +1381,189 @@ const handleRefresh = async () => {
 
                 >
 
-                    {/* =============================================
-                        BANNER
-                    ============================================= */}
+                    {/* =================================================
+                        STEP 1
+                    ================================================= */}
 
-                    <Step1ApplyLoanPersonalDetailBasicDetailsBanner
+                    {currentStep === 1 && (
 
-                        bannerSource={
-                            require(
-                                "./components/assets/basicInfo.png"
-                            )
-                        }
+                        <>
 
-                    />
+                            {/* =============================================
+                                STEP 1 BANNER
+                            ============================================= */}
+
+                            <Step1ApplyLoanPersonalDetailBasicDetailsBanner
+
+                                bannerSource={
+                                    require(
+                                        "./components/assets/basicInfo.png"
+                                    )
+                                }
+
+                            />
 
 
-                    {/* =============================================
-                        BENEFITS
-                    ============================================= */}
+                            {/* =============================================
+                                STEP 1 BENEFITS
+                            ============================================= */}
 
-                    <Step1ApplyLoanPersonalDetailBasicDetailsBenefits />
+                            <Step1ApplyLoanPersonalDetailBasicDetailsBenefits items={BasicDetailItems} />
 
 
-                    {/* =============================================
-                        PERSONAL DETAILS
-                    ============================================= */}
+                            {/* =============================================
+                                STEP 1 PERSONAL DETAILS
+                            ============================================= */}
 
-                    <Step1ApplyLoanPersonalDetailPersonalDetailsSection
+                            <Step1ApplyLoanPersonalDetailPersonalDetailsSection
 
-                        form={
-                            form
-                        }
+                                form={
+                                    form
+                                }
 
-                        errors={
-                            errors
-                        }
+                                errors={
+                                    errors
+                                }
 
-                        onChange={
-                            handleChange
-                        }
+                                onChange={
+                                    handleChange
+                                }
 
-                        kycCompleted={
-                            kycCompleted
-                        }
+                                onBlur={
+                                    handleBlur
+                                }
 
-                        lockedFields={
-                            lockedFields
-                        }
+                                kycCompleted={
+                                    kycCompleted
+                                }
 
-                        registerFieldPosition={
-                            registerFieldPosition
-                        }
+                                lockedFields={
+                                    lockedFields
+                                }
 
-                        scrollViewRef={
-                            scrollViewRef
-                        }
+                                registerFieldPosition={
+                                    registerFieldPosition
+                                }
 
-                    />
+                                scrollViewRef={
+                                    scrollViewRef
+                                }
 
-                     <Step1ApplyLoanAmountSelection
-                        selectedAmount={form.loanAmount}
-                        onSelectAmount={(amount) => {
-                            setForm(previous => ({
-                                ...previous,
-                                loanAmount: amount,
-                            }));
-                        }}
-                    />
+                            />
+
+                        </>
+
+                    )}
+
+
+                    {/* =================================================
+                        STEP 2
+                    ================================================= */}
+
+                    {currentStep === 2 && (
+
+                        <>
+
+                            {/* =============================================
+                                STEP 2 BANNER
+                            ============================================= */}
+
+                            <Step1ApplyLoanPersonalDetailBasicDetailsBanner
+
+                                bannerSource={
+                                    require(
+                                        "./components/assets/basicInfo.png"
+                                    )
+                                }
+
+                            />
+
+
+                            {/* =============================================
+                                STEP 2 BENEFITS
+                            ============================================= */}
+
+                            <Step1ApplyLoanPersonalDetailBasicDetailsBenefits items={LoanAmoutItems} />
+
+
+                            {/* =============================================
+                                STEP 2 LOAN AMOUNT
+                            ============================================= */}
+
+                            <Step1ApplyLoanAmountSelection
+
+                                selectedAmount={
+                                    form.loanAmount
+                                }
+
+                                error={
+                                    errors.loanAmount
+                                }
+
+                                onSelectAmount={
+                                    (amount) => {
+
+                                        setForm(
+                                            previous => ({
+                                                ...previous,
+
+                                                loanAmount:
+                                                    amount,
+                                            })
+                                        );
+
+
+                                        // Remove loan amount error
+                                        // after selection
+
+                                        if (
+                                            errors.loanAmount
+                                        ) {
+
+                                            setErrors(
+                                                previous => {
+
+                                                    const updated = {
+                                                        ...previous,
+                                                    };
+
+
+                                                    delete updated.loanAmount;
+
+
+                                                    return updated;
+
+                                                }
+                                            );
+
+                                        }
+
+                                    }
+                                }
+
+                                onGetHelp={() => {
+
+                                    console.log(
+                                        "helloe--------"
+                                    );
+
+                                    setHelpSheetVisible(
+                                        true
+                                    );
+
+                                }}
+
+                            />
+
+                        </>
+
+                    )}
 
                 </ScrollView>
 
 
                 {/* =================================================
                     BOTTOM BUTTON
-                    NOT ABSOLUTE
                 ================================================= */}
 
                 <View
@@ -996,12 +1589,12 @@ const handleRefresh = async () => {
                         title="Continue"
 
                         onPress={
-                            handleContinue
-                        }
 
-                        // loading={
-                        //     loading
-                        // }
+                            currentStep === 1
+                                ? handleStep1Continue
+                                : handleStep2Continue
+
+                        }
 
                         rightIcon={
 
@@ -1038,16 +1631,55 @@ const handleRefresh = async () => {
 
 
                 {/* =================================================
-                    PREFILL API ERROR
+                    HELP TICKET BOTTOM SHEET
                 ================================================= */}
 
- 
+                <HelpTicketBottomSheet
+                    visible={
+                        helpSheetVisible
+                    }
+
+                    onClose={() =>
+                        setHelpSheetVisible(false)
+                    }
+
+                    onSubmit={(payload) => {
+
+                        console.log(
+                            "Ticket Payload:",
+                            payload
+                        );
+
+                        // API call here
+
+                    }}
+                />
+
+
+                {/* =================================================
+                    SUCCESS SHEET
+                ================================================= */}
+
+                <LoanApplicationSuccessBottomSheet
+                    visible={
+                        successSheetVisible
+                    }
+
+                    onClose={
+                        handleSuccessSheetClose
+                    }
+
+                    onGoToDashboard={
+                        handleSuccessGoToDashboard
+                    }
+                />
 
             </KeyboardAvoidingBottomView>
 
         </SafeAreaView>
 
     );
+
 };
 
 
