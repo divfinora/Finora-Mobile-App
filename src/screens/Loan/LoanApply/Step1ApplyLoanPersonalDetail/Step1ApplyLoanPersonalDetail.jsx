@@ -1393,15 +1393,13 @@ const Step1ApplyLoanPersonalDetail = ({
                                 STEP 1 BANNER
                             ============================================= */}
 
-                            <Step1ApplyLoanPersonalDetailBasicDetailsBanner
-
-                                bannerSource={
-                                    require(
-                                        "./components/assets/basicInfo.png"
-                                    )
-                                }
-
-                            />
+                        <Step1ApplyLoanPersonalDetailBasicDetailsBanner
+    bannerSource={
+        kycCompleted
+            ? require("./components/assets/basicInfo.png")
+            : require("./components/assets/kyc-not-complete-banner.png")
+    }
+/>
 
 
                             {/* =============================================
@@ -1472,7 +1470,7 @@ const Step1ApplyLoanPersonalDetail = ({
 
                                 bannerSource={
                                     require(
-                                        "./components/assets/basicInfo.png"
+                                        "./components/assets/loanamout.png"
                                     )
                                 }
 
