@@ -63,7 +63,7 @@ import LoanApplicationSuccessBottomSheet
     from "./components/LoanApplicationSuccessBottomSheet";
 import { resetToTab } from "../../../../navigation/navigationReset";
 
- 
+
 
 
 // =====================================================
@@ -1109,7 +1109,7 @@ const Step1ApplyLoanPersonalDetail = ({
                 />
             ),
             title: "Quick Process",
-         
+
         },
 
         {
@@ -1121,7 +1121,7 @@ const Step1ApplyLoanPersonalDetail = ({
                 />
             ),
             title: "100% Secure",
-          
+
         },
 
         {
@@ -1133,7 +1133,7 @@ const Step1ApplyLoanPersonalDetail = ({
                 />
             ),
             title: "Your data is safe.",
-            
+
         },
     ];
     return (
@@ -1393,13 +1393,13 @@ const Step1ApplyLoanPersonalDetail = ({
                                 STEP 1 BANNER
                             ============================================= */}
 
-                        <Step1ApplyLoanPersonalDetailBasicDetailsBanner
-    bannerSource={
-        kycCompleted
-            ? require("./components/assets/basicInfo.png")
-            : require("./components/assets/kyc-not-complete-banner.png")
-    }
-/>
+                            <Step1ApplyLoanPersonalDetailBasicDetailsBanner
+                                bannerSource={
+                                    kycCompleted
+                                        ? require("./components/assets/basicInfo.png")
+                                        : require("./components/assets/kyc-not-complete-banner.png")
+                                }
+                            />
 
 
                             {/* =============================================

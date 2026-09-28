@@ -276,11 +276,9 @@ const HomeComponent = () => {
               >
 
                 <NotKycBannerCard
-                  onPress={() => {
-                     
-
+                  onPress={(path) => {
                     navigation.navigate(
-                      "complete-kyc-screen"
+                      path
                     );
 
                   }}

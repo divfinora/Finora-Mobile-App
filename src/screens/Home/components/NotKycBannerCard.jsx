@@ -78,7 +78,7 @@ const NotKycBannerCard = ({
       //     : onPress
       // }
       onPress={
-        onPress
+        onPress(  isVerified ? "complete-kyc-screen":"")
       }
       style={{
         width: "100%",
@@ -89,19 +89,20 @@ const NotKycBannerCard = ({
           theme.radius.lg,
 
         overflow: "hidden",
-
-        backgroundColor:
-          theme.colors.navy900,
+ 
+        // backgroundColor:
+        //   theme.colors.navy900,
       }}
     >
+      
       <Image
         source={
           isVerified
             ? require(
-                "./assets/image.png"
+                "./assets/complete-kyc.png"
               )
             : require(
-                "./assets/image.png"
+                "../../Loan/LoanApply/Step1ApplyLoanPersonalDetail/components/assets/kyc-not-complete-banner.png"
               )
         }
         resizeMode="contain"

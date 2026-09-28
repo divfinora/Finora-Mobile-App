@@ -1,61 +1,58 @@
 import React from "react";
-
-import {
-  createBottomTabNavigator,
-} from "@react-navigation/bottom-tabs";
+import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 
 import HomeScreen from "../screens/Home/HomeScreen.jsx";
 import LoanScreen from "../screens/Loan/LoanScreen.jsx";
-import HistoryScreen from "../screens/History/HistoryScreen.jsx";
-import ProfileScreen from "../screens/Profile/ProfileScreen.jsx";
 import MyLoanScreen from "../screens/GetLoan/MyLoan/MyLoanScreen.jsx";
-
-import { useSafeAreaInsets } from "react-native-safe-area-context";
+import ProfileScreen from "../screens/Profile/ProfileScreen.jsx";
 
 import VisitorHomeScreen from "../screens/Visitor/VisitorHomeScreen/VisitorHomeScreen.jsx";
 import MyApplicationsScreen from "../screens/Visitor/MyApplications/MyApplicationsScreen.jsx";
 import VisitorProfileScreen from "../screens/Visitor/Profile/VisitorProfileScreen.jsx";
 
 import useUserRole from "../hooks/useUserRole.js";
+import FinsaarthiCustomTabBar from "./FinsaarthiCustomTabBar.jsx";
 
 const Tab = createBottomTabNavigator();
 
-const BottomTabNavigator = () => {
-  const insets = useSafeAreaInsets();
-
+/**
+ * loanApplications shape expected by FloatingLoanApplicationCarousel:
+ * [
+ *   {
+ *     id: "loan-123",
+ *     title: "Personal Loan",
+ *     amount: 50000,
+ *     status: "Loan Application Submitted",
+ *     submittedAt: "2026-09-18T23:30:00.000Z",
+ *   },
+ * ]
+ *
+ * Keep the array connected to your real Finsaarthi loan/application API.
+ */
+const BottomTabNavigator = ({ loanApplications = [], onLoanApplicationPress }) => {
   const { isVisitor } = useUserRole();
 
   return (
     <Tab.Navigator
       initialRouteName="Home"
+      tabBarHideOnKeyboard
       screenOptions={{
         headerShown: false,
-
-        tabBarActiveTintColor: "#2563EB",
-        tabBarInactiveTintColor: "#9CA3AF",
-
-        tabBarStyle: {
-          height: 65 + insets.bottom,
-          backgroundColor: "#FFFFFF",
-          borderTopWidth: 1,
-          borderTopColor: "#E5E7EB",
-          paddingTop: 6,
-          paddingBottom: 8,
-        },
-
-        tabBarLabelStyle: {
-          fontSize: 12,
-          fontWeight: "500",
-        },
+        tabBarShowLabel: false,
       }}
+      tabBar={props => (
+        <FinsaarthiCustomTabBar
+          {...props}
+          loanApplications={loanApplications}
+          onLoanApplicationPress={onLoanApplicationPress}
+        />
+      )}
     >
-      {/* HOME */}
       <Tab.Screen
         name="Home"
         component={isVisitor ? VisitorHomeScreen : HomeScreen}
       />
 
-      {/* LOAN - ONLY NORMAL USER */}
       {!isVisitor && (
         <Tab.Screen
           name="Loan"
@@ -63,13 +60,11 @@ const BottomTabNavigator = () => {
         />
       )}
 
-      {/* HISTORY */}
       <Tab.Screen
         name="History"
         component={isVisitor ? MyApplicationsScreen : MyLoanScreen}
       />
 
-      {/* PROFILE */}
       <Tab.Screen
         name="Profile"
         component={isVisitor ? VisitorProfileScreen : ProfileScreen}
