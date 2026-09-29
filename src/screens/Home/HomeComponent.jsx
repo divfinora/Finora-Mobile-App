@@ -31,9 +31,15 @@ import {
   useSelector,
 } from "react-redux";
 import useKYCVerificationDoneAndNotDone from "../../hooks/useKYCVerificationDoneAndNotDone";
-
+ 
+import {
+  useBottomTabHeight,
+} from "../../navigation/BottomTabHeightContext.jsx";
 const HomeComponent = () => {
+ const { height: bottomTabHeight } = useBottomTabHeight();
 
+   console.log(bottomTabHeight ,"bottomTabHeigth")
+ 
   // =====================================================
   // NAVIGATION
   // =====================================================
@@ -379,9 +385,9 @@ const HomeComponent = () => {
 
       contentContainerStyle={{
 
-
-        paddingBottom:
-          theme.spacing.massive,
+ 
+          
+    paddingBottom: bottomTabHeight + theme.spacing.massive,
 
         backgroundColor:
           "#FFF9F0",

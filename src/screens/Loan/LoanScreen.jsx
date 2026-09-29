@@ -19,8 +19,15 @@ import HowItWorks from './components/HowItWorks.jsx'
 import OffersJustForYou from './components/OffersJustForYou.jsx'
 import { useGetAllLoanQuery } from "../../redux/features/customer/customerApi.js";
 import LoanBannerCard from "../Home/components/LoanBannerCard.jsx";
+import {useBottomTabHeight} from '../../navigation/BottomTabHeightContext.jsx'
+ 
 
 const LoanScreen = () => {
+
+
+   const { height: bottomTabHeight } = useBottomTabHeight()
+
+    
     const {
         refetch: refetchLoans,
     } = useGetAllLoanQuery();
@@ -82,7 +89,7 @@ const LoanScreen = () => {
                 }
 
                 contentContainerStyle={{
-
+                  paddingBottom: bottomTabHeight + theme.spacing.massive,
                 }}
 
                 refreshControl={

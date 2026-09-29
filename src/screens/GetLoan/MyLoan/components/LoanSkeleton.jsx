@@ -3,15 +3,23 @@ import { View } from 'react-native';
  
 import ShimmerPlaceholder from '../../../../components/common/Loader/ShimmerPlaceholder.jsx';
 import { theme } from '../../../../theme/index.js';
+import {
+  useBottomTabHeight,
+} from "../../../../navigation/BottomTabHeightContext.jsx";
+ 
  
 
 const LoanSkeleton = () => {
+   const { height: bottomTabHeight } =
+    useBottomTabHeight();
   return (
     <View
       style={{
         paddingHorizontal: theme.screen.horizontalPadding,
         paddingTop: theme.spacing.lg,
-      }}
+         paddingBottom: bottomTabHeight + theme.spacing.massive,
+     
+      }}  
     >
       {[1, 2, 3, 4].map((key) => (
         <View

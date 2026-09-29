@@ -53,7 +53,8 @@ import {
 } from '../../../theme/index.js';
 import { useSelector } from 'react-redux';
 import InlineRetry from '../../../components/common/RetryScreen/InlineRetry.jsx';
-
+import { useBottomTabHeight } from '../../../navigation/BottomTabHeightContext.jsx'
+ 
 
 // ============================================================
 // CONSTANTS
@@ -127,7 +128,8 @@ const COMPLETED_LOAN_STATUSES = [
 const GetLoanScreen = ({
   navigation,
 }) => {
-
+  const { height: bottomTabHeight } =
+    useBottomTabHeight();
 
   // ==========================================================
   // MAIN TAB
@@ -231,9 +233,9 @@ const GetLoanScreen = ({
   // SKELETON
   // ==========================================================
 
-  const showSkeleton =
+  const showSkeleton = true ||
     isLoading ||
-    isFetching;
+    isFetching
 
 
   // ==========================================================
@@ -734,11 +736,9 @@ const GetLoanScreen = ({
                     ?.lg ||
                   16,
 
-                paddingBottom:
-                  theme.spacing
-                    ?.xxl ||
-                  32,
 
+
+                paddingBottom: bottomTabHeight + theme.spacing.massive,
                 flexGrow:
                   1,
               }}

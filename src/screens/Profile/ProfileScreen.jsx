@@ -28,8 +28,11 @@ import LogoutButton from "../LogOut/LogoutButton.jsx";
 import useKYCVerificationDoneAndNotDone from "../../hooks/useKYCVerificationDoneAndNotDone.js";
 import { syncProfile } from "../../utils/profileSync";
 import { useGetSettingsQuery } from "../../redux/features/customer/customerApi";
+ 
+ import { useBottomTabHeight } from '../../navigation/BottomTabHeightContext.jsx'
 const ProfileScreen = () => {
-
+ const { height: bottomTabHeight } =
+  useBottomTabHeight();
 const {
   refetch: refetchSettings,
 } = useGetSettingsQuery();
@@ -136,7 +139,7 @@ const {
             contentContainerStyle={{
 
 
-              paddingBottom: theme.spacing.massive,
+      paddingBottom: bottomTabHeight + theme.spacing.massive,
             }}
           >
 
