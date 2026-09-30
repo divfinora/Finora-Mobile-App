@@ -17,7 +17,7 @@ const Step1ApplyLoanPersonalDetailBasicDetailsField = ({
     onChangeText,
 
     error,
-
+  maxLength =undefined,
     required = true,
 
     editable = true,
@@ -33,6 +33,7 @@ const Step1ApplyLoanPersonalDetailBasicDetailsField = ({
     onRightIconPress,
 
     onBlur,
+
 
 
     // =====================================================
@@ -55,7 +56,7 @@ const Step1ApplyLoanPersonalDetailBasicDetailsField = ({
         >
 
             <CommonInput
-
+maxLength ={maxLength}
                 label={
                     label
                 }

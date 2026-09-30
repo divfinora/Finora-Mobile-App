@@ -41,7 +41,7 @@ import VisitorGetNotificationScreen from '../screens/Visitor/Notification/Visito
 import EMICalculator from '../screens/EMICalculator/EMICalculator.jsx'
  import Step1ApplyLoanPersonalDetail from '../screens/Loan/LoanApply/Step1ApplyLoanPersonalDetail/Step1ApplyLoanPersonalDetail.jsx'
 
- import Step2PersonalLoanApply from '../screens/Loan/LoanApply/Step2ApplyLoanApply/PersonalLoan/Step2PersonalLoanApply.jsx'
+ import Step2PersonalLoanApply from '../screens/Loan/LoanApply/Step2ApplyLoanApply/PersonalLoan/Step2PersonalLoanApplyMainScreen.jsx'
 const Stack = createNativeStackNavigator();
 
 const AppStack = () => {
