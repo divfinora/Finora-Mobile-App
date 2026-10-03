@@ -233,7 +233,7 @@ const GetLoanScreen = ({
   // SKELETON
   // ==========================================================
 
-  const showSkeleton = true ||
+  const showSkeleton = 
     isLoading ||
     isFetching
 

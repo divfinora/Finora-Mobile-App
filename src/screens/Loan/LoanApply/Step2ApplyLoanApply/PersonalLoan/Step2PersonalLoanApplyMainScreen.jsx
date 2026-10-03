@@ -158,45 +158,45 @@ const Step2PersonalLoanApplyMainScreen = ({
     // FORM
     // =====================================================
 
-    const [
-        form,
-        setForm,
-    ] = useState({
+const [
+    form,
+    setForm,
+] = useState({
 
-        // STEP 1
-        fullName: "",
-        panNumber: "",
-        accountNumber: "",
-        aadhaarNumber: "",
-        addressLine1: "",
-        city: "",
-        state: "",
-        pincode: "",
+    // STEP 1
+    fullName: "Amit Kumar",
+    panNumber: "ABCDE1234F",
+    accountNumber: "123456789012",
+    aadhaarNumber: "123456789012",
+    addressLine1: "Sector 12, Dwarka",
+    city: "New Delhi",
+    state: "Delhi",
+    pincode: "110075",
 
-        // STEP 2
-        employmentType: "",
+    // STEP 2
+    employmentType: "Salaried",
 
-        // Self Employed
-        businessName: "",
-        businessType: "",
-        businessExperience: "",
+    // Self Employed
+    businessName: "",
+    businessType: "",
+    businessExperience: "",
 
-        // Salaried Person
-        companyName: "",
-        designation: "",
-        experience: "",
+    // Salaried Person
+    companyName: "ABC Technologies Pvt. Ltd.",
+    designation: "Software Developer",
+    experience: "2 Years",
 
-        // Common
-        monthlyIncome: "",
-        employmentPincode: "",
+    // Common
+    monthlyIncome: "50000",
+    employmentPincode: "110075",
 
-        // STEP 3
-        documents: [],
+    // STEP 3
+    documents: [],
 
-        // OLD FIELD - keep for backward compatibility
-        loanAmount: null,
+    // OLD FIELD - keep for backward compatibility
+    loanAmount: null,
 
-    });
+});
 
     // =====================================================
     // ERRORS
@@ -910,75 +910,85 @@ const Step2PersonalLoanApplyMainScreen = ({
 
     const validateStep3 = () => {
 
-        const newErrors = {};
+    const newErrors = {};
 
-        const requiredDocuments = [
-            {
-                key: "panCard",
-                minFiles: 2,
-                message: "Please upload PAN Card front and back image",
-            },
-            {
-                key: "aadharCard",
-                minFiles: 2,
-                message: "Please upload Aadhaar Card front and back image",
-            },
-            {
-                key: "salarySlips",
-                minFiles: 3,
-                message: "Please upload all 3 salary slips",
-            },
-            {
-                key: "bankStatement",
-                minFiles: 1,
-                message: "Please upload your bank statement",
-            },
-            {
-                key: "addressProof",
-                minFiles: 1,
-                message: "Please upload your address proof",
-            },
-        ];
+    const requiredDocuments = [
+        {
+            key: "panCard",
+            minFiles: 2,
+            message: "Please upload PAN Card front and back image",
+        },
+        {
+            key: "aadharCard",
+            minFiles: 2,
+            message: "Please upload Aadhaar Card front and back image",
+        },
+        {
+            key: "salarySlips",
+            minFiles: 3,
+            message: "Please upload all 3 salary slips",
+        },
+        {
+            key: "bankStatement",
+            minFiles: 1,
+            message: "Please upload your bank statement",
+        },
+        {
+            key: "addressProof",
+            minFiles: 1,
+            message: "Please upload your address proof",
+        },
+    ];
 
-        const documents =
-            form?.documents || [];
+    const documents =
+        form?.documents || [];
 
-        requiredDocuments.forEach(
-            document => {
+    requiredDocuments.forEach(document => {
 
-                const uploadedDocument =
-                    documents.find(
-                        item =>
-                            item?.type ===
-                            document.key
-                    );
+        const uploadedDocument =
+            documents.find(
+                item =>
+                    item?.type === document.key
+            );
 
-                const fileCount =
-                    uploadedDocument?.files?.length || 0;
+        const fileCount =
+            uploadedDocument?.files?.length || 0;
 
-                if (
-                    fileCount <
-                    document.minFiles
-                ) {
+        if (
+            fileCount <
+            document.minFiles
+        ) {
 
-                    newErrors[
-                        document.key
-                    ] =
-                        document.message;
-                }
-            }
+            newErrors[
+                document.key
+            ] = document.message;
+
+        }
+
+    });
+
+    setErrors(newErrors);
+
+    if (
+        Object.keys(newErrors).length > 0
+    ) {
+
+        scrollToFirstError(
+            newErrors,
+            [
+                "panCard",
+                "aadharCard",
+                "salarySlips",
+                "bankStatement",
+                "addressProof",
+            ]
         );
 
-        setErrors(
-            newErrors
-        );
+        return false;
+    }
 
-        return (
-            Object.keys(
-                newErrors
-            ).length === 0
-        );
-    };
+    return true;
+};
 
 
     // =====================================================
@@ -1659,7 +1669,7 @@ const Step2PersonalLoanApplyMainScreen = ({
                                 errors
                             }
                             setErrors={setErrors}
-
+  registerFieldPosition={registerFieldPosition}
                         />
 
                     )}

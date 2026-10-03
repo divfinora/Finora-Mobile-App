@@ -89,9 +89,18 @@ const BottomTabNavigator = ({
             onLoanApplicationPress={
               onLoanApplicationPress ||
               (item => {
-                navigation.navigate(
-                  "step-2-apply-personal-loan"
-                );
+                    if(item?.title === "Personal Loan") {
+                      navigation.navigate(
+                        "step-2-apply-personal-loan"
+                      );
+                    } else if(item?.title === "Gold Loan") {
+                      navigation.navigate(
+                        "step-2-apply-gold-loan"
+                      );
+                    } 
+                // navigation.navigate(
+                //   "step-2-apply-personal-loan"
+                // );
               })
             }
           />

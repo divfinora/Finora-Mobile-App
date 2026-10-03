@@ -39,9 +39,10 @@ import VisitorApplicationDetailsScreen from '../screens/Visitor/VisitorApplicati
 import VisitorPersonalInfoScreen from '../screens/Visitor/VisitorProfileInfoScreen/VisitorPersonalInfoScreen.jsx';
 import VisitorGetNotificationScreen from '../screens/Visitor/Notification/VisitorNotificationScreen.jsx'
 import EMICalculator from '../screens/EMICalculator/EMICalculator.jsx'
- import Step1ApplyLoanPersonalDetail from '../screens/Loan/LoanApply/Step1ApplyLoanPersonalDetail/Step1ApplyLoanPersonalDetail.jsx'
+import Step1ApplyLoanPersonalDetail from '../screens/Loan/LoanApply/Step1ApplyLoanPersonalDetail/Step1ApplyLoanPersonalDetail.jsx'
 
- import Step2PersonalLoanApply from '../screens/Loan/LoanApply/Step2ApplyLoanApply/PersonalLoan/Step2PersonalLoanApplyMainScreen.jsx'
+import Step2PersonalLoanApply from '../screens/Loan/LoanApply/Step2ApplyLoanApply/PersonalLoan/Step2PersonalLoanApplyMainScreen.jsx'
+import Step2GoldLoanApplyMainScreen from '../screens/Loan/LoanApply/Step2ApplyLoanApply/GoldLoan/Step2GoldLoanApplyMainScreen.jsx'
 const Stack = createNativeStackNavigator();
 
 const AppStack = () => {
@@ -140,10 +141,15 @@ const AppStack = () => {
         component={PersonalLoanScreen
         }
       />
-        <Stack.Screen
+      <Stack.Screen
         name="step-2-apply-personal-loan"
         component={Step2PersonalLoanApply
         }
+      />
+
+      <Stack.Screen
+        name="step-2-apply-gold-loan"
+        component={Step2GoldLoanApplyMainScreen}
       />
       <Stack.Screen
         name="apply-gold-loan"
@@ -166,7 +172,7 @@ const AppStack = () => {
         name="apply-renovation-loan"
         component={ApplyRenovationLoan}
       />
-        <Stack.Screen
+      <Stack.Screen
         name="apply-education-loan"
         component={ApplyEducationLoan}
       />
@@ -232,14 +238,14 @@ const AppStack = () => {
           headerShown: false,
         }}
       />
-        <Stack.Screen
+      <Stack.Screen
         name="visitor-get-notification-screen"
         component={VisitorGetNotificationScreen}
         options={{
           headerShown: false,
         }}
       />
-        <Stack.Screen
+      <Stack.Screen
         name="emi-calculator"
         component={EMICalculator}
         options={{
@@ -252,11 +258,11 @@ const AppStack = () => {
 
       {/* Step One Apply Loan  */}
       <Stack.Screen
-    name="step1-apply-loan-personal-detail"
-    component={
-        Step1ApplyLoanPersonalDetail
-    }
-/>
+        name="step1-apply-loan-personal-detail"
+        component={
+          Step1ApplyLoanPersonalDetail
+        }
+      />
 
     </Stack.Navigator>
   );
