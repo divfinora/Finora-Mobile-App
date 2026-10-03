@@ -43,6 +43,7 @@ import Step1ApplyLoanPersonalDetail from '../screens/Loan/LoanApply/Step1ApplyLo
 
 import Step2PersonalLoanApply from '../screens/Loan/LoanApply/Step2ApplyLoanApply/PersonalLoan/Step2PersonalLoanApplyMainScreen.jsx'
 import Step2GoldLoanApplyMainScreen from '../screens/Loan/LoanApply/Step2ApplyLoanApply/GoldLoan/Step2GoldLoanApplyMainScreen.jsx'
+import Step2VechleLoanApplyMainScreen from '../screens/Loan/LoanApply/Step2ApplyLoanApply/VechicleLoan/Step2VechleLoanApplyMainScreen.jsx'
 const Stack = createNativeStackNavigator();
 
 const AppStack = () => {
@@ -150,6 +151,10 @@ const AppStack = () => {
       <Stack.Screen
         name="step-2-apply-gold-loan"
         component={Step2GoldLoanApplyMainScreen}
+      />
+      <Stack.Screen
+        name="step-2-apply-vechicle-loan"
+        component={Step2VechleLoanApplyMainScreen}
       />
       <Stack.Screen
         name="apply-gold-loan"

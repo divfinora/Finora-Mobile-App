@@ -2004,10 +2004,10 @@ const Step2GoldLoanApplyMainScreen = ({
                 message: "Please upload your address proof",
             },
             {
-        key: "goldInvoice",
-        minFiles: 1,
-        message: "Please upload your Gold Invoice",
-    },
+                key: "goldInvoice",
+                minFiles: 1,
+                message: "Please upload your Gold Invoice",
+            },
         ];
 
         const documents = form?.documents || [];
@@ -2983,7 +2983,12 @@ const Step2GoldLoanApplyMainScreen = ({
                             kycCompleted={kycCompleted}
 
                             lockedFields={lockedFields}
-
+                            registerFieldPosition={
+                                registerFieldPosition
+                            }
+                            scrollViewRef={
+                                scrollViewRef
+                            }
                         />
 
                     )}
