@@ -48,6 +48,20 @@ const FAKE_LOAN_APPLICATIONS = [
     status: "Loan Application Submitted",
     submittedAt: "2026-09-20T12:15:00.000Z",
   },
+    {
+    id: "loan-003",
+    title: "Vechle Loan",
+    amount: 250000,
+    status: "Loan Application Submitted",
+    submittedAt: "2026-09-20T12:15:00.000Z",
+  } ,
+      {
+    id: "loan-003",
+    title: "Education Loan",
+    amount: 250000,
+    status: "Loan Application Submitted",
+    submittedAt: "2026-09-20T12:15:00.000Z",
+  }
 ];
 
 const BottomTabNavigator = ({
@@ -97,12 +111,17 @@ const BottomTabNavigator = ({
                   navigation.navigate(
                     "step-2-apply-gold-loan"
                   );
-                }else{
+                }else if(item?.title === "Vechle Loan"){
                    navigation.navigate(
                   "step-2-apply-vechicle-loan"
                 );
                 }
-               
+                else if(item?.title === "Education Loan"){
+                  navigation.navigate(
+                    "step-2-apply-education -loan"
+                  );
+                }
+
               })
             }
           />
