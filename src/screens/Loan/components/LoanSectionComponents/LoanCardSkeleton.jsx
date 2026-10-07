@@ -17,9 +17,9 @@ const LoanCardSkeleton = ({
         width:
           horizontal
             ? 180
-            : "48%",
+            : "49%",
 
-        minHeight: 138,
+        minHeight: 128,
 
         backgroundColor:
           theme.colors.white,

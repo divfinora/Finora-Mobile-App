@@ -18,11 +18,6 @@ import MaterialIcons from "@react-native-vector-icons/material-icons";
 
 import { theme } from "../theme";
 
-
-/* =========================================================
-   CONSTANTS
-========================================================= */
-
 const { width: SCREEN_WIDTH } =
   Dimensions.get("window");
 
@@ -33,40 +28,9 @@ const HORIZONTAL_GAP = 16;
 const CARD_WIDTH =
   SCREEN_WIDTH - HORIZONTAL_GAP * 2;
 
-
-/* =========================================================
-   TEMPORARY FAKE DATA
-   API connect hone tak use hoga
-========================================================= */
-
-const FAKE_LOAN_APPLICATIONS = [
-  {
-    id: "loan-001",
-    title: "Personal Loan",
-    amount: 50000,
-    status: "Loan Application Submitted",
-    submittedAt: "2026-09-18T23:30:00",
-  },
-  {
-    id: "loan-002",
-    title: "Gold Loan",
-    amount: 75000,
-    status: "Loan Application Submitted",
-    submittedAt: "2026-09-19T18:45:00",
-  },
-  {
-    id: "loan-003",
-    title: "Home Loan",
-    amount: 250000,
-    status: "Loan Application Submitted",
-    submittedAt: "2026-09-20T12:15:00",
-  },
-];
-
-
-/* =========================================================
-   FORMAT AMOUNT
-========================================================= */
+// =========================================================
+// FORMAT AMOUNT
+// =========================================================
 
 const formatAmount = value => {
   const amount = Number(value);
@@ -80,10 +44,9 @@ const formatAmount = value => {
   })}`;
 };
 
-
-/* =========================================================
-   FORMAT DATE
-========================================================= */
+// =========================================================
+// FORMAT DATE
+// =========================================================
 
 const formatSubmittedAt = value => {
   if (!value) {
@@ -124,16 +87,19 @@ const formatSubmittedAt = value => {
   return `${day} ${month} ${year}, ${displayHour}:${minutes}${suffix}`;
 };
 
+// =========================================================
+// NORMALIZE ITEM
+// =========================================================
 
-/* =========================================================
-   NORMALIZE ITEM
-========================================================= */
-
-const normalizeItem = item => ({
+const normalizeItem = (
+  item,
+  index
+) => ({
   id:
     item?.id ??
     item?.loanId ??
-    item?.applicationId,
+    item?.applicationId ??
+    `loan-${index}`,
 
   title:
     item?.title ??
@@ -158,10 +124,9 @@ const normalizeItem = item => ({
     "Loan Application Submitted",
 });
 
-
-/* =========================================================
-   COMPONENT
-========================================================= */
+// =========================================================
+// COMPONENT
+// =========================================================
 
 export default function FloatingLoanApplicationCarousel({
   items = [],
@@ -172,30 +137,55 @@ export default function FloatingLoanApplicationCarousel({
 
   const indexRef = useRef(0);
 
+  // =======================================================
+  // AUTO SLIDE TIMER
+  // =======================================================
+
+  const timerRef = useRef(null);
+
+  // =======================================================
+  // USER INTERACTION
+  // =======================================================
+
+  const isDraggingRef =
+    useRef(false);
+
+  const isMomentumRef =
+    useRef(false);
+
+  const isTouchingRef =
+    useRef(false);
+
   const [currentIndex, setCurrentIndex] =
     useState(0);
 
-
-  /* =======================================================
-     USE API DATA WHEN AVAILABLE,
-     OTHERWISE TEMPORARY FAKE DATA
-  ======================================================= */
+  // =======================================================
+  // SOURCE DATA
+  // =======================================================
 
   const sourceItems =
     items?.length > 0
       ? items
-      : FAKE_LOAN_APPLICATIONS;
+      : [];
 
-
-  /* =======================================================
-     NORMALIZE
-  ======================================================= */
+  // =======================================================
+  // NORMALIZE
+  // =======================================================
 
   const normalizedItems =
     useMemo(
       () =>
         sourceItems
-          .map(normalizeItem)
+          .map(
+            (
+              item,
+              index
+            ) =>
+              normalizeItem(
+                item,
+                index
+              )
+          )
           .filter(
             item =>
               item.id != null
@@ -203,175 +193,371 @@ export default function FloatingLoanApplicationCarousel({
       [sourceItems]
     );
 
+  // =======================================================
+  // STOP AUTO SLIDE
+  // =======================================================
 
-  /* =======================================================
-     AUTO SCROLL
-  ======================================================= */
-
-  const scrollToIndex =
-    useCallback(
-      index => {
-        if (
-          normalizedItems.length <= 1
-        ) {
-          return;
-        }
-
-        const safeIndex =
-          (
-            (
-              index %
-              normalizedItems.length
-            ) +
-            normalizedItems.length
-          ) %
-          normalizedItems.length;
-
-        indexRef.current =
-          safeIndex;
-
-        setCurrentIndex(
-          safeIndex
+  const stopAutoSlide =
+    useCallback(() => {
+      if (timerRef.current) {
+        clearTimeout(
+          timerRef.current
         );
 
-        listRef.current?.scrollToOffset({
-          /*
-           * One slide = full screen width.
-           * Card itself has 16px left/right margin.
-           */
-          offset:
-            safeIndex *
-            SCREEN_WIDTH,
+        timerRef.current = null;
+      }
+    }, []);
 
-          animated: true,
-        });
-      },
-      [normalizedItems.length]
-    );
+  // =======================================================
+  // START AUTO SLIDE
+  // =======================================================
 
+  const startAutoSlide =
+    useCallback(() => {
+      stopAutoSlide();
 
-  /* =======================================================
-     RESET
-  ======================================================= */
+      if (
+        normalizedItems.length <=
+        1
+      ) {
+        return;
+      }
+
+      // -----------------------------------------------
+      // User abhi bhi interact kar raha hai
+      // -----------------------------------------------
+
+      if (
+        isTouchingRef.current ||
+        isDraggingRef.current ||
+        isMomentumRef.current
+      ) {
+        return;
+      }
+
+      timerRef.current =
+        setTimeout(() => {
+          // ---------------------------------------------
+          // Safety check
+          // ---------------------------------------------
+
+          if (
+            isTouchingRef.current ||
+            isDraggingRef.current ||
+            isMomentumRef.current
+          ) {
+            return;
+          }
+
+          const nextIndex =
+            (indexRef.current + 1) %
+            normalizedItems.length;
+
+          indexRef.current =
+            nextIndex;
+
+          setCurrentIndex(
+            nextIndex
+          );
+
+          listRef.current?.scrollToOffset(
+            {
+              offset:
+                nextIndex *
+                SCREEN_WIDTH,
+
+              animated: true,
+            }
+          );
+        }, autoSlideTime);
+    }, [
+      normalizedItems.length,
+      autoSlideTime,
+      stopAutoSlide,
+    ]);
+
+  // =======================================================
+  // DATA CHANGE / INITIAL START
+  // =======================================================
 
   useEffect(() => {
     indexRef.current = 0;
 
     setCurrentIndex(0);
 
+    stopAutoSlide();
+
+    isTouchingRef.current =
+      false;
+
+    isDraggingRef.current =
+      false;
+
+    isMomentumRef.current =
+      false;
+
     requestAnimationFrame(() => {
-      listRef.current?.scrollToOffset({
-        offset: 0,
-        animated: false,
-      });
+      listRef.current?.scrollToOffset(
+        {
+          offset: 0,
+          animated: false,
+        }
+      );
+
+      startAutoSlide();
     });
-  }, [normalizedItems.length]);
-
-
-  /* =======================================================
-     AUTO SLIDE
-  ======================================================= */
-
-  useEffect(() => {
-    if (
-      normalizedItems.length <= 1
-    ) {
-      return undefined;
-    }
-
-    const timer =
-      setInterval(() => {
-        scrollToIndex(
-          indexRef.current + 1
-        );
-      }, autoSlideTime);
 
     return () => {
-      clearInterval(timer);
+      stopAutoSlide();
     };
   }, [
-    autoSlideTime,
     normalizedItems.length,
-    scrollToIndex,
+    startAutoSlide,
+    stopAutoSlide,
   ]);
 
+  // =======================================================
+  // FINAL CLEANUP
+  // =======================================================
 
-  /* =======================================================
-     EMPTY
-  ======================================================= */
+  useEffect(() => {
+    return () => {
+      stopAutoSlide();
+    };
+  }, [stopAutoSlide]);
+
+  // =======================================================
+  // USER TOUCH START
+  // =======================================================
+
+  const handleTouchStart =
+    useCallback(() => {
+      isTouchingRef.current =
+        true;
+
+      stopAutoSlide();
+    }, [stopAutoSlide]);
+
+  // =======================================================
+  // USER STARTS DRAGGING
+  // =======================================================
+
+  const handleScrollBeginDrag =
+    useCallback(() => {
+      isDraggingRef.current =
+        true;
+
+      isTouchingRef.current =
+        true;
+
+      stopAutoSlide();
+    }, [stopAutoSlide]);
+
+  // =======================================================
+  // MOMENTUM START
+  // =======================================================
+
+  const handleMomentumScrollBegin =
+    useCallback(() => {
+      isMomentumRef.current =
+        true;
+
+      stopAutoSlide();
+    }, [stopAutoSlide]);
+
+  // =======================================================
+  // TOUCH END
+  // =======================================================
+
+  const handleTouchEnd =
+    useCallback(() => {
+      isTouchingRef.current =
+        false;
+
+      // -----------------------------------------------
+      // Agar drag/momentum nahi hai,
+      // to normal tap tha.
+      // Timer restart karo.
+      // -----------------------------------------------
+
+      if (
+        !isDraggingRef.current &&
+        !isMomentumRef.current
+      ) {
+        startAutoSlide();
+      }
+    }, [startAutoSlide]);
+
+  // =======================================================
+  // SCROLL END
+  // =======================================================
+
+  const handleScrollEnd =
+    useCallback(
+      event => {
+        const offset =
+          event?.nativeEvent
+            ?.contentOffset
+            ?.x ?? 0;
+
+        const nextIndex = Math.max(
+          0,
+          Math.min(
+            normalizedItems.length -
+            1,
+            Math.round(
+              offset /
+              SCREEN_WIDTH
+            )
+          )
+        );
+
+        indexRef.current =
+          nextIndex;
+
+        setCurrentIndex(
+          nextIndex
+        );
+
+        isDraggingRef.current =
+          false;
+
+        isMomentumRef.current =
+          false;
+
+        isTouchingRef.current =
+          false;
+
+        // -----------------------------------------------
+        // User complete kar chuka hai.
+        // Ab fresh 3 sec timer.
+        // -----------------------------------------------
+
+        startAutoSlide();
+      },
+      [
+        normalizedItems.length,
+        startAutoSlide,
+      ]
+    );
+
+  // =======================================================
+  // SCROLL END WITHOUT MOMENTUM
+  // =======================================================
+
+  const handleScrollEndDrag =
+    useCallback(
+      event => {
+        const willDecelerate =
+          event?.nativeEvent
+            ?.willDecelerate;
+
+        isDraggingRef.current =
+          false;
+
+        // -----------------------------------------------
+        // Agar momentum nahi aana hai,
+        // to yahi scrolling finish hai.
+        // -----------------------------------------------
+
+        if (!willDecelerate) {
+          isMomentumRef.current =
+            false;
+
+          isTouchingRef.current =
+            false;
+
+          startAutoSlide();
+        }
+      },
+      [startAutoSlide]
+    );
+
+  // =======================================================
+  // EMPTY
+  // =======================================================
 
   if (
-    normalizedItems.length === 0
+    normalizedItems.length ===
+    0
   ) {
     return null;
   }
 
-
-  /* =======================================================
-     UI
-
-     IMPORTANT:
-     Entire carousel area is transparent.
-     No white/gray background behind the card.
-  ======================================================= */
+  // =======================================================
+  // UI
+  // =======================================================
 
   return (
     <View
       style={{
         width: "100%",
-        backgroundColor: "transparent",
+
+        backgroundColor:
+          "transparent",
+
         paddingTop: 4,
+
         paddingBottom: 4,
+
         overflow: "visible",
       }}
     >
-
       {/* ===================================================
           DOT INDICATOR
       =================================================== */}
 
-      {normalizedItems.length > 1 && (
-        <View
-          pointerEvents="none"
-          style={{
-            width: "100%",
-            height: 6,
-            flexDirection: "row",
-            alignItems: "center",
-            justifyContent: "center",
-            gap: 5,
-            marginBottom: 5,
-          }}
-        >
-          {normalizedItems.map(
-            (item, index) => (
-              <View
-                key={String(item.id)}
-                style={{
-                  width:
-                    index === currentIndex
-                      ? 20
-                      : 5,
-                  height: 4,
-                  borderRadius: 999,
-                  backgroundColor:
-                    index === currentIndex
-                      ? theme.colors.primary500
-                      : theme.colors.gray300,
-                }}
-              />
-            )
-          )}
-        </View>
-      )}
+      {normalizedItems.length >
+        1 && (
+          <View
+            pointerEvents="none"
+            style={{
+              width: "100%",
 
+              height: 6,
+
+              flexDirection: "row",
+
+              alignItems: "center",
+
+              justifyContent: "center",
+
+              gap: 5,
+
+              marginBottom: 5,
+            }}
+          >
+            {normalizedItems.map(
+              (item, index) => (
+                <View
+                  key={`${item.id}-${index}`}
+                  style={{
+                    width:
+                      index ===
+                        currentIndex
+                        ? 20
+                        : 5,
+
+                    height: 4,
+
+                    borderRadius: 999,
+
+                    backgroundColor:
+                      index ===
+                        currentIndex
+                        ? theme.colors
+                          .primary500
+                        : theme.colors
+                          .gray300,
+                  }}
+                />
+              )
+            )}
+          </View>
+        )}
 
       {/* ===================================================
           HORIZONTAL CAROUSEL
-
-          Each slide = full screen width.
-          Card = screen width - 32px.
-          Therefore exact 16px left/right margin.
       =================================================== */}
 
       <FlatList
@@ -380,10 +566,13 @@ export default function FloatingLoanApplicationCarousel({
         horizontal
 
         scrollEnabled={
-          normalizedItems.length > 1
+          normalizedItems.length >
+          1
         }
 
-        showsHorizontalScrollIndicator={false}
+        showsHorizontalScrollIndicator={
+          false
+        }
 
         bounces={false}
 
@@ -391,18 +580,25 @@ export default function FloatingLoanApplicationCarousel({
 
         style={{
           width: "100%",
-          backgroundColor: "transparent",
+
+          backgroundColor:
+            "transparent",
         }}
 
         contentContainerStyle={{
           paddingHorizontal: 0,
         }}
 
-        keyExtractor={item =>
-          String(item.id)
+        keyExtractor={(
+          item,
+          index
+        ) =>
+          `${item.id}-${index}`
         }
 
-        snapToInterval={SCREEN_WIDTH}
+        snapToInterval={
+          SCREEN_WIDTH
+        }
 
         snapToAlignment="start"
 
@@ -410,44 +606,74 @@ export default function FloatingLoanApplicationCarousel({
 
         disableIntervalMomentum
 
-        getItemLayout={(_, index) => ({
-          length: SCREEN_WIDTH,
+        getItemLayout={(
+          _,
+          index
+        ) => ({
+          length:
+            SCREEN_WIDTH,
+
           offset:
             SCREEN_WIDTH * index,
+
           index,
         })}
 
-        onMomentumScrollEnd={event => {
-          const offset =
-            event?.nativeEvent
-              ?.contentOffset
-              ?.x ?? 0;
+        // ==================================================
+        // USER TOUCH
+        // ==================================================
 
-          const nextIndex =
-            Math.round(
-              offset /
-              SCREEN_WIDTH
-            );
+        onTouchStart={
+          handleTouchStart
+        }
 
-          indexRef.current =
-            nextIndex;
+        onTouchEnd={
+          handleTouchEnd
+        }
 
-          setCurrentIndex(
-            nextIndex
-          );
-        }}
+        // ==================================================
+        // USER DRAG
+        // ==================================================
+
+        onScrollBeginDrag={
+          handleScrollBeginDrag
+        }
+
+        onScrollEndDrag={
+          handleScrollEndDrag
+        }
+
+        // ==================================================
+        // MOMENTUM
+        // ==================================================
+
+        onMomentumScrollBegin={
+          handleMomentumScrollBegin
+        }
+
+        onMomentumScrollEnd={
+          handleScrollEnd
+        }
+
+        // ==================================================
+        // RENDER
+        // ==================================================
 
         renderItem={({ item }) => (
           <View
             style={{
-              width: SCREEN_WIDTH,
+              width:
+                SCREEN_WIDTH,
+
               backgroundColor:
                 "transparent",
             }}
           >
             <LoanApplicationCard
               item={item}
-              onContinue={onContinue}
+              onContinue={
+                onContinue
+              }
             />
           </View>
         )}
@@ -456,30 +682,28 @@ export default function FloatingLoanApplicationCarousel({
   );
 }
 
-
-/* =========================================================
-   APPLICATION CARD
-========================================================= */
+// =========================================================
+// APPLICATION CARD
+// =========================================================
 
 function LoanApplicationCard({
   item,
   onContinue,
 }) {
-  const handleContinue = () => {
-    if (
-      typeof onContinue ===
-      "function"
-    ) {
-      onContinue(item);
-    }
-  };
-
+  const handleContinue =
+    () => {
+      if (
+        typeof onContinue ===
+        "function"
+      ) {
+        onContinue(item);
+      }
+    };
 
   return (
     <View
       style={{
-        width:
-          CARD_WIDTH,
+        width: CARD_WIDTH,
 
         marginLeft:
           HORIZONTAL_GAP,
@@ -515,6 +739,7 @@ function LoanApplicationCard({
 
         shadowOffset: {
           width: 0,
+
           height: 4,
         },
 
@@ -525,7 +750,6 @@ function LoanApplicationCard({
         elevation: 5,
       }}
     >
-
       {/* =================================================
           LEFT SECTION
       ================================================= */}
@@ -533,6 +757,7 @@ function LoanApplicationCard({
       <View
         style={{
           flex: 1,
+
           minWidth: 0,
 
           flexDirection: "row",
@@ -542,7 +767,6 @@ function LoanApplicationCard({
           paddingRight: 8,
         }}
       >
-
         {/* =================================================
             ICON
         ================================================= */}
@@ -550,6 +774,7 @@ function LoanApplicationCard({
         <View
           style={{
             width: 48,
+
             height: 48,
 
             borderRadius: 12,
@@ -568,11 +793,11 @@ function LoanApplicationCard({
             name="account-balance-wallet"
             size={22}
             color={
-              theme.colors.primary500
+              theme.colors
+                .primary500
             }
           />
         </View>
-
 
         {/* =================================================
             TEXT
@@ -598,12 +823,12 @@ function LoanApplicationCard({
               lineHeight: 17,
 
               fontFamily:
-                theme.fonts.extraBold,
+                theme.fonts
+                  .extraBold,
             }}
           >
             {item.title}
           </Text>
-
 
           <Text
             numberOfLines={1}
@@ -618,7 +843,8 @@ function LoanApplicationCard({
               marginTop: 1,
 
               fontFamily:
-                theme.fonts.semiBold,
+                theme.fonts
+                  .semiBold,
             }}
           >
             {item.status} for{" "}
@@ -627,13 +853,13 @@ function LoanApplicationCard({
             )}
           </Text>
 
-
           {!!item.submittedAt && (
             <Text
               numberOfLines={1}
               style={{
                 color:
-                  theme.colors.gray500,
+                  theme.colors
+                    .gray500,
 
                 fontSize: 9.5,
 
@@ -642,7 +868,8 @@ function LoanApplicationCard({
                 marginTop: 1,
 
                 fontFamily:
-                  theme.fonts.semiBold,
+                  theme.fonts
+                    .semiBold,
               }}
             >
               {formatSubmittedAt(
@@ -653,7 +880,6 @@ function LoanApplicationCard({
         </View>
       </View>
 
-
       {/* =================================================
           CONTINUE
       ================================================= */}
@@ -662,31 +888,19 @@ function LoanApplicationCard({
         onPress={
           handleContinue
         }
-
         disabled={
           typeof onContinue !==
           "function"
         }
-
         android_ripple={{
           color:
             "rgba(255,255,255,0.16)",
         }}
-
         style={({ pressed }) => ({
-          // minWidth: 88,
-
-
-          // height: 42,
-
           borderRadius: 999,
 
           backgroundColor:
             theme.colors.success,
-
-          // paddingHorizontal: 12,
-      //  paddingTop:10,
-      //  paddingBottom:12,
 
           flexDirection: "row",
 
@@ -695,23 +909,23 @@ function LoanApplicationCard({
           justifyContent: "center",
 
           flexShrink: 0,
-padding:8,
-          opacity:
-            pressed
-              ? 0.82
-              : 1,
+
+          padding: 8,
+
+          opacity: pressed
+            ? 0.82
+            : 1,
         })}
       >
         <Text
-        
           style={{
-    includeFontPadding: false,
+            includeFontPadding:
+              false,
+
             color:
               theme.colors.white,
 
-            fontSize:
-               10 ,
-               
+            fontSize: 10,
 
             fontFamily:
               theme.fonts.bold,
@@ -726,7 +940,6 @@ padding:8,
           color={
             theme.colors.white
           }
-
           style={{
             marginLeft: 5,
           }}

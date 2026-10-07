@@ -7,6 +7,7 @@ import {
     FlatList,
     RefreshControl,
     StatusBar,
+    View,
 } from "react-native";
 
 import { SafeAreaView } from "react-native-safe-area-context";
@@ -19,15 +20,17 @@ import HowItWorks from './components/HowItWorks.jsx'
 import OffersJustForYou from './components/OffersJustForYou.jsx'
 import { useGetAllLoanQuery } from "../../redux/features/customer/customerApi.js";
 import LoanBannerCard from "../Home/components/LoanBannerCard.jsx";
-import {useBottomTabHeight} from '../../navigation/BottomTabHeightContext.jsx'
- 
-
+import { useBottomTabHeight } from '../../navigation/BottomTabHeightContext.jsx'
+import HomeScreenHeaderCard from '../Home/components/HomeScreenHeaderCard.jsx'
+import CreditScoreCard from "./components/CreditScoreCard.jsx";
+import LoanEligibilityBanner from "../../components/common/LoanRegading/LoanEligibilityBanner.jsx";
+import ReferEarnCoinCard from "./components/LoanSectionComponents/ReferEarnCoinCard.jsx";
 const LoanScreen = () => {
 
 
-   const { height: bottomTabHeight } = useBottomTabHeight()
+    const { height: bottomTabHeight } = useBottomTabHeight()
 
-    
+
     const {
         refetch: refetchLoans,
     } = useGetAllLoanQuery();
@@ -74,6 +77,7 @@ const LoanScreen = () => {
                 }
             />
 
+            <HomeScreenHeaderCard />
             <FlatList
 
                 data={[]}
@@ -89,7 +93,8 @@ const LoanScreen = () => {
                 }
 
                 contentContainerStyle={{
-                  paddingBottom: bottomTabHeight + theme.spacing.massive,
+                    backgroundColor:'#F9EBD5',
+                    paddingBottom: bottomTabHeight + theme.spacing.massive,
                 }}
 
                 refreshControl={
@@ -119,23 +124,44 @@ const LoanScreen = () => {
                 ListHeaderComponent={
 
                     <>
-                        <LoanHeader />
+                        {/* <LoanHeader /> */}
+                        {/* <View style={{ flex: 1, backgroundColor: '#F9EBD5' }}> */}
+                            <CreditScoreCard
+                                score={742}
+                                maxScore={900}
+                                updatedDate="19 Sep 2026"
+                                onViewReport={() => {
+                                    console.log(
+                                        "View Credit Report"
+                                    );
+                                }}
+                            />
+
+                            <View
+                                style={{
+                                    width: "100%",
+                                    paddingTop: theme.spacing.lg,
+                                    paddingHorizontal: theme.spacing.lg,
+
+                                }}
+                            >
+                                <LoanEligibilityBanner
+                                    onPress={() => {
+                                        // navigation later
+                                    }}
+                                />
+                            </View>
+
+                            <LoanSection />
+
+                            <ReferEarnCoinCard />
 
 
-                        <LoanBannerCard
-                        MarginTop={theme.spacing.lg}
-                        ContainerPaddingHorizontal={theme.spacing.xl}
-                            ContainerPaddingVertical={theme.spacing.xl} />
-                        <LoanSection />
-
-
-                        <HowItWorks />
-
-
-                        <OffersJustForYou />
 
 
 
+
+                        {/* </View> */}
 
 
                     </>

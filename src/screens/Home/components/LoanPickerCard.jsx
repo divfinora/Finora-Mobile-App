@@ -1,4 +1,5 @@
 import React, { memo } from "react";
+
 import {
   Image,
   TouchableOpacity,
@@ -9,6 +10,10 @@ import { useNavigation } from "@react-navigation/native";
 
 import { theme } from "../../../theme";
 
+// ==========================================
+// LOAN PICKER IMAGE
+// ==========================================
+
 import LoanPickerImage from "./assets/LoanPicker.png";
 
 const LoanPickerCard = () => {
@@ -17,37 +22,91 @@ const LoanPickerCard = () => {
   const { width: screenWidth } =
     useWindowDimensions();
 
-  // Left + Right spacing
-  const horizontalPadding =
-    theme.spacing.lg * 2;
+  // ==========================================
+  // FIGMA SPACING
+  // Left  = 8px
+  // Right = 8px
+  // ==========================================
 
-  // Available banner width
+  const horizontalPadding = 8;
+
+  // ==========================================
+  // AVAILABLE BANNER WIDTH
+  // ==========================================
+
   const bannerWidth =
-    screenWidth - horizontalPadding;
+    screenWidth -
+    horizontalPadding * 2;
 
-  // Figma ratio: 396 × 317
+  // ==========================================
+  // FIGMA SIZE
+  // 412 × 204
+  // ==========================================
+
   const bannerHeight =
-    bannerWidth * (317 / 396);
+    bannerWidth * (204 / 412);
 
   return (
     <TouchableOpacity
       activeOpacity={0.9}
       onPress={() =>
-        navigation.navigate("emi-calculator")
+        navigation.navigate(
+          "emi-calculator"
+        )
       }
       style={{
-        marginTop:theme.spacing.xxl,
+        // ==========================================
+        // TOP SPACING
+        // ==========================================
+
+        marginTop:
+          theme.spacing.md,
+
+          marginTop:
+          theme.spacing.md,
+        // ==========================================
+        // FULL WIDTH
+        // ==========================================
+
         width: "100%",
+
+        // ==========================================
+        // LEFT / RIGHT SPACING
+        // ==========================================
+
         paddingHorizontal:
-          theme.spacing.lg,
+          horizontalPadding,
       }}
     >
       <Image
         source={LoanPickerImage}
         resizeMode="stretch"
         style={{
+          // ==========================================
+          // RESPONSIVE WIDTH
+          // ==========================================
+
           width: "100%",
-          height: bannerHeight,
+
+          // ==========================================
+          // RESPONSIVE HEIGHT
+          // FIGMA RATIO: 412 × 204
+          // ==========================================
+
+          height:
+            bannerHeight,
+
+          // ==========================================
+          // BORDER
+          // ==========================================
+
+          borderWidth: 1,
+          borderColor: "#E5E5E5",
+
+          // ==========================================
+          // BORDER RADIUS
+          // ==========================================
+
           borderRadius: 16,
         }}
       />
@@ -55,4 +114,6 @@ const LoanPickerCard = () => {
   );
 };
 
-export default memo(LoanPickerCard);
+export default memo(
+  LoanPickerCard
+);

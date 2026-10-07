@@ -474,6 +474,7 @@ const HomeScreenLoanSection = ({
 
               marginRight:
                 theme.spacing.md,
+               
             }}
           >
             <LoanCard
@@ -528,7 +529,8 @@ const HomeScreenLoanSection = ({
     <View
       style={{
         marginBottom:
-          theme.spacing.xl,
+          theme.spacing.lg,
+        
       }}
     >
 

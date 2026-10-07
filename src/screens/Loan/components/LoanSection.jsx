@@ -181,142 +181,7 @@ const LoanSection = () => {
 
         const category = loan?.category;
 
-        // switch (category) {
-
-        //     case "GOLD":
-
-        //         navigation.navigate(
-        //             "apply-gold-loan",
-        //             {
-        //                 product: loan,
-        //                 productId: loan?._id,
-        //                 documents: documents,
-        //             }
-        //         );
-
-        //         break;
-
-
-        //     case "PROPERTY":
-
-        //         navigation.navigate(
-        //             "apply-property-loan",
-        //             {
-        //                 product: loan,
-        //                 productId: loan?._id,
-        //                 documents: documents,
-        //             }
-        //         );
-
-        //         break;
-
-
-        //     case "VEHICLE":
-
-        //         navigation.navigate(
-        //             "apply-vechicle-loan",
-        //             {
-        //                 product: loan,
-        //                 productId: loan?._id,
-        //                 documents: documents,
-        //             }
-        //         );
-
-        //         break;
-
-
-        //     case "AGRICULTURE":
-
-        //         navigation.navigate(
-        //             "apply-agriculture-loan",
-        //             {
-        //                 product: loan,
-        //                 productId: loan?._id,
-        //                 documents: documents,
-        //             }
-        //         );
-
-        //         break;
-
-
-        //     case "RENOVATION":
-
-        //         navigation.navigate(
-        //             "apply-renovation-loan",
-        //             {
-        //                 product: loan,
-        //                 productId: loan?._id,
-        //                 documents: documents,
-        //             }
-        //         );
-
-        //         break;
-
-
-        //     case "COMMERCIAL":
-
-        //         navigation.navigate(
-        //             "apply-commercial-loan",
-        //             {
-        //                 product: loan,
-        //                 productId: loan?._id,
-        //                 documents: documents,
-        //             }
-        //         );
-
-        //         break;
-
-
-        //     case "PERSONAL":
-
-        //         navigation.navigate(
-        //             "apply-personal-loan",
-        //             {
-        //                 product: loan,
-        //                 productId: loan?._id,
-        //                 documents: documents,
-        //             }
-        //         );
-
-        //         break;
-
-
-        //     case "EDUCATION":
-
-        //         navigation.navigate(
-        //             "apply-education-loan",
-        //             {
-        //                 product: loan,
-        //                 productId: loan?._id,
-        //                 documents: documents,
-        //             }
-        //         );
-
-        //         break;
-
-
-        //     case "HOME":
-
-        //         navigation.navigate(
-        //             "apply-home-loan",
-        //             {
-        //                 product: loan,
-        //                 productId: loan?._id,
-        //                 documents: documents,
-        //             }
-        //         );
-
-        //         break;
-
-
-        //     default:
-
-        //         Alert.alert(
-        //             "Loan Unavailable",
-        //             "This loan is currently not available."
-        //         );
-
-        // }
+        
     };
 
     return (
@@ -324,7 +189,8 @@ const LoanSection = () => {
         <View
             style={{
                 marginTop:
-                    theme.spacing.xxxl,
+                    theme.spacing.sm,
+             
 
 
             }}
@@ -345,6 +211,7 @@ const LoanSection = () => {
 
                     marginBottom: theme.spacing.xl,
 
+                   
                 }}
             >
 
@@ -357,7 +224,7 @@ const LoanSection = () => {
 
                         height: 1,
 
-                        backgroundColor: "#F4DFC5",
+                            backgroundColor: "#fe804a3d",
 
                     }}
                 />
@@ -391,7 +258,7 @@ const LoanSection = () => {
 
                         height: 1,
 
-                        backgroundColor: "#F4DFC5",
+                        backgroundColor: "#fe804a3d",
 
                     }}
                 />
@@ -400,53 +267,7 @@ const LoanSection = () => {
 
             {/* Heading */}
 
-            <View
-                style={{
-                    paddingHorizontal:
-                        theme.spacing.xl,
-
-                    marginBottom:
-                        theme.spacing.lg,
-                }}
-            >
-
-                <Text
-                    style={{
-
-                        color:
-                            theme.colors.navy900,
-
-                        fontSize:
-                            theme.typography.h4,
-
-                        fontFamily:
-                            theme.fonts.headingBold,
-
-                    }}
-                >
-                    LOANS
-                </Text>
-
-                <Text
-                    style={{
-
-                        marginTop: 2,
-
-                        color:
-                            '#64748B',
-
-                        fontSize:
-                            theme.typography.b2,
-
-                        fontFamily:
-                            theme.fonts.medium,
-
-                    }}
-                >
-                    Quick Loans, Endless Possibilities
-                </Text>
-
-            </View>
+           
 
             {/* Error */}
 
@@ -464,8 +285,8 @@ const LoanSection = () => {
 
                     containerStyle={{
                         width: 'auto',
-                        marginHorizontal:
-                            theme.spacing.xl,
+                      paddingHorizontal:
+                            theme.spacing.lg,
                         borderWidth: 0.1,
 
                         ...theme.shadows.card,
@@ -504,7 +325,8 @@ const LoanSection = () => {
                             "space-between",
 
                         paddingHorizontal:
-                            theme.spacing.xl,
+                            theme.spacing.lg,
+                          
 
                     }}
 
@@ -513,7 +335,7 @@ const LoanSection = () => {
                         <View
                             style={{
                                 height:
-                                    theme.spacing.lg,
+                                    theme.spacing.sm,
                             }}
                         />
 
@@ -523,6 +345,7 @@ const LoanSection = () => {
 
                         paddingBottom:
                             theme.spacing.massive,
+                            
 
                     }}
 

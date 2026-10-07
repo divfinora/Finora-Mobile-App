@@ -13,63 +13,177 @@ import {
 
 import { theme } from "../../../../theme";
 
+// =====================================================
+// OFFLINE LOAN IMAGES
+// =====================================================
+
+import PersonalLoanImage from "../../../../assets/images/personal-loan.png";
+import InstantLoanImage from "../../../../assets/images/Instant-loan.png";
+import GoldLoanImage from "../../../../assets/images/gold-loan.png";
+import EducationLoanImage from "../../../../assets/images/education-loan.png";
+import AgricultureLoanImage from "../../../../assets/images/agriculture-loan.png";
+import VehicleLoanImage from "../../../../assets/images/vehicle-loan.png";
+
+// =====================================================
+// LOAN CARD CONFIG
+// =====================================================
+//
+// YAHI SE TITLE / SUBTITLE / IMAGE CHANGE KAR SAKTE HO
+//
+// =====================================================
+
+const LOAN_CARD_CONFIG = {
+  PERSONAL: {
+    title: "Personal Loan",
+    subtitle: "Quick Funds,\nEasy Access",
+    image: PersonalLoanImage,
+  },
+
+  INSTANT: {
+    title: "Instant Loan",
+    subtitle: "Quick Funds,\nEasy Access",
+    image: InstantLoanImage,
+  },
+
+  GOLD: {
+    title: "Gold Loan",
+    subtitle: "Get Cash\nAgainst Gold",
+    image: GoldLoanImage,
+  },
+
+  EDUCATION: {
+    title: "Education Loan",
+    subtitle: "Invest In Your\nEducation",
+    image: EducationLoanImage,
+  },
+
+  AGRICULTURE: {
+    title: "Agriculture Loan",
+    subtitle: "Support For Your\nFarming Needs",
+    image: AgricultureLoanImage,
+  },
+
+  VEHICLE: {
+    title: "Vehicle Loan",
+    subtitle: "Finance Your\nDream Vehicle",
+    image: VehicleLoanImage,
+  },
+};
+
+// =====================================================
+// COMPONENT
+// =====================================================
 
 const LoanCard = ({
   loan,
+  loanType,
   onPress,
   horizontal = false,
 }) => {
 
-  // ==========================================
+  // =====================================================
   // FORMAT AMOUNT
-  // ==========================================
+  // =====================================================
 
   const formatAmount = (value) => {
-
     if (!value) {
       return "0";
     }
 
     if (value >= 10000000) {
-      return `${(value / 10000000).toFixed(0)}Cr`;
+      return `${(
+        value / 10000000
+      ).toFixed(0)}Cr`;
     }
 
     if (value >= 100000) {
-      return `${(value / 100000).toFixed(0)}L`;
+      return `${(
+        value / 100000
+      ).toFixed(0)}L`;
     }
 
     if (value >= 1000) {
-      return `${(value / 1000).toFixed(0)}K`;
+      return `${(
+        value / 1000
+      ).toFixed(0)}K`;
     }
 
     return value;
   };
 
-
-  // ==========================================
+  // =====================================================
   // LOAN COUNT
-  // ==========================================
+  // =====================================================
 
   const loanCount =
     loan?.loanCount ??
     loan?.types?.reduce(
       (total, type) =>
-        total + (type?.loanCount || 0),
+        total +
+        (type?.loanCount || 0),
       0
     ) ??
     0;
 
+  // =====================================================
+  // CATEGORY
+  // =====================================================
 
-  // ==========================================
-  // LOAN NAME
-  // WORD BASED WRAPPING
-  // ==========================================
+  const category =
+    String(
+      loanType ??
+      loan?.category ??
+      loan?.loan?.category ??
+      loan?.name ??
+      ""
+    )
+      .trim()
+      .toUpperCase();
 
-  const loanName =
-    String(`${loan?.name} ` || "").trim();
+  // =====================================================
+  // CONFIG
+  // =====================================================
+
+  const loanConfig =
+    LOAN_CARD_CONFIG[category];
+
+  // =====================================================
+  // DISPLAY TITLE
+  // =====================================================
+
+  const backendName =
+    String(
+      loan?.loan?.name ??
+      loan?.name ??
+      ""
+    ).trim();
+
+  const displayTitle =
+    loanConfig?.title ||
+    backendName;
+
+  // =====================================================
+  // DISPLAY SUBTITLE
+  // =====================================================
+
+  const displaySubtitle =
+    loanConfig?.subtitle ||
+    "Quick Funds,\nEasy Access";
+
+  // =====================================================
+  // DISPLAY IMAGE
+  // =====================================================
+
+  const displayImage =
+    loanConfig?.image ||
+    PersonalLoanImage;
+
+  // =====================================================
+  // WORD WRAPPING
+  // =====================================================
 
   const loanNameParts =
-    loanName.split(/\s+/);
+    displayTitle.split(/\s+/);
 
   const firstLine =
     loanNameParts[0] || "";
@@ -79,63 +193,84 @@ const LoanCard = ({
       .slice(1)
       .join(" ");
 
+  // =====================================================
+  // RETURN
+  // =====================================================
 
   return (
-
     <TouchableOpacity
+    
       activeOpacity={0.9}
-      onPress={() => onPress?.(loan)}
-
+      onPress={() =>
+        onPress?.(loan)
+      }
       style={{
-        flex: horizontal ? 1 : null,
+    
+        // =================================================
+        // CARD
+        // =================================================
 
-        width: horizontal ? 180 : "48%",
-   
+        flex:
+          horizontal
+            ? 1
+            : null,
 
+        width:
+          horizontal
+            ? 180
+            : "49%",
 
-     minHeight: horizontal?null: 138 ,
+        minHeight:
+          horizontal
+            ? null
+            : 128,
+
         backgroundColor:
           theme.colors.white,
 
-        borderRadius: 24,
+        borderRadius:
+          24,
 
-        borderWidth: 1,
+        borderWidth:
+          1,
 
         borderColor:
           "#FCEDD6",
-        paddingHorizontal: 16,
-        paddingVertical: 20,
 
-        // padding:
-        //   theme.spacing.lg,
+        paddingHorizontal:
+          16,
+
+        paddingVertical:
+          20,
 
         justifyContent:
           "space-between",
 
         ...theme.shadows.card,
+      
       }}
     >
 
-      {/* ======================================
+      {/* =================================================
           TOP
-      ====================================== */}
+      ================================================= */}
 
       <View
         style={{
-          flexDirection: "row",
+          flexDirection:
+            "row",
 
           justifyContent:
             "space-between",
 
           alignItems:
             "flex-start",
-
         }}
       >
 
-        {/* ====================================
-            LOAN NAME
-        ==================================== */}
+        {/* =================================================
+            LOAN TITLE
+        ================================================= */}
 
         <View
           style={{
@@ -145,162 +280,132 @@ const LoanCard = ({
               theme.spacing.sm,
 
             minWidth: 0,
-            
           }}
         >
-
           <Text
             numberOfLines={2}
-
             style={{
               color:
                 theme.colors.black,
 
-              fontSize: 17,
+              // Sora Bold
+              fontSize:
+                14,
 
-              lineHeight: 22,
+              lineHeight:
+                18,
 
               fontFamily:
                 theme.fonts.headingBold,
 
-              letterSpacing: -0.2,
+              // -1%
+              letterSpacing:
+                -0.14,
 
               textTransform:
                 "capitalize",
+
+              includeFontPadding:
+                false,
             }}
           >
-
             {firstLine}
 
-            {secondLine ? "\n" : ""}
+            {secondLine
+              ? "\n"
+              : ""}
 
             {secondLine}
-
           </Text>
-
-
-          {/* ==================================
-              LOAN COUNT
-          ================================== */}
-
-          {/* <View
-            style={{
-              alignSelf:
-                "flex-start",
-
-              marginTop: 6,
-
-              paddingHorizontal: 8,
-
-              paddingVertical: 3,
-
-              borderRadius: 10,
-
-              backgroundColor:
-                "#FFF4E5",
-            }}
-          >
-
-            <Text
-              style={{
-                color:
-                  theme.colors.primary500,
-
-                fontSize: 10,
-
-                fontFamily:
-                  theme.fonts.bold,
-              }}
-            >
-              {loanCount}{" "}
-              {loanCount === 1
-                ? "Loan"
-                : "Loans"}
-            </Text>
-
-          </View> */}
-
         </View>
 
-
-        {/* ====================================
-            ICON
-        ==================================== */}
+        {/* =================================================
+            OFFLINE IMAGE
+        ================================================= */}
 
         <Image
-          source={{
-            uri:
-              "https://cdn-icons-png.flaticon.com/512/1170/1170576.png",
-          }}
-
+          source={
+            displayImage
+          }
           resizeMode="contain"
-
           style={{
-            width: 32,
+            width:
+              40,
 
-            height: 32,
+            height:
+              40,
 
-            flexShrink: 0,
+            flexShrink:
+              0,
           }}
         />
-
       </View>
 
-
-      {/* ======================================
+      {/* =================================================
           BOTTOM
-      ====================================== */}
+      ================================================= */}
 
       <View
         style={{
-          flexDirection: "row",
+          flexDirection:
+            "row",
 
           justifyContent:
             "space-between",
 
           alignItems:
             "flex-end",
-
-
         }}
       >
 
-        {/* ====================================
-            AMOUNT
-        ==================================== */}
+        {/* =================================================
+            SUBTITLE
+        ================================================= */}
 
         <View
           style={{
             flex: 1,
 
-            marginTop: 8
+            minWidth: 0,
           }}
         >
-
           <Text
+            numberOfLines={2}
             style={{
               color:
                 theme.colors.gray500,
 
-              fontSize: 14,
+              // Manrope SemiBold
+              fontSize:
+                12,
 
-              lineHeight: 21,
+              lineHeight:
+                18,
 
               fontFamily:
-                theme.fonts.regular,
+                theme.fonts.semiBold,
+
+              // -1%
+              letterSpacing:
+                -0.12,
 
               textTransform:
                 "capitalize",
+
+              includeFontPadding:
+                false,
             }}
           >
-            Get Up To
+            {displaySubtitle}
           </Text>
 
+          {/* =================================================
+              AMOUNT
+          ================================================= */}
 
+          {/*
           <Text
             style={{
-
-
               color:
                 theme.colors.black,
 
@@ -317,19 +422,17 @@ const LoanCard = ({
               loan?.loan?.maxAmount
             )}
           </Text>
-
+          */}
         </View>
 
-
-        {/* ====================================
+        {/* =================================================
             ARROW
-        ==================================== */}
+        ================================================= */}
 
         <ChevronRight
           size={
             theme.iconSize.md
           }
-
           color={
             theme.colors.black
           }
@@ -338,9 +441,9 @@ const LoanCard = ({
       </View>
 
     </TouchableOpacity>
-
   );
 };
 
-
-export default memo(LoanCard);
+export default memo(
+  LoanCard
+);

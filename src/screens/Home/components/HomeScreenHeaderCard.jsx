@@ -13,7 +13,7 @@ import LinearGradient from "react-native-linear-gradient";
 import { theme } from "../../../theme";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
-const HeaderCard = ({
+const HomeScreenHeaderCard = ({
   userName = "Parth Sarthi Singh",
   profileImage =
     "https://api.dicebear.com/9.x/adventurer/png?seed=Parth",
@@ -25,7 +25,7 @@ const HeaderCard = ({
     <LinearGradient
       colors={[
         "#FFFFFF",
-        "#FCEDD6",
+        "#fff3e1",
       ]}
       start={{
         x: 0,
@@ -40,8 +40,8 @@ const HeaderCard = ({
         // FULL WIDTH HEADER
         // ==========================================
 
-        marginHorizontal:
-          -theme.screen.horizontalPadding,
+        // marginHorizontal:
+        //   -theme.screen.horizontalPadding,
 
         paddingHorizontal:
           theme.screen.horizontalPadding,
@@ -58,7 +58,8 @@ const HeaderCard = ({
         // SPACE FOR FLOATING KYC BANNER
         // ==========================================
 
-      paddingBottom: 90,
+          paddingBottom: 8,
+        
       }}
     >
       <View
@@ -88,11 +89,9 @@ const HeaderCard = ({
               uri: profileImage,
             }}
             style={{
-              width:
-       52,
+              width: 52,
 
-              height:
-                  52 ,
+              height: 52,
 
               borderRadius:
                 theme.avatar.lg / 2,
@@ -122,13 +121,13 @@ const HeaderCard = ({
                   theme.colors.textLight,
 
                 fontSize:
-                  theme.typography.b2,
+                  theme.typography.b1,
 
                 lineHeight:
                   theme.lineHeight.b1,
 
                 fontFamily:
-                  theme.fonts.regular,
+                  theme.fonts.medium,
               }}
             >
               Welcome back
@@ -139,7 +138,7 @@ const HeaderCard = ({
             <Text
               numberOfLines={1}
               style={{
-                marginTop: 2,
+              marginTop: 1,
 
                 color:
                   theme.colors.text,
@@ -176,7 +175,7 @@ const HeaderCard = ({
               theme.radius.md,
 
             backgroundColor:
-               '#FCEDD6',
+              "#FCEDD6",
 
             justifyContent:
               "center",
@@ -191,12 +190,8 @@ const HeaderCard = ({
             size={
               theme.iconSize.sm
             }
-            color={
-              '#E2570E'
-            }
-            fill={
-             '#E2570E'
-            }
+            color="#E2570E"
+            fill="#E2570E"
           />
         </TouchableOpacity>
       </View>
@@ -205,5 +200,7 @@ const HeaderCard = ({
 };
 
 export default memo(
-  HeaderCard
+  HomeScreenHeaderCard
 );
+ 
+ 

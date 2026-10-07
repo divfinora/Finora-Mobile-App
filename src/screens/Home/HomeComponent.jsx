@@ -10,7 +10,7 @@ import {
   FlatList,
 } from "react-native";
 
-import HeaderCard from "./components/HeaderCard";
+import HeaderCard from "./components/HomeScreenHeaderCard.jsx";
 import NotKycBannerCard from "./components/NotKycBannerCard";
 import HomeScreenLoanSection from "./components/HomeScreenLoanSection";
 import NoticeCard from "./components/NoticeCard";
@@ -31,15 +31,17 @@ import {
   useSelector,
 } from "react-redux";
 import useKYCVerificationDoneAndNotDone from "../../hooks/useKYCVerificationDoneAndNotDone";
- 
+
 import {
   useBottomTabHeight,
 } from "../../navigation/BottomTabHeightContext.jsx";
-const HomeComponent = () => {
- const { height: bottomTabHeight } = useBottomTabHeight();
 
-   console.log(bottomTabHeight ,"bottomTabHeigth")
- 
+import LoanEligibilityBanner from "../../components/common/LoanRegading/LoanEligibilityBanner.jsx";
+const HomeComponent = () => {
+  const { height: bottomTabHeight } = useBottomTabHeight();
+
+
+
   // =====================================================
   // NAVIGATION
   // =====================================================
@@ -200,7 +202,25 @@ const HomeComponent = () => {
           // ---------------------------------------------
           // REFER
           // ---------------------------------------------
+          case "refer-banner":
+            return (
+              <View
+                style={{
+                  flex: 1,
+                  // paddingHorizontal:
+                  //   theme.spacing.lg,
 
+                }}
+              >
+                <ReferBannerCard
+                  onPress={() => {
+                    navigation.navigate(
+                      "refer-and-earn"
+                    );
+                  }}
+                />
+              </View>
+            );
 
 
           // ---------------------------------------------
@@ -239,71 +259,46 @@ const HomeComponent = () => {
           }}>
 
 
-            <View
-              style={{
-                position: "relative",
-                zIndex: 20,
-              }}
-            >
 
-              {/* HEADER */}
 
-              <HeaderCard
-                userName={
-                  user?.fullName ||
-                  "Parth Sarthi Singh"
-                }
-                onNotificationPress={() => {
 
+
+            {/* =================================================
+                FLOATING KYC CARD
+            ================================================= */}
+
+
+            <View style={{ flex: 1, paddingTop: 8 }}>
+
+
+              <NotKycBannerCard
+                onPress={(path) => {
                   navigation.navigate(
-                    "get-notification-screen"
+                    path
                   );
 
                 }}
               />
-
-              {/* =================================================
-                FLOATING KYC CARD
-            ================================================= */}
-
-              <View
-                style={{
-                  position: "absolute",
-
-                  left: 0,
-                  right: 0,
-
-                  bottom: -72,
-
-                  zIndex: 100,
-
-                  elevation: 15,
-                }}
-              >
-
-                <NotKycBannerCard
-                  onPress={(path) => {
-                    navigation.navigate(
-                      path
-                    );
-
-                  }}
-                />
-
-              </View>
-
             </View>
+            <LoanEligibilityBanner
+              onPress={() => {
+                // navigation later
+              }}
+            />
+
+
+
 
             {/* =================================================
               SPACE RESERVED FOR FLOATING KYC
           ================================================= */}
 
-            <View
-              style={{
-                height: 88,
+            {/* <View
+                style={{
+                  height: 88,
 
-              }}
-            />
+                }}
+              /> */}
 
             {/* =================================================
               LOANS
@@ -338,76 +333,97 @@ const HomeComponent = () => {
   // =====================================================
 
   return (
-    <FlatList
-      data={sections}
 
-      keyExtractor={(item) =>
-        item.id
-      }
+    <>
+      <HeaderCard
+        userName={
+          user?.fullName ||
+          "Parth Sarthi Singh"
+        }
+        onNotificationPress={() => {
 
-      renderItem={
-        renderItem
-      }
+          navigation.navigate(
+            "get-notification-screen"
+          );
 
-      ListHeaderComponent={
-        listHeader
-      }
+        }}
+      />
+      <FlatList
+        data={sections}
 
-      showsVerticalScrollIndicator={
-        false
-      }
+        keyExtractor={(item) =>
+          item.id
+        }
 
-      // ===================================================
-      // REFRESH
-      // ===================================================
+        renderItem={
+          renderItem
+        }
 
-      refreshing={
-        refreshing
-      }
+        ListHeaderComponent={
+          listHeader
+        }
 
-      onRefresh={
-        handleRefresh
-      }
+        showsVerticalScrollIndicator={
+          false
+        }
 
-      // ===================================================
-      // SCREEN BACKGROUND
-      // ===================================================
+        // ===================================================
+        // REFRESH
+        // ===================================================
 
-      style={{
-        flex: 1,
-        backgroundColor:
-          "#FFF9F0",
-      }}
+        refreshing={
+          refreshing
+        }
 
-      // ===================================================
-      // CONTENT
-      // ===================================================
+        onRefresh={
+          handleRefresh
+        }
 
-      contentContainerStyle={{
+        // ===================================================
+        // SCREEN BACKGROUND
+        // ===================================================
 
- 
-          
-    paddingBottom: bottomTabHeight + theme.spacing.massive,
+        style={{
+          flex: 1,
+          backgroundColor:
+            "#FFF9F0",
+          borderwidth: 1,
+        }}
 
-        backgroundColor:
-          "#FFF9F0",
-      }}
+        // ===================================================
+        // CONTENT
+        // ===================================================
 
-      // ===================================================
-      // PERFORMANCE
-      // ===================================================
+        contentContainerStyle={{
 
-      removeClippedSubviews={
-        true
-      }
 
-      initialNumToRender={6}
 
-      maxToRenderPerBatch={6}
+          paddingBottom: bottomTabHeight + theme.spacing.massive,
+          borderwidth: 1,
+          backgroundColor:
+            "#FCEDD6",
+          // backgroundColor:'red'
+        }}
 
-      windowSize={7}
+        // ===================================================
+        // PERFORMANCE
+        // ===================================================
 
-    />
+        removeClippedSubviews={
+          true
+        }
+
+        initialNumToRender={6}
+
+        maxToRenderPerBatch={6}
+
+        windowSize={7}
+
+      />
+
+    </>
+
+
   );
 };
 
