@@ -161,7 +161,8 @@ const LoanScreen = () => {
 
 
 
-                        {/* </View> */}
+                        {/* </View>
+                         */}
 
 
                     </>
