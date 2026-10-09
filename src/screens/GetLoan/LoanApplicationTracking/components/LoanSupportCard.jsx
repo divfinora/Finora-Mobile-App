@@ -28,10 +28,18 @@ const LoanSupportCard = ({
                 marginTop:
                     theme.spacing.lg,
 
-                padding:
+                paddingHorizontal:
                     theme.spacing.lg,
 
+                paddingVertical:
+                    theme.spacing.md,
+
                 borderRadius: 16,
+
+                borderWidth: 1,
+
+                borderColor:
+                    "#F2C98F",
 
                 backgroundColor:
                     theme.colors.white,
@@ -44,16 +52,13 @@ const LoanSupportCard = ({
             }}
         >
 
+            {/* =================================================
+                SUPPORT ICON
+            ================================================= */}
+
             <View
                 style={{
-                    width: 44,
-
-                    height: 44,
-
-                    borderRadius: 999,
-
-                    backgroundColor:
-                        "#F1F5F9",
+                    width: 32,
 
                     alignItems:
                         "center",
@@ -67,25 +72,36 @@ const LoanSupportCard = ({
                     name="headset-mic"
                     size={24}
                     color={
-                        theme.colors.navy900
+                        theme.colors.primary500
                     }
                 />
 
             </View>
 
 
+            {/* =================================================
+                CONTENT
+            ================================================= */}
+
             <View
                 style={{
                     flex: 1,
+                  
 
                     marginLeft:
-                        theme.spacing.md,
+                        theme.spacing.sm,
+
+                    marginRight:
+                        theme.spacing.sm,
+                      
                 }}
             >
 
                 <Text
                     style={{
                         fontSize: 14,
+
+                        lineHeight: 18,
 
                         fontFamily:
                             theme.fonts.bold,
@@ -100,11 +116,11 @@ const LoanSupportCard = ({
 
                 <Text
                     style={{
-                        marginTop: 2,
+                        marginTop: 1,
 
                         fontSize: 12,
 
-                        lineHeight: 17,
+                        lineHeight: 16,
 
                         fontFamily:
                             theme.fonts.regular,
@@ -113,31 +129,37 @@ const LoanSupportCard = ({
                             theme.colors.gray500,
                     }}
                 >
-                    You can explore other loan
-                    options or contact our
-                    support team for assistance.
+                    Explore other loan options or contact
+                    support.
                 </Text>
 
             </View>
 
 
+            {/* =================================================
+                GET SUPPORT BUTTON
+            ================================================= */}
+
             <TouchableOpacity
                 activeOpacity={0.8}
+
                 onPress={
                     onPress
                 }
+
                 style={{
-                    borderWidth: 1,
-
-                    borderColor:
-                        "#FFB27D",
-
-                    borderRadius: 10,
+                    height: 38,
 
                     paddingHorizontal:
                         theme.spacing.md,
 
-                    height: 38,
+                    borderRadius: 20,
+
+                    backgroundColor:
+                        theme.colors.primary500,
+
+                    flexDirection:
+                        "row",
 
                     alignItems:
                         "center",
@@ -147,18 +169,31 @@ const LoanSupportCard = ({
                 }}
             >
 
+                <MaterialIcons
+                    name="phone-in-talk"
+                    size={14}
+                    color={
+                        theme.colors.white
+                    }
+                />
+
+
                 <Text
                     style={{
+                        marginLeft: 5,
+
                         fontSize: 12,
 
+                        lineHeight: 16,
+
                         fontFamily:
-                            theme.fonts.semiBold,
+                            theme.fonts.bold,
 
                         color:
-                            theme.colors.primary700,
+                            theme.colors.white,
                     }}
                 >
-                    Contact Support
+                    Get Support
                 </Text>
 
             </TouchableOpacity>

@@ -697,7 +697,7 @@ const handleLoanPress = useCallback(
         navigation.navigate(
             "get-single-loan-detail",
             {
-                loanId,
+                loanId:'6a8c306580ed376a74e494f4',
                 status: normalizedStatus,
             }
         );

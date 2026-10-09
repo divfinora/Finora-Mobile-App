@@ -46,6 +46,10 @@ import Step2GoldLoanApplyMainScreen from '../screens/Loan/LoanApply/Step2ApplyLo
 import Step2VechleLoanApplyMainScreen from '../screens/Loan/LoanApply/Step2ApplyLoanApply/VechicleLoan/Step2VechleLoanApplyMainScreen.jsx'
 import Step2EducationLoanApplyMainScreen from '../screens/Loan/LoanApply/Step2ApplyLoanApply/EducationLoan/Step2EducationLoanApplyMainScreen.jsx'
 import LoanApplicationTrackingScreen from '../screens/GetLoan/LoanApplicationTracking/LoanApplicationTrackingScreen.jsx'
+
+
+import LoanDisbursedDetails from '../screens/GetLoan/LoanApplicationTracking/DissbursadlaonDetail.jsx'
+import EMIDetailsScreen from '../screens/GetLoan/LoanApplicationTracking/EMIDetailsScreen.jsx'
 const Stack = createNativeStackNavigator();
 
 const AppStack = () => {
@@ -191,6 +195,14 @@ const AppStack = () => {
       <Stack.Screen
         name="get-single-loan-detail"
         component={LoanApplicationTrackingScreen}
+      />
+      <Stack.Screen
+        name="loan-disbursed-get-single-loan-detail"
+        component={LoanDisbursedDetails}
+      />
+       <Stack.Screen
+        name="loan-emi-details-get-single-loan-detail"
+        component={EMIDetailsScreen}
       />
       <Stack.Screen
         name="notification-preferences-screen"

@@ -17,6 +17,10 @@ import {
 } from "../../../../theme";
 
 
+// ============================================================
+// TIMELINE DOT
+// ============================================================
+
 const TimelineDot = ({
     state,
 }) => {
@@ -31,37 +35,56 @@ const TimelineDot = ({
         state === "rejected";
 
 
+    // ----------------------------------------------------------
+    // DEFAULT / PENDING
+    // ----------------------------------------------------------
+
     let borderColor =
-        theme.colors.gray300;
+        "#E5E7EB";
 
     let backgroundColor =
-        "#FFF4E8";
+        "#F3F4F6";
 
+
+    // ----------------------------------------------------------
+    // COMPLETED
+    // ----------------------------------------------------------
 
     if (completed) {
+
         borderColor =
-            "#009E75";
+            "#00A078";
 
         backgroundColor =
-            "#E9FFF7";
+            "#F0FFF9";
     }
 
+
+    // ----------------------------------------------------------
+    // CURRENT
+    // ----------------------------------------------------------
 
     if (current) {
+
         borderColor =
-            "#FF9A45";
+            "#FF9847";
 
         backgroundColor =
-            "#FFF0DF";
+            "#FFF1E3";
     }
 
 
+    // ----------------------------------------------------------
+    // REJECTED
+    // ----------------------------------------------------------
+
     if (rejected) {
+
         borderColor =
-            theme.colors.error;
+            "#E91E4D";
 
         backgroundColor =
-            theme.colors.error;
+            "#E91E4D";
     }
 
 
@@ -72,9 +95,12 @@ const TimelineDot = ({
 
                 height: 28,
 
-                borderRadius: 999,
+                borderRadius: 14,
 
-                borderWidth: 2,
+                borderWidth:
+                    current
+                        ? 3
+                        : 2,
 
                 borderColor,
 
@@ -85,38 +111,52 @@ const TimelineDot = ({
 
                 justifyContent:
                     "center",
+
+                zIndex: 2,
             }}
         >
+
+            {/* =================================================
+                COMPLETED
+            ================================================= */}
 
             {completed && (
                 <MaterialIcons
                     name="check"
-                    size={18}
-                    color="#009E75"
+                    size={16}
+                    color="#00A078"
                 />
             )}
 
 
+            {/* =================================================
+                CURRENT
+            ================================================= */}
+
             {current && (
                 <View
                     style={{
-                        width: 12,
+                        width: 14,
 
-                        height: 12,
+                        height: 14,
 
-                        borderRadius: 999,
+                        borderRadius: 7,
 
                         backgroundColor:
-                            "#FF9A45",
+                            "#FF9847",
                     }}
                 />
             )}
 
 
+            {/* =================================================
+                REJECTED
+            ================================================= */}
+
             {rejected && (
                 <MaterialIcons
                     name="close"
-                    size={17}
+                    size={16}
                     color={
                         theme.colors.white
                     }
@@ -127,6 +167,10 @@ const TimelineDot = ({
     );
 };
 
+
+// ============================================================
+// TIMELINE ITEM
+// ============================================================
 
 const TimelineItem = ({
     title,
@@ -143,6 +187,10 @@ const TimelineItem = ({
         state === "rejected";
 
 
+    // ----------------------------------------------------------
+    // TITLE COLOR
+    // ----------------------------------------------------------
+
     const titleColor =
         completed ||
         state === "current" ||
@@ -151,9 +199,13 @@ const TimelineItem = ({
             : "#62748C";
 
 
+    // ----------------------------------------------------------
+    // TIMELINE LINE COLOR
+    // ----------------------------------------------------------
+
     const lineColor =
         rejected
-            ? theme.colors.error
+            ? "#E91E4D"
             : completed
                 ? "#00A078"
                 : "#FFE0B5";
@@ -172,7 +224,9 @@ const TimelineItem = ({
             }}
         >
 
-            {/* LEFT */}
+            {/* =================================================
+                LEFT TIMELINE
+            ================================================= */}
 
             <View
                 style={{
@@ -180,8 +234,13 @@ const TimelineItem = ({
 
                     alignItems:
                         "center",
+
+                    position:
+                        "relative",
                 }}
             >
+
+                {/* DOT */}
 
                 <TimelineDot
                     state={
@@ -189,6 +248,8 @@ const TimelineItem = ({
                     }
                 />
 
+
+                {/* LINE */}
 
                 {!last && (
                     <View
@@ -204,6 +265,8 @@ const TimelineItem = ({
 
                             backgroundColor:
                                 lineColor,
+
+                            zIndex: 1,
                         }}
                     />
                 )}
@@ -211,7 +274,9 @@ const TimelineItem = ({
             </View>
 
 
-            {/* CONTENT */}
+            {/* =================================================
+                CONTENT
+            ================================================= */}
 
             <View
                 style={{
@@ -224,6 +289,8 @@ const TimelineItem = ({
                         theme.spacing.sm,
                 }}
             >
+
+                {/* TITLE + RIGHT TEXT */}
 
                 <View
                     style={{
@@ -274,7 +341,7 @@ const TimelineItem = ({
 
                                 color:
                                     rejected
-                                        ? theme.colors.error
+                                        ? "#E91E4D"
                                         : state === "current" ||
                                           completed
                                             ? "#00A078"
@@ -290,6 +357,8 @@ const TimelineItem = ({
 
                 </View>
 
+
+                {/* DESCRIPTION */}
 
                 {!!description && (
                     <Text

@@ -4,7 +4,9 @@
 
 // ============================================================
 import formatAmount from '../../../../utils/formatAmount'
-
+import {
+    useNavigation,
+} from "@react-navigation/native";
 
 import React, {
 
@@ -1278,7 +1280,7 @@ const CARD = StyleSheet.create({
 
 
 
- 
+
 
 
 
@@ -2036,7 +2038,7 @@ const LoanHeader = memo(({
 
                     {
 
-                       formatAmount(amount)
+                        formatAmount(amount)
 
                     }
 
@@ -2520,11 +2522,11 @@ const StatusMessage = memo(({
 
                             ? COLORS.rejectedBackground
 
-                           
 
-                             
 
-                                    : COLORS.messageBackground,
+
+
+                            : COLORS.messageBackground,
 
                 },
 
@@ -2546,11 +2548,11 @@ const StatusMessage = memo(({
 
                                 ? COLORS.rejectedText
 
-                               
 
-                                   
 
-                                        : COLORS.navy,
+
+
+                                : COLORS.navy,
 
                     },
 
@@ -2720,11 +2722,11 @@ const StatusMessage = memo(({
 
                         ? COLORS.rejectedText
 
-                     
 
-                         
 
-                                : COLORS.navy
+
+
+                        : COLORS.navy
 
                 }
 
@@ -3031,7 +3033,7 @@ const ActiveLoanCard = memo(({
     isSmallPhone,
 
 }) => {
-
+    const navigation = useNavigation()
     const amount =
 
         loan?.loanAmount ??
@@ -3754,6 +3756,7 @@ const ClosedLoanCard = memo(({
 
 }) => {
 
+    const navigation = useNavigation()
     const amount =
 
         loan?.loanAmount ??
@@ -4268,15 +4271,17 @@ const ClosedLoanCard = memo(({
 
                     ]}
 
-                    onPress={() =>
+                    onPress={() => {
+                        navigation.navigate('loan-disbursed-get-single-loan-detail')
+                    }
 
-                        onPress?.(
+                        // onPress?.(
 
-                            loan,
+                        //     loan,
 
-                            "LOAN_DETAILS"
+                        //     "LOAN_DETAILS"
 
-                        )
+                        // )
 
                     }
 
@@ -4396,7 +4401,7 @@ const LoanHistoryCard = ({
 
 }) => {
 
-     console.log(loan ,"loan")
+    console.log(loan, "loan")
 
     const {
 
@@ -4405,7 +4410,7 @@ const LoanHistoryCard = ({
     } = useWindowDimensions();
 
 
-
+    // const navigation = useNavigation()
     const isSmallPhone =
 
         width < 360;

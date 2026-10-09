@@ -10,15 +10,13 @@ import {
     RefreshControl,
     ScrollView,
     StatusBar,
-    Text,
-    View,
 } from "react-native";
 
 import {
     SafeAreaView,
 } from "react-native-safe-area-context";
 
- import {
+import {
     normalizeStatus,
 } from "./utils/loanTrackingHelpers";
 
@@ -44,14 +42,16 @@ import LoanSupportCard from
 import TrackingSkeleton from
     "./components/TrackingSkeleton";
 
-import {
-    getScreenStatus,
-} from "./utils/loanTrackingHelpers";
+import InlineRetry from
+    "../../../components/common/RetryScreen/InlineRetry";
 
 import {
     FAKE_LOAN_TRACKING_DATA,
 } from "./utils/fakeLoanTrackingData";
-import { useGetSingleLoanDetailsQuery } from "../../../redux/features/customer/customerApi";
+
+import {
+    useGetSingleLoanDetailsQuery,
+} from "../../../redux/features/customer/customerApi";
 
 
 // ============================================================
@@ -60,6 +60,10 @@ import { useGetSingleLoanDetailsQuery } from "../../../redux/features/customer/c
 
 const USE_FAKE_DATA = true;
 
+
+// ============================================================
+// SCREEN
+// ============================================================
 
 const LoanApplicationTrackingScreen = ({
     navigation,
@@ -70,18 +74,19 @@ const LoanApplicationTrackingScreen = ({
     // LOAN ID
     // ========================================================
 
-const loanId =
-    route?.params?.loanId;
+    const loanId =
+        route?.params?.loanId;
 
- 
-// ========================================================
-// STATUS FROM PARAMS
-// ========================================================
 
-const status =
-    normalizeStatus(
-        route?.params?.status ?? "PENDING"
-    );
+    // ========================================================
+    // STATUS FROM PARAMS
+    // ========================================================
+
+    const status =
+        normalizeStatus(
+            route?.params?.status ?? "PENDING"
+        );
+
 
     // ========================================================
     // SINGLE LOAN API
@@ -153,12 +158,6 @@ const status =
 
 
     // ========================================================
-    // STATUS
-    // ========================================================
- 
-
-
-    // ========================================================
     // PROGRESS
     // ========================================================
 
@@ -203,7 +202,7 @@ const status =
 
 
     // ========================================================
-    // REFRESH
+    // REFRESH / RETRY
     // ========================================================
 
     const handleRefresh =
@@ -254,123 +253,6 @@ const status =
 
 
     // ========================================================
-    // ERROR
-    // ========================================================
-
-    if (
-        isError &&
-        !USE_FAKE_DATA &&
-        !loading
-    ) {
-
-        return (
-            <SafeAreaView
-                edges={[
-                    "left",
-                    "right",
-                    "bottom",
-                ]}
-                style={{
-                    flex: 1,
-
-                    backgroundColor:
-                        "#F9EBD5",
-                }}
-            >
-
-                <StatusBar
-                    barStyle="dark-content"
-                    backgroundColor="#FFF9F0"
-                />
-
-
-                <NewFlowCommonHeader
-                    title="Track Application"
-
-                    onBack={
-                        handleBack
-                    }
-
-                    onNotificationPress={
-                        handleNotification
-                    }
-                />
-
-
-                <ScrollView
-                    refreshControl={
-                        <RefreshControl
-                            refreshing={
-                                isFetching
-                            }
-
-                            onRefresh={
-                                handleRefresh
-                            }
-
-                            tintColor={
-                                theme.colors.primary500
-                            }
-                        />
-                    }
-
-                    contentContainerStyle={{
-                        flexGrow: 1,
-
-                        alignItems:
-                            "center",
-
-                        justifyContent:
-                            "center",
-
-                        padding:
-                            theme.spacing.xl,
-                    }}
-                >
-
-                    <Text
-                        style={{
-                            fontSize: 18,
-
-                            fontFamily:
-                                theme.fonts.bold,
-
-                            color:
-                                theme.colors.navy900,
-                        }}
-                    >
-                        Unable to load application
-                    </Text>
-
-
-                    <Text
-                        style={{
-                            marginTop:
-                                theme.spacing.sm,
-
-                            fontSize: 13,
-
-                            textAlign:
-                                "center",
-
-                            fontFamily:
-                                theme.fonts.regular,
-
-                            color:
-                                theme.colors.gray500,
-                        }}
-                    >
-                        Pull down to try again.
-                    </Text>
-
-                </ScrollView>
-
-            </SafeAreaView>
-        );
-    }
-
-
-    // ========================================================
     // SCREEN
     // ========================================================
 
@@ -388,6 +270,10 @@ const status =
                     "#F9EBD5",
             }}
         >
+
+            {/* =================================================
+                STATUS BAR
+            ================================================= */}
 
             <StatusBar
                 barStyle="dark-content"
@@ -413,7 +299,7 @@ const status =
 
 
             {/* =================================================
-                SKELETON
+                LOADING
             ================================================= */}
 
             {loading ? (
@@ -453,68 +339,111 @@ const status =
 
                         paddingBottom:
                             theme.spacing.massive,
+
+                        flexGrow:
+                            isError
+                                ? 1
+                                : 0,
                     }}
                 >
 
                     {/* =================================================
-                        REJECTED TOP CARD
+                        ERROR
                     ================================================= */}
 
-                    {status ===
-                        "REJECTED" && (
+                    {/* {isError ? ( */}
+                    {isError ? (
 
-                        <RejectedLoanCard
-                            loan={
-                                loan
+                        <InlineRetry
+                            title="Unable to load application"
+
+                            description={
+                                "Something went wrong while loading your application. Please try again."
                             }
+
+                            buttonText="Retry"
+
+                            loading={
+                                isFetching
+                            }
+
+                            onRetry={
+                                handleRefresh
+                            }
+
+                            containerStyle={{
+                                marginTop:
+                                    theme.spacing.lg,
+                            }}
                         />
 
-                    )}
+                    ) : (
+
+                        <>
+
+                            {/* =================================================
+                                REJECTED TOP CARD
+                            ================================================= */}
+
+                            {status ===
+                                "REJECTED" && (
+
+                                <RejectedLoanCard
+                                    loan={
+                                        loan
+                                    }
+                                />
+
+                            )}
 
 
-                    {/* =================================================
-                        PROGRESS
-                    ================================================= */}
+                            {/* =================================================
+                                PROGRESS
+                            ================================================= */}
 
-                    <OverallProgressCard
-                        progress={
-                            progress
-                        }
+                            <OverallProgressCard
+                                progress={
+                                    progress
+                                }
 
-                        rejected={
-                            status ===
-                            "REJECTED"
-                        }
-                    />
-
-
-                    {/* =================================================
-                        TIMELINE
-                    ================================================= */}
-
-                    <StatusTimeline
-                        status={
-                            status
-                        }
-
-                        onContinue={
-                            handleContinue
-                        }
-                    />
+                                rejected={
+                                    status ===
+                                    "REJECTED"
+                                }
+                            />
 
 
-                    {/* =================================================
-                        SUPPORT
-                    ================================================= */}
+                            {/* =================================================
+                                TIMELINE
+                            ================================================= */}
 
-                    {status ===
-                        "REJECTED" && (
+                            <StatusTimeline
+                                status={
+                                    status
+                                }
 
-                        <LoanSupportCard
-                            onPress={
-                                handleSupport
-                            }
-                        />
+                                onContinue={
+                                    handleContinue
+                                }
+                            />
+
+
+                            {/* =================================================
+                                SUPPORT
+                            ================================================= */}
+
+                            {status ===
+                                "REJECTED" && (
+
+                                <LoanSupportCard
+                                    onPress={
+                                        handleSupport
+                                    }
+                                />
+
+                            )}
+
+                        </>
 
                     )}
 
