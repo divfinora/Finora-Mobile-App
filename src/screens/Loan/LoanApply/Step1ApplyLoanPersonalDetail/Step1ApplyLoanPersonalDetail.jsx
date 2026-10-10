@@ -429,137 +429,137 @@ const Step1ApplyLoanPersonalDetail = ({
     // =====================================================
 
 
-    //     useEffect(() => {
+        useEffect(() => {
 
-    //     if (
-    //         prefillLoading ||
-    //         prefillFetching ||
-    //         prefillError
-    //     ) {
+        if (
+            prefillLoading ||
+            prefillFetching ||
+            prefillError
+        ) {
 
-    //         return;
+            return;
 
-    //     }
-
-
-    //     if (!prefill) {
-
-    //         return;
-
-    //     }
+        }
 
 
-    //     const panNumber =
-    //         kycDetails?.panNumber || "";
+        if (!prefill) {
+
+            return;
+
+        }
 
 
-    //     const accountNumber =
-    //         bankDetails?.accountNumber || "";
+        const panNumber =
+            kycDetails?.panNumber || "";
 
 
-    //     const aadhaarNumber =
-    //         kycDetails?.aadhaarNumber || "";
+        const accountNumber =
+            bankDetails?.accountNumber || "";
 
 
-    //     setForm({
-
-    //         fullName:
-    //             personalDetails?.fullName || "",
-
-    //         panNumber,
-
-    //         accountNumber,
-
-    //         aadhaarNumber,
-
-    //         addressLine1:
-    //             addressDetails?.addressLine1 || "",
-
-    //         city:
-    //             addressDetails?.city || "",
-
-    //         state:
-    //             addressDetails?.state || "",
-
-    //         pincode:
-    //             addressDetails?.pincode || "",
-
-    //     });
+        const aadhaarNumber =
+            kycDetails?.aadhaarNumber || "";
 
 
-    //     // Lock only those fields
-    //     // which already have saved values
+        setForm({
 
-    //     setLockedFields({
+            fullName:
+                personalDetails?.fullName || "",
 
-    //         panNumber:
-    //             Boolean(
-    //                 panNumber?.trim()
-    //             ),
+            panNumber,
 
+            accountNumber,
 
-    //         accountNumber:
-    //             Boolean(
-    //                 accountNumber?.trim()
-    //             ),
+            aadhaarNumber,
 
+            addressLine1:
+                addressDetails?.addressLine1 || "",
 
-    //         aadhaarNumber:
-    //             Boolean(
-    //                 aadhaarNumber?.trim()
-    //             ),
+            city:
+                addressDetails?.city || "",
 
-    //     });
+            state:
+                addressDetails?.state || "",
 
+            pincode:
+                addressDetails?.pincode || "",
 
-    //     setErrors(
-    //         previous => {
-
-    //             const updated = {
-    //                 ...previous,
-    //             };
-
-    //             if (personalDetails?.fullName?.trim()) {
-    //                 delete updated.fullName;
-    //             }
-
-    //             if (panNumber?.trim()) {
-    //                 delete updated.panNumber;
-    //             }
-
-    //             if (accountNumber?.trim()) {
-    //                 delete updated.accountNumber;
-    //             }
-
-    //             if (aadhaarNumber?.trim()) {
-    //                 delete updated.aadhaarNumber;
-    //             }
-
-    //             if (addressDetails?.addressLine1?.trim()) {
-    //                 delete updated.addressLine1;
-    //             }
-
-    //             if (addressDetails?.city?.trim()) {
-    //                 delete updated.city;
-    //             }
-
-    //             if (addressDetails?.state?.trim()) {
-    //                 delete updated.state;
-    //             }
-
-    //             if (addressDetails?.pincode?.trim()) {
-    //                 delete updated.pincode;
-    //             }
-
-    //             return updated;
-    //         }
-    //     );
+        });
 
 
-    // }, [
-    //     prefill,
-    //     prefillError,
-    // ]);
+        // Lock only those fields
+        // which already have saved values
+
+        setLockedFields({
+
+            panNumber:
+                Boolean(
+                    panNumber?.trim()
+                ),
+
+
+            accountNumber:
+                Boolean(
+                    accountNumber?.trim()
+                ),
+
+
+            aadhaarNumber:
+                Boolean(
+                    aadhaarNumber?.trim()
+                ),
+
+        });
+
+
+        setErrors(
+            previous => {
+
+                const updated = {
+                    ...previous,
+                };
+
+                if (personalDetails?.fullName?.trim()) {
+                    delete updated.fullName;
+                }
+
+                if (panNumber?.trim()) {
+                    delete updated.panNumber;
+                }
+
+                if (accountNumber?.trim()) {
+                    delete updated.accountNumber;
+                }
+
+                if (aadhaarNumber?.trim()) {
+                    delete updated.aadhaarNumber;
+                }
+
+                if (addressDetails?.addressLine1?.trim()) {
+                    delete updated.addressLine1;
+                }
+
+                if (addressDetails?.city?.trim()) {
+                    delete updated.city;
+                }
+
+                if (addressDetails?.state?.trim()) {
+                    delete updated.state;
+                }
+
+                if (addressDetails?.pincode?.trim()) {
+                    delete updated.pincode;
+                }
+
+                return updated;
+            }
+        );
+
+
+    }, [
+        prefill,
+        prefillError,
+    ]);
 
     const handleChange = (
         field,

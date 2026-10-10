@@ -884,107 +884,78 @@ const Step2VechleLoanApplyMainScreen = ({
     };
 
 
-    // =====================================================
-    // STEP 3 DOCUMENT VALIDATION
-    // =====================================================
+// =====================================================
+// STEP 3 DOCUMENT VALIDATION
+// =====================================================
 
-    const validateStep3 = () => {
+ 
+const validateStep3 = () => {
+    const newErrors = {};
 
-        const newErrors = {};
+    const requiredDocuments = [
+        {
+            key: "panCard",
+            message: "Please upload your PAN Card",
+        },
+        {
+            key: "aadharCard",
+            message: "Please upload your Aadhaar Card",
+        },
+        {
+            key: "warrantyPapers",
+            message: "Please upload your Warranty Papers",
+        },
+        {
+            key: "pollutionCertificate",
+            message: "Please upload your Pollution Certificate (PUC)",
+        },
+        {
+            key: "registrationCertificate",
+            message: "Please upload your Registration Certificate",
+        },
+        {
+            key: "drivingLicence",
+            message: "Please upload your Driving licence",
+        },
+        {
+            key: "bikeInvoices",
+            message: "Please upload your Bike Invoice",
+        },
+        {
+            key: "insurancePaper",
+            message: "Please upload your Insurance Paper",
+        },
+    ];
 
+    const documents = form?.documents || [];
 
-        const requiredDocuments = [
-
-            {
-                key: "panCard",
-                minFiles: 1,
-                message:
-                    "Please upload your PAN Card",
-            },
-
-            {
-                key: "aadharCard",
-                minFiles: 1,
-                message:
-                    "Please upload your Aadhaar Card",
-            },
-
-            {
-                key: "bankStatement",
-                minFiles: 1,
-                message:
-                    "Please upload your bank statement",
-            },
-
-            {
-                key: "addressProof",
-                minFiles: 1,
-                message:
-                    "Please upload your address proof",
-            },
-
-        ];
-
-
-        const documents =
-            form?.documents || [];
-
-
-        requiredDocuments.forEach(
-            document => {
-
-                const uploadedDocument =
-                    documents.find(
-                        item =>
-                            item?.type ===
-                            document.key
-                    );
-
-
-                const fileCount =
-                    uploadedDocument?.files?.length ||
-                    0;
-
-
-                if (
-                    fileCount <
-                    document.minFiles
-                ) {
-
-                    newErrors[
-                        document.key
-                    ] = document.message;
-
-                }
-
-            }
+    requiredDocuments.forEach(document => {
+        const uploadedDocument = documents.find(
+            item => item?.type === document.key
         );
 
+        const fileCount = uploadedDocument?.files?.length || 0;
 
-        setErrors(newErrors);
-
-
-        if (
-            Object.keys(newErrors).length > 0
-        ) {
-
-            scrollToFirstError(
-                newErrors,
-                [
-                    "panCard",
-                    "aadharCard",
-                    "bankStatement",
-                    "addressProof",
-                ]
-            );
-
+        if (fileCount < 1) {
+            newErrors[document.key] = document.message;
         }
+    });
 
+    setErrors(newErrors);
 
-        return (
-            Object.keys(newErrors).length === 0
+    if (Object.keys(newErrors).length > 0) {
+        scrollToFirstError(
+            newErrors,
+            requiredDocuments.map(document => document.key)
         );
-    };
+    }
+
+    return Object.keys(newErrors).length === 0;
+};
+ 
+ 
+
+    
 
 
     // =====================================================

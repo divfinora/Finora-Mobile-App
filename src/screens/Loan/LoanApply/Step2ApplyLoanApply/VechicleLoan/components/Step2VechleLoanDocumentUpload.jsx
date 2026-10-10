@@ -42,102 +42,82 @@ import DocumentUploadCard
 // =====================================================
 // DOCUMENT CONFIG
 // =====================================================
-
 const DOCUMENT_TYPES = [
-
-    // =================================================
-    // REQUIRED DOCUMENTS
-    // =================================================
-
     {
         key: "panCard",
-
         title: "PAN Card",
-
         subtitle: "Upload clear image",
-
         maxFiles: 1,
-
         requiredFiles: 1,
-
         required: true,
-
         icon: "badge",
     },
-
     {
         key: "aadharCard",
-
         title: "Aadhaar Card",
-
         subtitle: "Upload clear image",
-
         maxFiles: 1,
-
         requiredFiles: 1,
-
         required: true,
-
         icon: "fingerprint",
     },
-
     {
-        key: "salarySlips",
-
-        title: "Salary Slips",
-
-        subtitle: "Last 3 months",
-
+        key: "warrantyPapers",
+        title: "Warranty Papers",
+        subtitle: "Warranty document for verification.",
         maxFiles: 1,
-
         requiredFiles: 1,
-
         required: true,
-
+        icon: "verified",
+    },
+    {
+        key: "pollutionCertificate",
+        title: "Pollution Certificate (PUC)",
+        subtitle: "PUC certificate for verification.",
+        maxFiles: 1,
+        requiredFiles: 1,
+        required: true,
+        icon: "fact-check",
+    },
+    {
+        key: "registrationCertificate",
+        title: "Registration Certificate",
+        subtitle: "RC for vehicle verification.",
+        maxFiles: 1,
+        requiredFiles: 1,
+        required: true,
+        icon: "assignment",
+    },
+    {
+        key: "drivingLicence",
+        title: "Driving licence",
+        subtitle: "Valid license for identity verification.",
+        maxFiles: 1,
+        requiredFiles: 1,
+        required: true,
+        icon: "badge",
+    },
+    {
+        key: "bikeInvoices",
+        title: "Bike Invoices",
+        subtitle: "Invoice to verify purchase details.",
+        maxFiles: 1,
+        requiredFiles: 1,
+        required: true,
+        icon: "picture-as-pdf",
+    },
+    {
+        key: "insurancePaper",
+        title: "Insurance Paper",
+        subtitle: "Insurance document for verification.",
+        maxFiles: 1,
+        requiredFiles: 1,
+        required: true,
         icon: "description",
     },
-
-    {
-        key: "bankStatement",
-
-        title: "Bank Statement",
-
-        subtitle: "Last 6 months",
-
-        maxFiles: 1,
-
-        requiredFiles: 1,
-
-        required: true,
-
-        icon: "account-balance",
-    },
-
-
-    // =================================================
-    // OPTIONAL DOCUMENTS
-    // =================================================
-
-    {
-        key: "addressProof",
-
-        title: "Address Proof",
-
-        subtitle: "Utility bill / Rent agreement",
-
-        maxFiles: 1,
-
-        requiredFiles: 0,
-
-        required: false,
-
-        icon: "home",
-    },
-
-     
-
-     
 ];
+ 
+ 
 
 
 // =====================================================
