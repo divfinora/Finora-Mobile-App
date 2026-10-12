@@ -22,20 +22,21 @@ import BackButton from "../../components/common/BackButton/BackButton.jsx";
 import ProfileBanner from "./components/ProfileBanner";
 import QuickActions from "./components/QuickActions";
 import SettingsSection from "./components/SettingsSection";
-import ReportsCard from "./components/ReportsCard";
+import HelpAndSupportCard from "./components/HelpAndSupportCard.jsx";
 import LogoutButton from "../LogOut/LogoutButton.jsx";
 
 import useKYCVerificationDoneAndNotDone from "../../hooks/useKYCVerificationDoneAndNotDone.js";
 import { syncProfile } from "../../utils/profileSync";
 import { useGetSettingsQuery } from "../../redux/features/customer/customerApi";
- 
- import { useBottomTabHeight } from '../../navigation/BottomTabHeightContext.jsx'
+
+import { useBottomTabHeight } from '../../navigation/BottomTabHeightContext.jsx'
+import NewFlowCommonHeader from "../../components/common/BackButton/NewFlowCommonHeader.jsx";
 const ProfileScreen = () => {
- const { height: bottomTabHeight } =
-  useBottomTabHeight();
-const {
-  refetch: refetchSettings,
-} = useGetSettingsQuery();
+  const { height: bottomTabHeight } =
+    useBottomTabHeight();
+  const {
+    refetch: refetchSettings,
+  } = useGetSettingsQuery();
   const {
     verification,
     isLoading,
@@ -54,7 +55,7 @@ const {
       await Promise.all([
         syncProfile(), // Profile API
         refetch(),     // KYC API
-             refetchSettings(),  // Settings
+        refetchSettings(),  // Settings
       ]);
 
     } finally {
@@ -62,14 +63,47 @@ const {
     }
   };
 
+  const handleBack = () => {
 
+    if (currentStep > 1) {
+
+      setErrors({});
+
+      setCurrentStep(
+
+        previous =>
+
+          previous - 1
+
+      );
+
+      requestAnimationFrame(() => {
+
+        scrollViewRef.current?.scrollTo({
+
+          y: 0,
+
+          animated: false,
+
+        });
+
+      });
+
+      return;
+
+    }
+
+    navigation.goBack();
+
+  };
 
   return (
 
     <SafeAreaView
+      edges={['left', "right", 'bottom']}
       style={{
         flex: 1,
-        backgroundColor: theme.colors.white,
+        backgroundColor: '#FCEDD6',
       }}
     >
 
@@ -78,8 +112,13 @@ const {
       {/* ===================================== */}
 
       <StatusBar
-        backgroundColor={theme.colors.white}
-        barStyle={theme.statusBar.dark}
+        translucent={
+          false
+        }
+        backgroundColor={
+          "#FAF4E9"
+        }
+        barStyle="dark-content"
       />
 
       {/* ===================================== */}
@@ -100,7 +139,25 @@ const {
         {/* ===================================== */}
         {/* FIXED HEADER */}
         {/* ===================================== */}
+        <NewFlowCommonHeader
 
+          title={
+            'Settings'
+          }
+
+          onBack={
+            handleBack
+          }
+
+          onNotificationPress={() => {
+
+            navigation.navigate(
+              "get-notification-screen"
+            );
+
+          }}
+
+        />
         <View
           style={{
 
@@ -109,15 +166,6 @@ const {
           }}
         >
 
-          <BackButton
-            title="Settings"
-              titleStyle={{
-                fontFamily: theme.fonts.bold,
-                fontSize: 20,
-                lineHeight: 20,
-                textAlign: "center",
-              }}
-          />
 
 
 
@@ -137,9 +185,10 @@ const {
             showsVerticalScrollIndicator={false}
             keyboardShouldPersistTaps="handled"
             contentContainerStyle={{
+              paddingTop: theme.spacing.lg,
 
 
-      paddingBottom: bottomTabHeight + theme.spacing.massive,
+              paddingBottom: bottomTabHeight + theme.spacing.massive,
             }}
           >
 
@@ -150,7 +199,7 @@ const {
             <ProfileBanner
               verification={verification}
               loading={isLoading || isFetching}
-              error ={error}
+              error={error}
               refetch={refetch}
             />
 
@@ -158,7 +207,7 @@ const {
             {/* QUICK ACTIONS */}
             {/* =============================== */}
 
-            <QuickActions />
+          
 
             {/* =============================== */}
             {/* ACCOUNT */}
@@ -178,7 +227,7 @@ const {
             {/* REPORTS */}
             {/* =============================== */}
 
-            <ReportsCard />
+            <HelpAndSupportCard/>
 
             {/* =============================== */}
             {/* LOGOUT */}
@@ -198,4 +247,3 @@ const {
 
 export default ProfileScreen;
 
- 

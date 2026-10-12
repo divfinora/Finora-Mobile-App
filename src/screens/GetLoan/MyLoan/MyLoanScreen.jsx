@@ -857,15 +857,15 @@ const handleLoanPress = useCallback(
                 STATUS BAR
             ================================================= */}
 
-            <StatusBar
-                translucent={
-                    false
-                }
-                backgroundColor={
-                    "#FAF4E9"
-                }
-                barStyle="dark-content"
-            />
+                <StatusBar
+                    translucent={
+                        false
+                    }
+                    backgroundColor={
+                        "#FAF4E9"
+                    }
+                    barStyle="dark-content"
+                />
 
             {/* =================================================
                 HEADER

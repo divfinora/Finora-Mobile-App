@@ -1,5 +1,4 @@
 
-
 import React from "react";
 
 import {
@@ -8,410 +7,278 @@ import {
   Image,
 } from "react-native";
 
-import LinearGradient from "react-native-linear-gradient";
+import { useSelector } from "react-redux";
 
+import {
+  UserRoundX,
+  BadgeCheck,
+  CircleX,
+  Camera,
+} from "lucide-react-native";
 
 import { theme } from "../../../theme";
-
 import ProfileBannerSkeleton from "./ProfileBannerSkeleton.jsx";
-import InlineRetry from  '../../../components/common/RetryScreen/InlineRetry.jsx'
-import { useSelector } from "react-redux";
+import InlineRetry from "../../../components/common/RetryScreen/InlineRetry.jsx";
 
 const ProfileBanner = ({
   verification,
   loading,
-  refetch  ,
-  error ,
+  refetch,
+  error,
 }) => {
+  const user = useSelector((state) => state.auth.user);
 
-  const isVerified =
-    verification?.isVerification &&
+  // ==========================
+  // KYC VERIFICATION
+  // ==========================
+  const isVerified =   
+    verification?.isVerification === true &&
     verification?.kycStatus === "VERIFIED";
 
   // ==========================
   // LOADING
   // ==========================
-  const user = useSelector((state) => state.auth.user);
   if (loading) {
     return <ProfileBannerSkeleton />;
   }
- 
- if (error) {
-  return (
-   <View
-      style={{
-        padding: theme.spacing.lg,
-        backgroundColor: "#FDF2F2",
-        borderRadius: 24,
-        paddingVertical: theme.spacing.xxxl,
-      }}
-    >
-      <InlineRetry
-        title="Unable to load profile"
-        description="Tap below to refresh your profile."
-        loading={loading}
-        onRetry={refetch}
-        containerStyle={{
-          backgroundColor: "transparent",
-          borderWidth: 0,
-          elevation: 0,
-          shadowOpacity: 0,
-          paddingHorizontal: 0,
-          paddingVertical: 0,
-        }}
-      />
-    </View>
-  );
-}
 
   // ==========================
-  // VERIFIED
+  // ERROR
   // ==========================
-
-  if (isVerified) {
-
+  if (error) {
     return (
-
-      <LinearGradient
-
-        colors={[
-          "#16212D",
-          "#07090C",
-        ]}
-
-        start={{
-          x: 0,
-          y: 0,
-        }}
-
-        end={{
-          x: 1,
-          y: 1,
-        }}
-
+      <View
         style={{
           padding: theme.spacing.lg,
-          borderRadius: 24,
-
-          paddingVertical: 28,
-
-          alignItems: "center",
-
+          backgroundColor: "#FFF0EF",
+          borderRadius: 16,
+          borderWidth: 1,
+          borderColor: "#FFD0CC",
+          paddingVertical: theme.spacing.xxxl,
         }}
-
       >
-
-        {/* ============================ */}
-        {/* PROFILE IMAGE */}
-        {/* ============================ */}
-
-        <View
-
-          style={{
-
-            width: 92,
-
-            height: 92,
-
-            borderRadius: 46,
-
-            borderWidth: 4,
-
-            borderColor: theme.colors.primary500,
-
-            justifyContent: "center",
-
-            alignItems: "center",
-
+        <InlineRetry
+          title="Unable to load profile"
+          description="Tap below to refresh your profile."
+          loading={loading}
+          onRetry={refetch}
+          containerStyle={{
+            backgroundColor: "transparent",
+            borderWidth: 0,
+            elevation: 0,
+            shadowOpacity: 0,
+            paddingHorizontal: 0,
+            paddingVertical: 0,
           }}
-
-        >
-
-          <Image
-
-            source={{
-              uri:
-                user?.profileImage ||
-                "https://i.pravatar.cc/300",
-            }}
-
-            style={{
-
-              width: 82,
-
-              height: 82,
-
-              borderRadius: 41,
-
-            }}
-
-          />
-
-          {/* VERIFIED BADGE */}
-
-          <View
-
-            style={{
-
-              position: "absolute",
-
-              bottom: -2,
-
-              right: -2,
-
-              width: 24,
-
-              height: 24,
-
-              borderRadius: 12,
-
-              backgroundColor: theme.colors.primary500,
-
-              borderWidth: 2,
-
-              borderColor: "#FFD25A",
-
-              justifyContent: "center",
-
-              alignItems: "center",
-
-            }}
-
-          >
-
-            <Text
-
-              style={{
-
-                color: theme.colors.white,
-
-                fontSize: 12,
-
-              }}
-
-            >
-
-              ✓
-
-            </Text>
-
-          </View>
-
-        </View>
-
-        {/* ============================ */}
-        {/* NAME */}
-        {/* ============================ */}
-
-        <Text
-          numberOfLines={2}
-          ellipsizeMode="tail"
-
-          style={{
-            textAlign: "center",
-            marginTop: theme.spacing.lg,
-
-            color: theme.colors.white,
-
-            fontSize: theme.typography.h2,
-
-            fontFamily: theme.fonts.headingSemiBold,
-
-          }}
-
-        >
-
-          {user?.fullName || "-"}
-
-        </Text>
-
-        {/* ============================ */}
-        {/* CITIZEN ID */}
-        {/* ============================ */}
-
-        <Text
-
-          style={{
-            textAlign: 'center',
-            marginTop: 6,
-
-            color: "#AEB7C6",
-
-            fontSize: theme.typography.b2,
-
-            fontFamily: theme.fonts.medium,
-
-          }}
-
-        >
-
-          Citizen ID: {user?.customerId || "-"}
-
-        </Text>
-
-        {/* ============================ */}
-        {/* VERIFIED CHIP */}
-        {/* ============================ */}
-
-        <View
-
-          style={{
-
-            marginTop: 16,
-
-            backgroundColor: "#FFF2E7",
-
-            paddingHorizontal: 16,
-
-            paddingVertical: 6,
-
-            borderRadius: 50,
-
-          }}
-
-        >
-
-          <Text
-
-            style={{
-
-              color: theme.colors.primary500,
-
-              fontSize: 11,
-
-              letterSpacing: 1,
-
-              fontFamily: theme.fonts.bold,
-
-            }}
-
-          >
-
-            VERIFIED
-
-          </Text>
-
-        </View>
-
-      </LinearGradient>
-
+        />
+      </View>
     );
-
   }
 
   // ==========================
-  // NOT VERIFIED
+  // PROFILE BANNER
   // ==========================
-
-  // ==========================
-  // NOT VERIFIED
-  // ==========================
-
-  return (
-
+   return (
     <View
       style={{
-        padding: theme.spacing.lg,
-        backgroundColor: "#FDF2F2",
-        borderRadius: 24,
-        paddingVertical: theme.spacing.xxxl,
+        width: "100%",
+        paddingHorizontal: 16,
+        paddingVertical: 28,
+
         alignItems: "center",
+        justifyContent: "center",
+
+        borderRadius: 16,
+        borderWidth: 1,
+
+        backgroundColor: isVerified ? "#FCEDD6" : "#FFF0EF",
+        borderColor: isVerified ? "#FFFFFF" : "#F04444",
+
+        // iOS shadow (soft, Figma jaisa)
+        shadowColor: "#101828",
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: isVerified ? 0.08 : 0,
+        shadowRadius: isVerified ? 6 : 0,
+
+        // Android shadow (kam rakho, warna square patti aati hai)
+        elevation: isVerified ? 2 : 0,
       }}
     >
-
-      {/* Avatar */}
-
+      {/* AVATAR */}
       <View
         style={{
-          width: 92,
-          height: 92,
-          borderRadius: 46,
-          backgroundColor: theme.colors.gray200,
+          width: 90,
+          height: 90,
+          borderRadius: 45,
+          borderWidth: 3,
+          borderColor: isVerified ? "#FFA68C" : "#FFB0A9",
+          backgroundColor: "#FFFFFF",
           justifyContent: "center",
           alignItems: "center",
         }}
       >
-
-        <Image
-          source={{
-            uri:
-              user?.profileImage ||
-              "https://i.pravatar.cc/300",
-          }}
-          resizeMode="contain"
+        <View
           style={{
-            width: 82,
-            height: 82,
-            borderRadius: 41,
+            width: 84,
+            height: 84,
+            borderRadius: 42,
+            overflow: "hidden",
+            backgroundColor: isVerified ? "#131B2C" : "#BC2025",
+            justifyContent: "center",
+            alignItems: "center",
           }}
-        />
+        >
+          {isVerified && user?.profileImage ? (
+            <Image
+              source={{ uri: user.profileImage }}
+              resizeMode="cover"
+              style={{ width: "100%", height: "100%" }}
+            />
+          ) : isVerified ? (
+            <View
+              style={{
+                width: "100%",
+                height: "100%",
+                backgroundColor: "#131B2C",
+                alignItems: "center",
+              }}
+            >
+              {/* Head */}
+              <View
+                style={{
+                  position: "absolute",
+                  top: 18,
+                  width: 30,
+                  height: 30,
+                  borderRadius: 15,
+                  backgroundColor: "#010102",
+                }}
+              />
+              {/* Shoulders */}
+              <View
+                style={{
+                  position: "absolute",
+                  bottom: 12,
+                  width: 54,
+                  height: 24,
+                  borderTopLeftRadius: 28,
+                  borderTopRightRadius: 28,
+                  backgroundColor: "#2E3A50",
+                }}
+              />
+            </View>
+          ) : (
+            <UserRoundX size={44} color="#FFFFFF" strokeWidth={1.7} />
+          )}
+        </View>
 
+        {/* CAMERA BADGE – rounded square */}
+        {isVerified && (
+          <View
+            style={{
+              position: "absolute",
+              right: -4,
+              bottom: -4,
+
+              width: 26,
+              height: 26,
+              borderRadius: 8,
+
+              backgroundColor: "#F26B21",
+              borderWidth: 2,
+              borderColor: "#FFFFFF",
+
+              justifyContent: "center",
+              alignItems: "center",
+            }}
+          >
+            <Camera size={13} color="#FFFFFF" strokeWidth={2.2} />
+          </View>
+        )}
       </View>
 
-      {/* Name */}
-
+      {/* USER NAME */}
       <Text
         numberOfLines={2}
         ellipsizeMode="tail"
         style={{
-          textAlign: 'center',
-          marginTop: theme.spacing.lg,
-          color: theme.colors.error,
-          fontSize: theme.typography.h2,
-          fontFamily: theme.fonts.headingSemiBold,
-
+          textAlign: "center",
+          marginTop: 8,
+          color: "#172033",
+          fontSize: 18,
+          lineHeight: 28,
+          fontFamily: theme.fonts.bold,
+          
         }}
       >
         {user?.fullName || "-"}
       </Text>
 
-      {/* Phone */}
-
-      <Text
-        numberOfLines={1}
-        ellipsizeMode="tail"
-        style={{
-          textAlign: 'center',
-          marginTop: theme.spacing.xs,
-          color: theme.colors.black,
-          fontSize: theme.typography.b2,
-          fontFamily: theme.fonts.medium,
-        }}
-      >
-        +91 {user?.mobile || ""}
-      </Text>
-
-      {/* Status */}
-
-      <View
-        style={{
-          marginTop: theme.spacing.sm,
-          paddingHorizontal: theme.spacing.lg,
-          paddingVertical: theme.spacing.xs,
-          borderRadius: 50,
-          borderWidth: 1,
-          borderColor: theme.colors.error,
-          backgroundColor: theme.colors.white,
-        }}
-      >
-
-        <Text
+      {/* KYC STATUS */}
+      {isVerified ? (
+        <View
           style={{
-            color: theme.colors.error,
-            fontSize: theme.typography.b3,
-            fontFamily: theme.fonts.extraBold,
-            letterSpacing: 0.8,
+            flexDirection: "row",
+            alignItems: "center",
+            justifyContent: "center",
+            marginTop: 4,
+            paddingHorizontal: 10,
+            paddingVertical: 4,
+            borderRadius: 30,
+            borderWidth: 1,
+            borderColor: "#9BE6C0",
+            backgroundColor: "#E5F8EE",
           }}
         >
-          KYC : NOT VERIFIED
-        </Text>
-
-      </View>
-
+          <BadgeCheck
+            size={14}
+            color="#008F55"
+            fill="#008F55"
+            stroke="#E5F8EE"
+          />
+          <Text
+            style={{
+              marginLeft: 5,
+              color: "#008F55",
+             fontSize: 14,
+              lineHeight: 16,
+              fontFamily: theme.fonts.semiBold,
+            }}
+          >
+            KYC : Verified
+          </Text>
+        </View>
+      ) : (
+        <View
+          style={{
+            flexDirection: "row",
+            alignItems: "center",
+            justifyContent: "center",
+            marginTop: 4,
+            paddingHorizontal: 10,
+            paddingVertical: 4,
+            borderRadius: 30,
+            borderWidth: 1,
+            borderColor: "#FF8D8D",
+            backgroundColor: "#FFF7F6",
+          }}
+        >
+          <CircleX size={14} color="#C82025" strokeWidth={1.8} />
+          <Text
+            style={{
+              marginLeft: 5,
+              color: "#AF0505",
+              fontSize: 14,
+              lineHeight: 16,
+              fontFamily: theme.fonts.semiBold,
+            }}
+          >
+            KYC : Not Verified
+          </Text>
+        </View>
+      )}
     </View>
-
   );
-
 };
 
 export default ProfileBanner;

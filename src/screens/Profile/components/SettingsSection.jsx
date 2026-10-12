@@ -5,8 +5,15 @@ import {
   Text,
 } from "react-native";
 
+
+
+import SettingItem from "./SettingItem";
+import { useNavigation } from "@react-navigation/native";
+import { useGetSettingsQuery, useGetupdateSettingsMutation } from "../../../redux/features/customer/customerApi";
+import useHandleMutation from "../../../hooks/useHandleMutation";
+import InlineRetry from "../../../components/common/RetryScreen/InlineRetry";
 import {
-  User,
+  ContactRound,
   Landmark,
   BadgeCheck,
   Fingerprint,
@@ -14,18 +21,10 @@ import {
   KeyRound,
   CircleHelp,
   FileText,
-  Shield,
-} from "lucide-react-native";
-import {
-
+  ShieldCheck,
   Bell,
-
+  Headset,
 } from "lucide-react-native";
-import SettingItem from "./SettingItem";
-import { useNavigation } from "@react-navigation/native";
-import { useGetSettingsQuery, useGetupdateSettingsMutation } from "../../../redux/features/customer/customerApi";
-import useHandleMutation from "../../../hooks/useHandleMutation";
-import InlineRetry from "../../../components/common/RetryScreen/InlineRetry";
 import { theme } from "../../../theme";
 
 const SettingsSection = () => {
@@ -225,8 +224,8 @@ const SettingsSection = () => {
           marginBottom: 12,
           marginTop: 10,
           fontSize: 14,
-          color: "#5F7395",
-          fontWeight: "600",
+          color: "#000000",
+          fontFamily: theme.fonts.bold
         }}
       >
         ACCOUNT
@@ -241,22 +240,26 @@ const SettingsSection = () => {
       >
 
         <SettingItem
-
           title="Personal Info"
-          icon={User}
-          onPress={() => navigation.navigate("profile-screen-personal-info-screen")}
+          icon={ContactRound}
+          onPress={() =>
+            navigation.navigate("profile-screen-personal-info-screen")
+          }
         />
 
         <SettingItem
           title="Link Bank Accounts"
           icon={Landmark}
-          onPress={() => navigation.navigate("profile-screen-bank-accounts-screen")}
+          onPress={() =>
+            navigation.navigate("profile-screen-bank-accounts-screen")
+          }
         />
-
         <SettingItem
           title="KYC Details"
           icon={BadgeCheck}
-          onPress={() => navigation.navigate("profile-screen-kyc-details")}
+          onPress={() =>
+            navigation.navigate("profile-screen-kyc-details")
+          }
           isLast
         />
 
@@ -266,11 +269,11 @@ const SettingsSection = () => {
 
       <Text
         style={{
-          marginBottom: 12,
-          marginTop: 28,
+          marginBottom: 8,
+          marginTop: 16,
           fontSize: 14,
-          color: "#5F7395",
-          fontWeight: "600",
+          color: "#000000",
+          fontFamily: theme.fonts.bold
         }}
       >
         SECURITY
@@ -339,38 +342,10 @@ const SettingsSection = () => {
                 )
               }
             />
-            {/* <SettingItem
-              title="Push Notification"
-              icon={Bell}
-              type="toggle"
-              value={pushNotification}
-              loading={loadingKey === "pushNotification"}
-              disabled={loadingKey?true :false  || settingsLoading || settingsisFetching}
-              onToggle={(value) =>
-                handleSettingToggle(
-                  "pushNotification",
-                  value,
-                  setPushNotification
-                )
-              }
-            /> */}
 
-            <SettingItem
-              title="Notification Preferences"
-              icon={Bell}
 
-              onPress={() =>
-                navigation.navigate("notification-preferences-screen")
-              }
-            />
-            <SettingItem
-              title="Show All Notification"
-              icon={Bell}
 
-              onPress={() =>
-                navigation.navigate("get-notification-screen")
-              }
-            />
+
           </>}
         <SettingItem
           title="Change Pin"
@@ -385,11 +360,11 @@ const SettingsSection = () => {
 
       <Text
         style={{
-          marginBottom: 12,
-          marginTop: 28,
+          marginBottom: 8,
+          marginTop: 16,
           fontSize: 14,
-          color: "#5F7395",
-          fontWeight: "600",
+          color: "#000000",
+          fontFamily: theme.fonts.bold
         }}
       >
         HELP & LEGAL
@@ -415,7 +390,7 @@ const SettingsSection = () => {
 
         <SettingItem
           title="User Policy"
-          icon={Shield}
+          icon={ShieldCheck}
           isLast
         />
 
