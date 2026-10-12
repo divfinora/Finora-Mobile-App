@@ -88,7 +88,7 @@ const AgricultureInputField = ({
 }) => {
 const isLandArea =
     fieldName === "landArea" ||
-    fieldName === "currentCropType";
+    fieldName === "currentCropType";            
 
     return (
         <View style={{ marginTop: 18 }}>
