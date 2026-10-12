@@ -29,22 +29,22 @@ const DocumentUploadCard = ({
 
     return (
         <View
-      style={{
-    marginHorizontal: 16,
-    marginBottom: 10,
-    paddingHorizontal: 16,
-    paddingVertical: 15,
-    borderRadius: 17,
-    backgroundColor: "#FFFFFF",
-    position: "relative",
-    overflow: "hidden",
+            style={{
+                marginHorizontal: 16,
+                marginBottom: 10,
+                paddingHorizontal: 16,
+                paddingVertical: 15,
+                borderRadius: 17,
+                backgroundColor: "#FFFFFF",
+                position: "relative",
+                overflow: "hidden",
 
-    // ERROR BORDER
-    borderWidth: error ? 1.5 : 0,
-    borderColor: error
-        ? theme.colors.error
-        : "transparent",
-}}
+                // ERROR BORDER
+                borderWidth: error ? 1.5 : 0,
+                borderColor: error
+                    ? theme.colors.error
+                    : "transparent",
+            }}
         >
 
             {/* =================================================

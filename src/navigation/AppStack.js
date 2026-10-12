@@ -45,7 +45,9 @@ import Step2PersonalLoanApply from '../screens/Loan/LoanApply/Step2ApplyLoanAppl
 import Step2GoldLoanApplyMainScreen from '../screens/Loan/LoanApply/Step2ApplyLoanApply/GoldLoan/Step2GoldLoanApplyMainScreen.jsx'
 import Step2VechleLoanApplyMainScreen from '../screens/Loan/LoanApply/Step2ApplyLoanApply/VechicleLoan/Step2VechleLoanApplyMainScreen.jsx'
 import Step2EducationLoanApplyMainScreen from '../screens/Loan/LoanApply/Step2ApplyLoanApply/EducationLoan/Step2EducationLoanApplyMainScreen.jsx'
+import Step2AgricultureLoanApplyMainScreen from '../screens/Loan/LoanApply/Step2ApplyLoanApply/Agriculture/Step2AgricultureLoanApplyMainScreen.jsx'
 import LoanApplicationTrackingScreen from '../screens/GetLoan/LoanApplicationTracking/LoanApplicationTrackingScreen.jsx'
+ 
 
 
 import LoanDisbursedDetails from '../screens/GetLoan/LoanApplicationTracking/DissbursadlaonDetail.jsx'
@@ -161,6 +163,10 @@ const AppStack = () => {
       <Stack.Screen
         name="step-2-apply-vechicle-loan"
         component={Step2VechleLoanApplyMainScreen}
+      />
+      <Stack.Screen
+        name="step-2-apply-agriculture-loan"
+        component={Step2AgricultureLoanApplyMainScreen}
       />
       <Stack.Screen
         name="step-2-apply-education -loan"
