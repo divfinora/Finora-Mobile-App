@@ -273,7 +273,7 @@ const ProfileBanner = ({
               fontFamily: theme.fonts.semiBold,
             }}
           >
-            KYC : Not Verified
+            KYC : Not Verified  
           </Text>
         </View>
       )}
